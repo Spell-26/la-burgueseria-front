@@ -1,0 +1,67 @@
+/* You can add global styles to this file, and also import other style files */
+/* Reiniciar o normalizar el CSS para eliminar estilos predeterminados del navegador */
+html, body, h1, h2, h3, p, ul, ol, li, a {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+html, body {
+  height: 100%;
+}
+html {
+  box-sizing: border-box;
+}
+body{
+  font-family: WorkSans, sans-serif;
+}
+/* Establecer márgenes y relleno en elementos principales */
+
+/* Aplicar una caja de modelo border-box para evitar problemas con el ancho y alto de elementos */
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+*{
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Establecer estilos para títulos */
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+/* Establecer estilos para listas */
+ul, ol {
+  list-style: none;
+}
+
+@font-face {
+  font-family: 'WorkSans';
+  src: url('fonts/WorkSans-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'WorkSans-Bold';
+  src: url('fonts/WorkSans-Bold.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'WorkSans-Medium';
+  src: url('fonts/WorkSans-Medium.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'WorkSans-Light';
+  src: url('fonts/WorkSans-Light.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
