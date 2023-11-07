@@ -6,12 +6,14 @@ import { InsumosComponent } from './components';
 import { MenuComponent } from './utils/menu/menu.component';
 import { FooterComponent } from './utils/footer/footer.component';
 import {MatTableModule} from '@angular/material/table';
+import { NuevoInsumoComponent } from './components/nuevo-insumo/nuevo-insumo.component';
 
 
 @NgModule({
   declarations: [
     AdministradorComponent,
     InsumosComponent,
+    NuevoInsumoComponent,
 
   ],
   imports: [

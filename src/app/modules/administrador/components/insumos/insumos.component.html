@@ -17,13 +17,44 @@
           </button>
         </div>
         <div id="nuevo-insumo">
-          <button>Agregar insumo</button>
+          <button routerLink="nuevo">Agregar insumo</button>
         </div>
       </div>
 
-
+    <div id="contenedor-lista">
+      <div *ngIf="!insumos; else elseInsumos">
+        <h2>Buscando...</h2>
+      </div>
+    </div>
     </div>
 
   </main>
   <app-footer></app-footer>
 </div>
+
+<ng-template #elseInsumos>
+  <div class="table">
+    <table>
+      <thead id="cabecera-tabla">
+        <tr>
+          <th>Nombre insumo</th>
+          <th>Cantidad en inventario</th>
+          <th colspan="2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-tabla">
+      <tr *ngFor="let i of insumos?.object; let j = index">
+        <th>{{i.nombre}}</th>
+        <th>{{i.cantidad}}</th>
+        <th>boton1</th>
+        <th>
+          <button (click)="deleteInsumo(i.id)" class="eliminar-btn">
+            Eliminar
+          </button>
+        </th>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
