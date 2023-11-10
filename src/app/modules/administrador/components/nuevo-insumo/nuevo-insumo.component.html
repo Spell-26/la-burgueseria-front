@@ -9,29 +9,51 @@
         <p>Aquí puedes agregar uno o más insumos, también se podrá declarar el egreso por el valor total de los insumos</p>
       </div>
     <div class="insumos-a-agregar">
+      <div id="insumos-e-informacion">
+
+
+      <div id="informacion-insumos">
+        <h1>Insumos pendientes por agregar: {{addedInsumos.length}}</h1>
+      </div>
       <div id="insumos">
         <ul>
-          <ng-container  *ngFor="let i of insumos; let j = index">
+          <ng-container *ngIf="addedInsumos.length != 0; else noInsumos">
+          <ng-container  *ngFor="let i of insumos; let j = index" >
             <li *ngIf="seleccionados[j]" class="seleccionados">
               <span class="circulo-numeral">{{j + 1}}</span>
               <span class="nombre">{{i.nombre}}</span>
-              <input type="number" value="{{i.cantidad}}">
+              <input type="number" [(ngModel)]="i.cantidad"  >
+              <button class="quitar-unitario" (click)="quitarUnitario(j)">
+                <img src="assets/icons/minus.svg" alt="">
+              </button>
             </li>
           </ng-container>
+          </ng-container>
+          <ng-template #noInsumos>
+            <div id="noInsumos">
+              <h2>Aún no hay insumos seleccionados.</h2>
+              <p>Puedes agregar insumos seleccionando el cuadro en frente de cada uno
+                en la sección de "<b>Insumos registrados</b>"
+                en la parte inferior.</p>
+            </div>
+
+          </ng-template>
 
         </ul>
       </div>
+      </div>
       <div id="contenedor-botones">
-        <button class="guardar">
+        <button class="guardar" (click)="actualizarInsumos()">
           Guardar
         </button>
-        <button class="cancelar">Cancelar</button>
+        <button class="cancelar" (click)="quitarTodos()">Cancelar</button>
       </div>
     </div>
       <div id="contenedor-inferior">
         <div id="contenedor-insumos">
+          <h3 id="titulo2">Insumos</h3>
           <div id="contenedor-interno">
-            <div id="add-insumo">
+            <div id="add-insumo" (click)="modalCrearInsumo()">
               <img src="assets/icons/plus.svg" alt="add">
             </div>
             <div id="insumos-actuales">

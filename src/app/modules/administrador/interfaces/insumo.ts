@@ -1,9 +1,9 @@
-export interface Insumo {
+export interface insumoResponse {
   mensaje: string;
-  object:  Object[];
+  object:  insumo[];
 }
 
-export interface Object {
+export interface insumo {
   id:       number;
   nombre:   string;
   cantidad: number;

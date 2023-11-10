@@ -11,6 +11,9 @@ html, body {
 html {
   box-sizing: border-box;
 }
+*{
+  font-family: WorkSans, serif;
+}
 body{
   font-family: WorkSans, sans-serif;
 }

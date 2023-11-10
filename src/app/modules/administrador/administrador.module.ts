@@ -7,6 +7,7 @@ import { MenuComponent } from './utils/menu/menu.component';
 import { FooterComponent } from './utils/footer/footer.component';
 import {MatTableModule} from '@angular/material/table';
 import { NuevoInsumoComponent } from './components/nuevo-insumo/nuevo-insumo.component';
+import {FormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { NuevoInsumoComponent } from './components/nuevo-insumo/nuevo-insumo.com
     MenuComponent,
     FooterComponent,
     MatTableModule,
+    FormsModule,
   ]
 })
 export class AdministradorModule { }

@@ -25,6 +25,8 @@ main{
 }
 #titulo-seccion{
   color: #fff;
+  font-family: WorkSans-bold;
+  font-size: 2.5em;
 }
 .ayuda{
   background-color: rgba(0, 209, 255, 0.62);
@@ -79,11 +81,23 @@ app-menu{
   flex-direction: column;
   align-items: center;
 }
-#insumos{
+#insumos-e-informacion{
   width: 100%;
+  display: flex;
+}
+#informacion-insumos{
+  width: 40%;
+  color: white;
+  margin: 2em;
+  padding: 1em;
+}
+#informacion-insumos h1{
+  font-family: WorkSans-bold;
+}
+#insumos{
+  width: 60%;
   min-height: 35vh;
   max-height: 35vh;
-  border: 1px solid red;
   margin-top: 2em;
   color: #ffffff;
 }
@@ -144,6 +158,7 @@ app-menu{
   flex-direction: column;
 }
 #add-insumo{
+
   background-color: #0EAC10;
   width: 4em;
   height: 4em;
@@ -219,7 +234,42 @@ app-menu{
 }
 .seleccionados input{
   padding: .6em;
-  font-family: WorkSans-Medium, serif;
-  font-size: 1.3em;
+  font-family: WorkSans-bold, serif;
+  font-size: 1em;
   width: 5em;
+  border-radius: 1em;
+  border: 0;
+}
+.quitar-unitario{
+  margin: 0 1.2em;
+  background-color: red;
+  border: 0;
+  padding: .5em;
+  border-radius: 100%;
+  cursor: pointer;
+
+}
+.quitar-unitario:hover{
+  background-color: #b30505;
+}
+.quitar-unitario img{
+  margin: auto;
+}
+#noInsumos{
+  width: 75%;
+  background-color: rgba(0, 209, 255, 0.62);
+  padding: .7em;
+  border-radius: 10px;
+  margin-top: 1.5em;
+}
+#noInsumos h2{
+  font-family: WorkSans-bold, serif;
+}
+#noInsumos p{
+  font-family: WorkSans, serif;
+}
+#titulo2{
+  font-family: WorkSans-bold, serif;
+  color: #fff;
+  font-size: 2em;
 }
