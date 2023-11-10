@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {ActivatedRoute, Router, RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-menu',
@@ -11,9 +11,4 @@ import {ActivatedRoute, Router, RouterLink} from "@angular/router";
   ]
 })
 export class MenuComponent {
-  constructor(private router: Router) {
-  }
-  goToInsumos():void{
-    this.router.navigate(['/insumos'])
-  }
 }

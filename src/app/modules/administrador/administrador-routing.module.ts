@@ -4,9 +4,14 @@ import {AdministradorComponent} from "./administrador.component";
 import {InsumosComponent, NuevoInsumoComponent} from "./components";
 
 const routes: Routes = [
-  { path : '', component: AdministradorComponent},
-  {path: 'insumos', component: InsumosComponent},
-  {path:'insumos/nuevo', component: NuevoInsumoComponent}
+  {
+    path : '',
+    component: AdministradorComponent,
+    children: [
+      {path: 'insumos', component: InsumosComponent},
+      {path:'insumos/nuevo', component: NuevoInsumoComponent},
+    ],
+  },
 ];
 
 @NgModule({
