@@ -1,0 +1,55 @@
+<div class="contenedor-modulo">
+  <div class="contenido-seccion">
+    <header id="cabecera-seccion">
+      <h1 id="titulo-seccion">Productos</h1>
+    </header>
+    <div class="ayuda">
+      <p>En esta sección podrás ver los insumos restantes en el sistema, añadir más insumos, editarlos, eliminarlos
+        o incluso buscar alguno en especifico.</p>
+    </div>
+    <div id="contenedor-funciones">
+      <div id="buscar">
+        <input type="text" placeholder="Buscar...">
+        <button>
+          <img src="assets/icons/lupa.png" alt="buscar">
+        </button>
+        <!-- <div class="producto-buscado" *ngIf="isNombreBusqueda">
+            <span class="texto-producto-buscado">
+              {{nombreBusqueda}}
+            </span>
+          <span (click)="limpiarBusqueda()" class="limpiar-producto-buscado">
+              <img src="assets/icons/close.svg" alt="cerrar">
+            </span>
+        </div> -->
+      </div>
+      <div class="boton-funciones">
+        <button>Nuevo producto</button>
+      </div>
+      <div class="boton-funciones">
+        <button>Nueva categoría</button>
+      </div>
+    </div>
+
+    <div class="contenedor-cards">
+      <div *ngIf="!productos; else listaProductos">
+        <h2>Buscando...</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #listaProductos>
+  <div class="card-productos" *ngFor="let producto of productos?.object; let i = index">
+    <div class="imagen-productos">
+      <img src="{{producto.imagen}}" onerror="this.src='assets/img/placeholder-hamburguesa.png'"  alt="logo hamburguesa" >
+      <div class="datos-producto">
+        <span>{{producto.nombre}}</span>
+        <span>{{producto.precio}}</span>
+      </div>
+    </div>
+    <div class="informacion-producto">
+      <p>{{producto.descripcion}}</p>
+    </div>
+  </div>
+</ng-template>

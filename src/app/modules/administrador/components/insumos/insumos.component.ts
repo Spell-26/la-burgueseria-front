@@ -7,7 +7,7 @@ import {Observable} from "rxjs";
 @Component({
   selector: 'app-insumos',
   templateUrl: './insumos.component.html',
-  styleUrls: ['./insumos.component.css']
+  styleUrls: ['./insumos.component.css', '../../utils/styles/estilosCompartidos.css']
 })
 export class InsumosComponent implements OnInit{
   public insumos?: insumoResponse;

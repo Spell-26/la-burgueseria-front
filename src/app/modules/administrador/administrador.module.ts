@@ -8,6 +8,7 @@ import { FooterComponent } from './utils/footer/footer.component';
 import {MatTableModule} from '@angular/material/table';
 import { NuevoInsumoComponent } from './components/nuevo-insumo/nuevo-insumo.component';
 import {FormsModule} from "@angular/forms";
+import { ProductosComponent } from './components/productos/productos.component';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import {FormsModule} from "@angular/forms";
     AdministradorComponent,
     InsumosComponent,
     NuevoInsumoComponent,
+    ProductosComponent,
 
   ],
   imports: [

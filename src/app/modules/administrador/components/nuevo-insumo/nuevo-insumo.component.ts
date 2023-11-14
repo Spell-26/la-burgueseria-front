@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-nuevo-insumo',
   templateUrl: './nuevo-insumo.component.html',
-  styleUrls: ['./nuevo-insumo.component.css']
+  styleUrls: ['./nuevo-insumo.component.css', '../../utils/styles/estilosCompartidos.css']
 })
 export class NuevoInsumoComponent implements OnInit{
 

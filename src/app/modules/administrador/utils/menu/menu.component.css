@@ -1,7 +1,7 @@
 #menu{
   background-color: #191919;
   border: 2px solid #3C3B3B;
-  width: 100%;
+  min-width: 100%;
   border-radius: 10px;
 }
 #menu header{
@@ -19,6 +19,7 @@
   width: 60%;
   display: flex;
   align-items: center;
+  padding: 0 .1em;
 }
 #container-textos{
   display: flex;

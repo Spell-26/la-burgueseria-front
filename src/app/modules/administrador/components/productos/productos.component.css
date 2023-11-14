@@ -1,4 +1,3 @@
-
 #contenedor-funciones{
   display: flex;
   width: 100%;
@@ -32,10 +31,10 @@
   cursor: pointer;
 
 }
-#nuevo-insumo{
+.boton-funciones{
   width: 40%;
 }
-#nuevo-insumo button{
+.boton-funciones button{
   padding: 1em;
   background-color: #9ded12;
   border: 0;
@@ -44,7 +43,7 @@
   color: #000;
   cursor: pointer;
 }
-#nuevo-insumo button:hover{
+.boton-funciones button:hover{
   background-color: #7fc010;
 }
 #buscar input{
@@ -66,62 +65,60 @@
 #buscar button:hover{
   background-color: #7fc010;
 }
-
-#contenedor-lista{
+.contenedor-cards{
   display: flex;
   width: 100%;
   background-color: rgba(25, 25, 25, 0.85);
   border: 2px solid #3C3B3B;
-  padding: 1em;
+  padding: 1.5em;
   border-radius: 1em;
   min-height: 60vh;
   margin-top: 2em;
   margin-bottom: 2em;
+  flex-direction: row;
 }
-
-/*  ESTILIS TABLA*/
-.table{
-  width: 100%;
-
+.card-productos{
+  width: 20%;
+  background-color: #EC1515;
+  border-radius: 10px;
+  min-height: 10vh;
+  max-height: 34vh;
 }
-.table table{
+.imagen-productos{
   width: 100%;
+  position: relative;
+}
+.imagen-productos img{
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.datos-producto{
   color: white;
-  border-collapse: collapse;
-
-}
-
-.table table th, .table table td{
-  padding: 1.5em;
-}
-#cabecera-tabla{
-  background-color: #246355;
-  font-size: 1.2em;
-  font-family: WorkSans-Medium, serif;
-  border-bottom: solid 5px #0F362D;
-}
-#cuerpo-tabla{
-  font-size: 1.2em;
-  font-family: WorkSans, serif;
-  font-weight: normal;
-}
-.table tr:nth-child(even){
-  background-color: rgba(35, 35, 35, 0.56);
-}
-#cuerpo-tabla tr:hover{
-  background-color: #1d354a;
-}
-.eliminar-btn{
-  background-color: red;
-  padding: 1em;
-  border: 0;
+  font-family: WorkSans-bold, serif;
   font-size: 1em;
-  font-family: WorkSans, serif;
-  font-weight: normal;
-  border-radius: 5px;
-  color: #fff;
-  cursor: pointer;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  position: absolute;
+  top: 90%;
+  left: 90%;
+  transform: translate(-90%, -90%);
+  margin-left: .5em;
 }
-.eliminar-btn:hover{
-  background-color: #b30505;
+.datos-producto span{
+  width: 35%;
+  font-weight: bold;
+  /* borde letra*/
+  text-shadow: -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000; /* Desplazamiento y color del borde */
+
+}
+.informacion-producto{
+  font-family: WorkSans-Medium, serif;
+  padding: 1em;
+  color: white;
 }
