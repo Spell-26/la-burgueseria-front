@@ -23,7 +23,7 @@
         </div> -->
       </div>
       <div class="boton-funciones">
-        <button>Nuevo producto</button>
+        <button (click)="modalNuevoProducto()">Nuevo producto</button>
       </div>
       <div class="boton-funciones">
         <button>Nueva categoría</button>
@@ -31,7 +31,7 @@
     </div>
 
     <div class="contenedor-cards">
-      <div *ngIf="!productos; else listaProductos">
+      <div *ngIf="!productos || productos.object.length == 0; else listaProductos">
         <h2>Buscando...</h2>
       </div>
     </div>

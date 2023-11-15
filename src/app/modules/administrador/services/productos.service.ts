@@ -1,8 +1,8 @@
 
 import { Injectable } from '@angular/core';
-import {Observable, Subject} from "rxjs";
+import {Observable, Subject, tap} from "rxjs";
 import {HttpClient} from "@angular/common/http";
-import {ProductoResponse} from "../interfaces/producto";
+import {Producto, ProductoResponse} from "../interfaces/producto";
 
 @Injectable({
   providedIn: 'root'
@@ -21,5 +21,16 @@ export class ProductosService {
 
   gerProductos(): Observable<ProductoResponse>{
     return this.http.get<ProductoResponse>(`${this.apiUrl}s`);
+  }
+  //crear producto
+  crearProducto(producto: FormData):Observable<any>{
+    return this.http.post(this.apiUrl, producto)
+      .pipe(
+        tap(
+          () => {
+            this._refreshNeeded.next();
+          }
+        )
+      )
   }
 }
