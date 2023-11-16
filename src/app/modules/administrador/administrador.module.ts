@@ -9,6 +9,8 @@ import {MatTableModule} from '@angular/material/table';
 import { NuevoInsumoComponent } from './components/nuevo-insumo/nuevo-insumo.component';
 import {FormsModule} from "@angular/forms";
 import { ProductosComponent } from './components/productos/productos.component';
+import {FileUploadModule} from "primeng/fileupload";
+import {SafePipe} from "./pipes";
 
 
 @NgModule({
@@ -17,15 +19,16 @@ import { ProductosComponent } from './components/productos/productos.component';
     InsumosComponent,
     NuevoInsumoComponent,
     ProductosComponent,
-
+    SafePipe
   ],
-  imports: [
-    CommonModule,
-    AdministradorRoutingModule,
-    MenuComponent,
-    FooterComponent,
-    MatTableModule,
-    FormsModule,
-  ]
+    imports: [
+        CommonModule,
+        AdministradorRoutingModule,
+        MenuComponent,
+        FooterComponent,
+        MatTableModule,
+        FormsModule,
+        FileUploadModule,
+    ]
 })
 export class AdministradorModule { }

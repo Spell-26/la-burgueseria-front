@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Producto, ProductoResponse} from "../../interfaces/producto";
 import {ProductosService} from "../../services/productos.service";
 import Swal from "sweetalert2";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-productos',
@@ -10,9 +11,9 @@ import Swal from "sweetalert2";
 })
 export class ProductosComponent  implements OnInit{
   //  VARIABLES
-  public productos ?: ProductoResponse;
+  public productos : Producto[] = [];
   // CONSTRUCTOR E INICIALIZADORES
-  constructor(private productosService : ProductosService) {
+  constructor(private productosService : ProductosService, private sanitizer : DomSanitizer) {
   }
   ngOnInit(): void {
     this.productosService.refreshNeeded
@@ -27,7 +28,11 @@ export class ProductosComponent  implements OnInit{
   //****************************
   //*******MÉTODOS*******
   //****************************
-
+  onImageError(producto: any) {
+    console.error(`Error cargando la imagen para el producto: ${producto.nombre}`);
+    // Puedes realizar otras acciones aquí, como establecer una imagen de reemplazo.
+    producto.imagenUrl = 'assets/img/placeholder-hamburguesa.png';
+  }
   modalNuevoProducto() {
     Swal.fire({
       title: 'Agregar Producto',
@@ -35,12 +40,13 @@ export class ProductosComponent  implements OnInit{
         '<input id="nombre" class="swal2-input" placeholder="Nombre">' +
         '<input id="precio" class="swal2-input" placeholder="Precio" type="number">' +
         '<input type="file" id="imagen" class="swal2-file" accept="image/*">' +
+
         '<textarea id="descripcion" class="swal2-textarea" placeholder="Descripción"></textarea>',
       focusConfirm: false,
       preConfirm: () => {
         const nombre = (document.getElementById('nombre') as HTMLInputElement).value;
         const precio: number = +(document.getElementById('precio') as HTMLInputElement).value;
-        const imagen = (document.getElementById('imagen') as HTMLInputElement).files?.[0];
+        const imagen: File | undefined = (document.getElementById('imagen') as HTMLInputElement).files?.[0];
         const descripcion = (document.getElementById('descripcion') as HTMLTextAreaElement).value;
 
         if(!nombre || !precio){
@@ -48,12 +54,13 @@ export class ProductosComponent  implements OnInit{
         }else{
           //peticion para guardar
           const productoSave : Producto = {
+            imagenUrl: null,
             id: 0,
             nombre : nombre,
             precio : precio,
             descripcion: descripcion,
             imagen : imagen,
-            categoriaProducto : null
+            categoriaProducto : null,
           };
 
           this.crearProducto(productoSave).subscribe(
@@ -65,8 +72,6 @@ export class ProductosComponent  implements OnInit{
             }
           )
         }
-
-
       },
     });
   }
@@ -76,10 +81,19 @@ export class ProductosComponent  implements OnInit{
   //*******PETICIONES HTTP*******
   //****************************
   public getAllProductos(){
-    this.productosService.gerProductos()
+    this.productosService.getProductos()
       .subscribe(
         producto => {
-          this.productos = producto;
+          this.productos = producto.object;
+          console.log(this.productos);
+
+          this.productos.forEach(
+            (item) =>{
+              if(item.imagen){
+                item.imagenUrl = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + item.imagen);
+              }
+            }
+          )
           console.log(this.productos);
         }
       );
@@ -93,6 +107,10 @@ export class ProductosComponent  implements OnInit{
     formData.append('desc', producto.descripcion);
 
     return this.productosService.crearProducto(formData);
+  }
+  public deleteProducto(id:number):void{
+    this.productosService.deleteProducto(id)
+      .subscribe();
   }
 
 }

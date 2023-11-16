@@ -6,6 +6,7 @@ export interface ProductoResponse {
 }
 
 export interface Producto {
+  imagenUrl: any | null;
   id:                number;
   nombre:            string;
   precio:            number;

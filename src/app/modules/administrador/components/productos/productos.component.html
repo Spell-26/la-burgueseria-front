@@ -31,25 +31,33 @@
     </div>
 
     <div class="contenedor-cards">
-      <div *ngIf="!productos || productos.object.length == 0; else listaProductos">
+      <div *ngIf="!productos || productos.length == 0; else listaProductos">
         <h2>Buscando...</h2>
       </div>
     </div>
   </div>
 </div>
-
-
 <ng-template #listaProductos>
-  <div class="card-productos" *ngFor="let producto of productos?.object; let i = index">
+  <div class="card-productos" *ngFor="let producto of productos; let i = index">
     <div class="imagen-productos">
-      <img src="{{producto.imagen}}" onerror="this.src='assets/img/placeholder-hamburguesa.png'"  alt="logo hamburguesa" >
+      <img [src]="producto.imagenUrl" alt="logo hamburguesa" (error)="onImageError(producto)">
       <div class="datos-producto">
         <span>{{producto.nombre}}</span>
         <span>{{producto.precio}}</span>
       </div>
     </div>
     <div class="informacion-producto">
-      <p>{{producto.descripcion}}</p>
+      <p>Categoría: {{producto.categoriaProducto?.nombre}}<br><br>
+        Descripción: {{producto.descripcion}}</p>
+      <div class="btn-container">
+        <div class="btn-editar">
+          <button>Editar</button>
+        </div>
+        <div class="btn-eliminar">
+          <button (click)="deleteProducto(producto.id)">Eliminar</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </ng-template>

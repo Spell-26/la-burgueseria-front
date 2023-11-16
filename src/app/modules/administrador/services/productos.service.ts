@@ -19,15 +19,27 @@ export class ProductosService {
   private apiUrl = 'http://localhost:8080/api/v1/producto';
   constructor( private http : HttpClient) { }
 
-  gerProductos(): Observable<ProductoResponse>{
+  getProductos(): Observable<ProductoResponse>{
     return this.http.get<ProductoResponse>(`${this.apiUrl}s`);
   }
   //crear producto
   crearProducto(producto: FormData):Observable<any>{
+
     return this.http.post(this.apiUrl, producto)
       .pipe(
         tap(
           () => {
+            this._refreshNeeded.next();
+          }
+        )
+      )
+  }
+  //  ELIMINAR PRODUCTO
+  deleteProducto(id :number):Observable<any>{
+    return this.http.delete(`${this.apiUrl}/${id}`)
+      .pipe(
+        tap(
+          () =>{
             this._refreshNeeded.next();
           }
         )
