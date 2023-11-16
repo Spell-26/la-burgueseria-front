@@ -20,14 +20,7 @@ export class InsumosService {
   constructor( private http : HttpClient) { }
 
   getInsumos(): Observable<insumoResponse>{
-    return this.http.get<insumoResponse>('http://localhost:8080/api/v1/insumos')
-      .pipe(
-        tap(
-          () => {
-            this._refreshNeeded.next();
-          }
-        )
-      );
+    return this.http.get<insumoResponse>('http://localhost:8080/api/v1/insumos');
   }
 
   deleteInsumo(id : number):Observable<any>{

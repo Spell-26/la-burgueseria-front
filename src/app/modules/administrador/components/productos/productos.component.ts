@@ -130,7 +130,6 @@ export class ProductosComponent  implements OnInit{
                 Swal.fire('Error', 'Hubo un problema al agregar la categoría', 'error');
               }
             );
-          this.refreshPagina();
         }
       },
     });
