@@ -1,9 +1,9 @@
 export interface CategoriaProductoResponse {
   mensaje: string;
-  object:  Object[];
+  object:  CategoriaProducto[];
 }
 
 export interface CategoriaProducto {
-  id:     number;
+  id:     string | number;
   nombre: string;
 }

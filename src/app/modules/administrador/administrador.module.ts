@@ -11,6 +11,7 @@ import {FormsModule} from "@angular/forms";
 import { ProductosComponent } from './components/productos/productos.component';
 import {FileUploadModule} from "primeng/fileupload";
 import {SafePipe} from "./pipes";
+import { CategoriaProductoComponent } from './components/categoria-producto/categoria-producto.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import {SafePipe} from "./pipes";
     InsumosComponent,
     NuevoInsumoComponent,
     ProductosComponent,
-    SafePipe
+    SafePipe,
+    CategoriaProductoComponent
   ],
     imports: [
         CommonModule,

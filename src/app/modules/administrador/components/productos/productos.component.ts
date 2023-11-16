@@ -3,6 +3,9 @@ import {Producto, ProductoResponse} from "../../interfaces/producto";
 import {ProductosService} from "../../services/productos.service";
 import Swal from "sweetalert2";
 import {DomSanitizer} from "@angular/platform-browser";
+import {CategoriaProducto} from "../../interfaces/categoriaProducto";
+import {CategoriaProductoService} from "../../services/categoria-producto.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-productos',
@@ -11,18 +14,24 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class ProductosComponent  implements OnInit{
   //  VARIABLES
+  public categoriasProductos : CategoriaProducto[] = [];
   public productos : Producto[] = [];
   // CONSTRUCTOR E INICIALIZADORES
-  constructor(private productosService : ProductosService, private sanitizer : DomSanitizer) {
+  constructor(private productosService : ProductosService,
+              private sanitizer : DomSanitizer,
+              private categoriaProductoService : CategoriaProductoService,
+              private router : Router) {
   }
   ngOnInit(): void {
     this.productosService.refreshNeeded
       .subscribe(
         () =>{
           this.getAllProductos();
+          this.getAllCategoriasProductos();
         }
       );
     this.getAllProductos();
+    this.getAllCategoriasProductos();
 
   }
   //****************************
@@ -34,13 +43,22 @@ export class ProductosComponent  implements OnInit{
     producto.imagenUrl = 'assets/img/placeholder-hamburguesa.png';
   }
   modalNuevoProducto() {
+
+    const opcionesCategoria: string[] = [];
+    this.categoriasProductos.forEach(categoria =>{
+      opcionesCategoria.push(`<option value="${categoria.id}">${categoria.nombre}</option>`)
+    })
+
     Swal.fire({
       title: 'Agregar Producto',
       html:
         '<input id="nombre" class="swal2-input" placeholder="Nombre">' +
         '<input id="precio" class="swal2-input" placeholder="Precio" type="number">' +
         '<input type="file" id="imagen" class="swal2-file" accept="image/*">' +
-
+        '<select id="categoria" class="swal2-select">' +
+        '<option value="" disabled selected>Selecciona una categoria</option>'+
+        opcionesCategoria.join('') +
+        '</select>'+
         '<textarea id="descripcion" class="swal2-textarea" placeholder="Descripción"></textarea>',
       focusConfirm: false,
       preConfirm: () => {
@@ -48,10 +66,16 @@ export class ProductosComponent  implements OnInit{
         const precio: number = +(document.getElementById('precio') as HTMLInputElement).value;
         const imagen: File | undefined = (document.getElementById('imagen') as HTMLInputElement).files?.[0];
         const descripcion = (document.getElementById('descripcion') as HTMLTextAreaElement).value;
-
+        const categoriaId = (document.getElementById('categoria') as HTMLSelectElement).value;
+        let id:number = parseInt(categoriaId, 10);
         if(!nombre || !precio){
           Swal.showValidationMessage('Por favor, completa todos los campos');
         }else{
+
+          const categoriaProducto : CategoriaProducto = {
+            id: categoriaId,
+            nombre: ""
+          };
           //peticion para guardar
           const productoSave : Producto = {
             imagenUrl: null,
@@ -63,12 +87,12 @@ export class ProductosComponent  implements OnInit{
             categoriaProducto : null,
           };
 
-          this.crearProducto(productoSave).subscribe(
+          this.crearProducto(productoSave, id).subscribe(
             (respuesta) =>{
-              Swal.fire('Éxito', 'Insumo agregado correctamente', 'success');
+              Swal.fire('Éxito', 'Producto agregado correctamente', 'success');
             },
             (error) =>{
-              Swal.fire('Error', 'Hubo un problema al agregar el insumo', 'error');
+              Swal.fire('Error', 'Hubo un problema al agregar el producto', 'error');
             }
           )
         }
@@ -76,17 +100,57 @@ export class ProductosComponent  implements OnInit{
     });
   }
 
+  //CREAR NUEVA CATEGORIA
+  modalNuevaCategoria(){
+    Swal.fire({
+      title: 'Crear Una Nueva Categoría',
+      html:
+        '<input id="nombre" class="swal2-input" placeholder="Nombre de la categoría">',
+      focusConfirm: false,
+      preConfirm: () => {
+        const nombreCategoria = (document.getElementById('nombre') as HTMLInputElement).value;
+
+        if (!nombreCategoria) {
+          Swal.showValidationMessage('Por favor, ingresa un nombre para la categoría');
+        }
+        else {
+
+          const categoriaProductoSave : CategoriaProducto = {
+            id: 0,
+            nombre: nombreCategoria
+          }
+
+          this.categoriaProductoService.crearCategoria(categoriaProductoSave)
+            .subscribe(
+              (respuesta) =>{
+                Swal.fire('Éxito', 'Categoría agregada correctamente', 'success');
+
+              },
+              (error) =>{
+                Swal.fire('Error', 'Hubo un problema al agregar la categoría', 'error');
+              }
+            );
+          this.refreshPagina();
+        }
+      },
+    });
+  }
+
+  refreshPagina(){
+    this.router.navigate(['admin/productos'])
+  }
 
   //****************************
   //*******PETICIONES HTTP*******
   //****************************
+
+
+  //consultar todos los productos
   public getAllProductos(){
     this.productosService.getProductos()
       .subscribe(
         producto => {
           this.productos = producto.object;
-          console.log(this.productos);
-
           this.productos.forEach(
             (item) =>{
               if(item.imagen){
@@ -94,17 +158,28 @@ export class ProductosComponent  implements OnInit{
               }
             }
           )
-          console.log(this.productos);
         }
       );
   }
-  private crearProducto(producto : Producto){
+  //consultar todas las categorias de productos
+  public getAllCategoriasProductos(){
+    this.categoriaProductoService.getCategoriasProductos()
+      .subscribe(
+        categoriaProcuto =>{
+          this.categoriasProductos = categoriaProcuto.object;
+        }
+      )
+  }
+  private crearProducto(producto : Producto, categoriaid: number){
     const formData : FormData = new FormData();
 
     formData.append('nombre', producto.nombre);
     formData.append('precio' , producto.precio.toString());
     formData.append('imagen', producto.imagen);
     formData.append('desc', producto.descripcion);
+    formData.append('categoria', categoriaid.toString());
+
+
 
     return this.productosService.crearProducto(formData);
   }
