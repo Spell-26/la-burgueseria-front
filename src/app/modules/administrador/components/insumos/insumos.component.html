@@ -51,9 +51,9 @@
       <tr *ngFor="let i of insumos?.object; let j = index">
         <th>{{i.nombre}}</th>
         <th>{{i.cantidad}}</th>
-        <th>boton1</th>
+        <th></th>
         <th>
-          <button (click)="deleteInsumo(i.id)" class="eliminar-btn">
+        <button (click)="deleteInsumo(i.id)" class="eliminar-btn">
             Eliminar
           </button>
         </th>
