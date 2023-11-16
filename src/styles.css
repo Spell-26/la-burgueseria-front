@@ -16,6 +16,7 @@ html {
 }
 body{
   font-family: WorkSans, sans-serif;
+  background-color: black;
 }
 /* Establecer márgenes y relleno en elementos principales */
 
@@ -74,4 +75,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .accion-lista:visited {
   color: #fff;
+}
+app-categoria-producto{
+  width:100%;
+}
+app-nuevo-insumo{
+  width:100%;
 }
