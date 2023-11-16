@@ -100,45 +100,6 @@ export class ProductosComponent  implements OnInit{
     });
   }
 
-  //CREAR NUEVA CATEGORIA
-  modalNuevaCategoria(){
-    Swal.fire({
-      title: 'Crear Una Nueva Categoría',
-      html:
-        '<input id="nombre" class="swal2-input" placeholder="Nombre de la categoría">',
-      focusConfirm: false,
-      preConfirm: () => {
-        const nombreCategoria = (document.getElementById('nombre') as HTMLInputElement).value;
-
-        if (!nombreCategoria) {
-          Swal.showValidationMessage('Por favor, ingresa un nombre para la categoría');
-        }
-        else {
-
-          const categoriaProductoSave : CategoriaProducto = {
-            id: 0,
-            nombre: nombreCategoria
-          }
-
-          this.categoriaProductoService.crearCategoria(categoriaProductoSave)
-            .subscribe(
-              (respuesta) =>{
-                Swal.fire('Éxito', 'Categoría agregada correctamente', 'success');
-
-              },
-              (error) =>{
-                Swal.fire('Error', 'Hubo un problema al agregar la categoría', 'error');
-              }
-            );
-        }
-      },
-    });
-  }
-
-  refreshPagina(){
-    this.router.navigate(['admin/productos'])
-  }
-
   //****************************
   //*******PETICIONES HTTP*******
   //****************************

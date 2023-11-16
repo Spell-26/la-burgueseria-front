@@ -1,5 +1,5 @@
-<div class="contenedor-modulo">
-  <div class="contenido-seccion">
+<div id="contenedor-modulo">
+  <div id="contenido-seccion">
     <header id="cabecera-seccion">
       <h1 id="titulo-seccion">Categorías</h1>
     </header>
@@ -21,9 +21,41 @@
             </span>
         </div>-->
       </div>
-      <div id="nuevo-insumo">
-        <button>Nueva categoría</button>
+      <div id="nueva-categoria">
+        <button (click)="modalNuevaCategoria()" >Nueva categoría</button>
       </div>
     </div>
+
+    <div id="contenedor-lista" >
+      <div *ngIf="!categoriasProductos || categoriasProductos.object.length == 0;
+       else elseCategorias">
+        <h2>Buscando...</h2>
+      </div>
+    </div>
+
   </div>
 </div>
+
+<ng-template #elseCategorias>
+  <div class="table">
+    <table>
+      <thead id="cabecera-tabla">
+      <tr>
+        <th>Nombre categoría</th>
+        <th colspan="2">Acciones</th>
+      </tr>
+      </thead>
+      <tbody id="cuerpo-tabla">
+      <tr *ngFor="let i of categoriasProductos?.object; let j = index">
+        <th>{{i.nombre}}</th>
+        <th>boton1</th>
+        <th>
+          <button  class="eliminar-btn" (click)="deleteCategoria(i.id)">
+            Eliminar
+          </button>
+        </th>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>

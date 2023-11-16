@@ -16,10 +16,11 @@ export class CategoriaProductoService {
   private apiUrl = 'http://localhost:8080/api/v1/categoria-producto';
   constructor(private http : HttpClient) { }
 
+  //eliminar categoria
   getCategoriasProductos():Observable<CategoriaProductoResponse>{
     return this.http.get<CategoriaProductoResponse>('http://localhost:8080/api/v1/categorias-productos');
   }
-
+  //crear categoria
   crearCategoria(categoriaProducto : CategoriaProducto) : Observable<any>{
     return this.http.post(this.apiUrl, categoriaProducto)
       .pipe(
@@ -29,5 +30,16 @@ export class CategoriaProductoService {
           }
         )
       )
-  };
+  }
+  //eliminar categoría
+  deleteCategoria(id : number) : Observable<any>{
+    return this.http.delete(`${this.apiUrl}/${id}`)
+      .pipe(
+        tap(
+          () => {
+            this._refreshNeeded.next();
+          }
+        )
+      );
+  }
 }

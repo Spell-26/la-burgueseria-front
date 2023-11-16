@@ -4,6 +4,6 @@ export interface CategoriaProductoResponse {
 }
 
 export interface CategoriaProducto {
-  id:     string | number;
+  id:     any;
   nombre: string;
 }
