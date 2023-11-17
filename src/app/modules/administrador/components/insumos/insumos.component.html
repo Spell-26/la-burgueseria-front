@@ -11,7 +11,7 @@
       </div>
       <div id="contenedor-funciones">
         <div id="buscar">
-          <input type="text" placeholder="Buscar..."[(ngModel)]="nombreBusqueda">
+          <input type="text" placeholder="Buscar..."[(ngModel)]="nombreBusqueda" (keyup)="buscarInsumos()">
           <button (click)="buscarInsumos()">
             <img src="assets/icons/lupa.png" alt="buscar">
           </button>

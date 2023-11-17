@@ -34,7 +34,8 @@ export class InsumosComponent implements OnInit{
   }
   public limpiarBusqueda(){
     this.isNombreBusqueda = false;
-    this.getAllInsumos()
+    this.getAllInsumos();
+    this.nombreBusqueda ="";
   }
 
 
@@ -54,11 +55,17 @@ export class InsumosComponent implements OnInit{
       });
   }
   public buscarInsumos(){
-    this.insumosService.buscarPorNombre(this.nombreBusqueda)
-      .subscribe(insumo =>{
-        this.insumos = insumo;
-      });
-    this.setIsNombreBusqueda(true);
+    if(this.nombreBusqueda.length == 0){
+      this.setIsNombreBusqueda(false);
+      this.getAllInsumos();
+    }else{
+      this.insumosService.buscarPorNombre(this.nombreBusqueda)
+        .subscribe(insumo =>{
+          this.insumos = insumo;
+        });
+      this.setIsNombreBusqueda(true);
+    }
+
   }
 
 
