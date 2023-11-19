@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
 import {insumoResponse, insumo} from "../interfaces";
 
@@ -21,6 +21,15 @@ export class InsumosService {
 
   getInsumos(): Observable<insumoResponse>{
     return this.http.get<insumoResponse>('http://localhost:8080/api/v1/insumos');
+  }
+  getInsumosPageable(numeroPagina : number, tamanoPagina : number, order: string, asc : boolean) : Observable<any>{
+    let params = new HttpParams()
+      .set('page', numeroPagina.toString())
+      .set('size', tamanoPagina.toString())
+      .set('order', order)
+      .set('asc', asc);
+
+    return this.http.get<any>('http://localhost:8080/api/v1/insumos2', {params})
   }
 
   deleteInsumo(id : number):Observable<any>{

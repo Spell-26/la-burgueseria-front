@@ -1,127 +1,121 @@
-
-#contenedor-funciones{
-  display: flex;
+.container-section{
   width: 100%;
-  background-color: rgba(25, 25, 25, 0.85);
-  border: 2px solid #3C3B3B;
-  padding: 1em;
-  border-radius: 1em;
-  justify-content: space-between;
+  min-height: 60vh;
+  margin: 1em 2em 2em 2em;
 }
-#buscar{
-  width: 60%;
-  display: flex;
-  align-items: center;
+.header-module{
+  width: 100%;
+  color: #fff;
+  font-family: WorkSans-Medium, serif;
 }
-.producto-buscado{
-  margin: 0 2em;
-  background-color: rgba(86, 86, 86, 0.66);
-  border-radius: 3em;
-  padding: .3em .5em;
+.header-module h1{
+  font-size: 2em;
+}
+/* ZONA DE ACCIONES */
+.actions-container{
+  width: 100%;
+  border-bottom: 1px solid #3C3B3B;
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  padding: .3em 0;
+  justify-content: space-between;
+  align-content: center;
 }
-.texto-producto-buscado{
-  font-family: WorkSans-bold, serif;
+.search-container{
+  width: 20%;
+}
+.search-container input{
+  width: 100%;
+  padding: .8em;
+  border: 0;
+}
+.btn-black{
+  width: 10%;
+}
+.btn-black button{
+  border: 1px solid #3C3B3B;
+  background-color: black;
+  padding: .25em .6em;
   color: white;
-}
-.limpiar-producto-buscado{
-  margin-top: .2em;
-  cursor: pointer;
-
-}
-#nuevo-insumo{
-  width: 40%;
-}
-#nuevo-insumo button{
-  padding: 1em;
-  background-color: #9ded12;
-  border: 0;
-  border-radius: 5px;
   font-family: WorkSans-Medium, serif;
-  color: #000;
-  cursor: pointer;
-}
-#nuevo-insumo button:hover{
-  background-color: #7fc010;
-}
-#buscar input{
-  padding: 10px;
-  width: 60%;
-  border-radius: 5px;
-  border: 0;
-  outline: none;
-  font-size: 1rem;
-}
-#buscar button {
-  padding: 8px 10px;
-  background-color: #9ded12;
-  margin-left: .4em;
-  border: 0;
-  border-radius: 5px;
-  cursor: pointer;
-}
-#buscar button:hover{
-  background-color: #7fc010;
-}
-
-#contenedor-lista{
-  display: flex;
-  width: 100%;
-  background-color: rgba(25, 25, 25, 0.85);
-  border: 2px solid #3C3B3B;
-  padding: 1em;
-  border-radius: 1em;
-  min-height: 60vh;
-  margin-top: 2em;
-  margin-bottom: 2em;
-}
-
-/*  ESTILIS TABLA*/
-.table{
-  width: 100%;
-
-}
-.table table{
-  width: 100%;
-  color: white;
-  border-collapse: collapse;
-
-}
-
-.table table th, .table table td{
-  padding: 1.5em;
-}
-#cabecera-tabla{
-  background-color: #246355;
-  font-size: 1.2em;
-  font-family: WorkSans-Medium, serif;
-  border-bottom: solid 5px #0F362D;
-}
-#cuerpo-tabla{
-  font-size: 1.2em;
-  font-family: WorkSans, serif;
-  font-weight: normal;
-}
-.table tr:nth-child(even){
-  background-color: rgba(35, 35, 35, 0.56);
-}
-#cuerpo-tabla tr:hover{
-  background-color: #1d354a;
-}
-.eliminar-btn{
-  background-color: red;
-  padding: 1em;
-  border: 0;
   font-size: 1em;
-  font-family: WorkSans, serif;
-  font-weight: normal;
-  border-radius: 5px;
-  color: #fff;
   cursor: pointer;
 }
-.eliminar-btn:hover{
-  background-color: #b30505;
+.btn-black button:hover{
+  border: 1px solid green;
+}
+/* Contenido principal del componente (tablas, cards, etc)*/
+.component-main-content{
+  width: 100%;
+  display: flex;
+  margin-top: .5em;
+  justify-content: center;
+  flex-direction: column;
+}
+.tabla-listado{
+  width: 100%;
+  color: #fff;
+  margin: 0 .5em;
+  border-collapse: separate;
+  border-spacing: 0 10px
+}
+.row-header-element{
+  font-size: 1.1em;
+  font-family: WorkSans-bold, serif;
+  text-align: left;
+  color: #EBB80D;
+}
+.row-contenido-tabla:hover{
+  background-color: rgba(79, 74, 74, 0.42);
+  cursor: pointer;
+}
+.row-contenido-element{
+  padding: .8em .5em;
+}
+.btn-eliminar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+}
+.btn-eliminar-element:hover{
+  border: 1px solid red;
+  color: red;
+  cursor: pointer;
+}
+.cargando{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 1em;
+}
+.cargando img{
+  width: 40%;
+  margin: auto;
+}
+.cargando h2{
+  color: #fff;
+  font-family: WorkSans, serif;
+  width: 100%;
+  text-align: center;
+}
+.paginacion{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  color: white;
+  justify-content: center;
+  padding: .3em;
+  margin: .2em;
+  align-content: center;
+}
+.paginacion h3{
+  margin: 0 .5em;
+  cursor: default;
+}
+.paginacion img {
+  cursor: pointer;
 }

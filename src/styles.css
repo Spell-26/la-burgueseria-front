@@ -76,9 +76,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .accion-lista:visited {
   color: #fff;
 }
-app-categoria-producto{
-  width:100%;
+
+app-nuevo-insumo, app-insumos, app-categoria-producto{
+  width:80%;
 }
-app-nuevo-insumo{
-  width:100%;
-}
+
