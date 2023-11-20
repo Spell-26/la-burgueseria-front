@@ -26,3 +26,32 @@
   display: flex;
   justify-content: center;
 }
+
+
+/*    ESTILOS COMPARTIDOS V2 */
+.btn-eliminar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+}
+.btn-eliminar-element:hover{
+  border: 1px solid red;
+  color: red;
+  cursor: pointer;
+}
+.btn-actualizar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+  margin: 0 1em;
+  cursor: pointer;
+}
+.btn-actualizar-element:hover{
+  border: 1px solid #EBB80D;
+}

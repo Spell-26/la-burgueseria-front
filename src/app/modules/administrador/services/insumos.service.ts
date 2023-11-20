@@ -55,20 +55,20 @@ export class InsumosService {
       );
   }
   //actualizar insumo
-  actualizarInsumos(datos: insumo[]) : Observable<any>[] {
-    const responses: Observable<any>[] = [];
+  actualizarInsumos(datos: insumo) : Observable<any> {
 
-    for (const insumo of datos) {
-      const id = insumo.id;
+
+
+      const id = datos.id;
       const url = `${this.apiUrl}/${id}`;
 
       // Configura un encabezado personalizado con el ID
       const headers = new HttpHeaders().set('Id', id.toString());
 
       // Realiza la solicitud PUT y agrega la respuesta al array de respuestas
-      responses.push(this.http.put(url, insumo, { headers }));
-    }
-    return responses;
+
+
+     return this.http.put(url, datos, { headers });
 
   }
 

@@ -8,17 +8,17 @@
   <!-- Barra de acciones -->
   <div class="actions-container">
     <div class="search-container">
-      <input type="text" placeholder="Buscar insumo..." [(ngModel)]="nombreBusqueda">
+      <input type="text" placeholder="Buscar insumo..." [(ngModel)]="nombreBusqueda" (keyup)="buscarInsumos()">
     </div>
     <div class="btn-black">
-      <button>
+      <button (click)="openDialog()">
         Nuevo Insumo
       </button>
     </div>
   </div>
   <!-- Sección tabla de contenido -->
   <section class="component-main-content">
-      <table class="tabla-listado" *ngIf="insumos; else buscando" >
+      <table class="tabla-listado" *ngIf="insumos.length > 0; else buscando" >
         <thead class="cabecera-tabla">
           <tr class="row-header">
             <th class="row-header-element">
@@ -33,18 +33,31 @@
           </tr>
         </thead>
         <tbody class="contenido-tabla">
-          <tr class="row-contenido-tabla" *ngFor="let insumo of insumos">
+          <tr class="row-contenido-tabla" *ngFor="let insumo of insumos; let i = index" >
             <td class="row-contenido-element">{{insumo.nombre}}</td>
-            <td class="row-contenido-element">{{insumo.cantidad}}</td>
+            <td class="row-contenido-element, editable" *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)" (click)="iniciarEdicion(i)">
+              {{insumo.cantidad}}
+            </td>
+            <td class="row-contenido-element" *ngIf="modoEdicion && i === insumoEditandoIndex">
+              {{insumo.cantidad}}
+              <span>Nueva cantidad: </span>
+              <input type="number" [(ngModel)]="cantidadEditada" />
+            </td>
             <td class="row-contenido-element">
-              <button class="btn-eliminar-element" (click)="deleteInsumo(insumo.id)">
+                <button class="btn-actualizar-element" *ngIf="modoEdicion && i === insumoEditandoIndex" (click)="guardarEdicion(i)">
+                  Guardar
+                </button>
+              <button class="btn-eliminar-element" *ngIf="modoEdicion && i === insumoEditandoIndex" (click)="cancelarEdicion()">
+                Cancelar
+              </button>
+              <button class="btn-eliminar-element" (click)="deleteInsumo(insumo.id)" *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)">
                 Borrar
               </button>
             </td>
           </tr>
         </tbody>
       </table>
-    <div class="paginacion">
+    <div class="paginacion" *ngIf="insumos.length > 0">
       <img src="assets/icons/arrow-prev-small-svgrepo-com.svg" alt="anterior" *ngIf="!isFirst" (click)="previousPage()">
       <h3>Pagina {{pagina+1}}</h3>
       <img src="assets/icons/arrow-next-small-svgrepo-com.svg" alt="siguiente" *ngIf="!isLast" (click)="nextPage()">

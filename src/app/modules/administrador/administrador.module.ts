@@ -6,31 +6,36 @@ import { InsumosComponent } from './components';
 import { MenuComponent } from './utils/menu/menu.component';
 import { FooterComponent } from './utils/footer/footer.component';
 import {MatTableModule} from '@angular/material/table';
-import { NuevoInsumoComponent } from './components/nuevo-insumo/nuevo-insumo.component';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { ProductosComponent } from './components/productos/productos.component';
 import {FileUploadModule} from "primeng/fileupload";
 import {SafePipe} from "./pipes";
 import { CategoriaProductoComponent } from './components/categoria-producto/categoria-producto.component';
+import { ModalInsumosComponent } from './utils/modal-insumos/modal-insumos.component';
+import {MatDialogModule} from "@angular/material/dialog";
+import {MatInputModule} from "@angular/material/input";
 
 
 @NgModule({
   declarations: [
     AdministradorComponent,
     InsumosComponent,
-    NuevoInsumoComponent,
     ProductosComponent,
     SafePipe,
-    CategoriaProductoComponent
+    CategoriaProductoComponent,
+    ModalInsumosComponent
   ],
-    imports: [
-        CommonModule,
-        AdministradorRoutingModule,
-        MenuComponent,
-        FooterComponent,
-        MatTableModule,
-        FormsModule,
-        FileUploadModule,
-    ]
+  imports: [
+    CommonModule,
+    AdministradorRoutingModule,
+    MenuComponent,
+    FooterComponent,
+    MatTableModule,
+    FormsModule,
+    FileUploadModule,
+    MatDialogModule,
+    MatInputModule,
+    ReactiveFormsModule,
+  ]
 })
 export class AdministradorModule { }

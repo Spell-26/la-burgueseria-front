@@ -1,0 +1,39 @@
+h2{
+  width: 100%;
+  text-align: center;
+  margin: 2em 0;
+}
+/* nombre-del-componente.component.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.48); /* Fondo semi-transparente */
+}
+
+
+mat-dialog-content {
+  flex: 1;
+  display: flex;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px; /* Ajusta según tu preferencia */
+}
+
+form {
+  width: 100%;
+  max-width: 400px; /* Ajusta según tu preferencia */
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px; /* Ajusta según tu preferencia */
+}
+
+mat-dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px; /* Ajusta según tu preferencia */
+}

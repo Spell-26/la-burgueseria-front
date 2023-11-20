@@ -1,9 +1,12 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {InsumosService} from "../../services/insumos.service";
-import {InsumoPaginacion, insumoResponse} from "../../interfaces";
+import {insumo, InsumoPaginacion, insumoResponse} from "../../interfaces";
 import {Observable} from "rxjs";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {ModalInsumosComponent} from "../../utils/modal-insumos/modal-insumos.component";
 
 
 @Component({
@@ -12,7 +15,7 @@ import {MatPaginator} from "@angular/material/paginator";
   styleUrls: ['./insumos.component.css', '../../utils/styles/estilosCompartidos.css']
 })
 export class InsumosComponent implements OnInit{
-  public insumos!: Array<any>;
+  public insumos: Array<any> = [];
   public nombreBusqueda : string = "";
   public isNombreBusqueda : boolean = false;
   //parametros paginacion
@@ -22,7 +25,14 @@ export class InsumosComponent implements OnInit{
   asc = true;
   isFirst = false;
   isLast = false;
-  constructor(private insumosService : InsumosService) {
+  //variables para editar un insumo en especifico
+  modoEdicion :boolean = false;
+  cantidadEditada : number = 0;
+  insumoEditandoIndex : number | null = null;
+
+  constructor(private insumosService : InsumosService,
+              public dialog : MatDialog
+  ) {
 
   }
   ngOnInit(): void{
@@ -39,6 +49,31 @@ export class InsumosComponent implements OnInit{
   //****************************
   //*******MÉTODOS*******
   //****************************
+
+  /*
+  *
+  * metodos modal
+  * */
+  openDialog(): void {
+    const dialogRef = this.dialog.open(ModalInsumosComponent, {
+      width: '400px', // Ajusta el ancho según tus necesidades
+      position: { right: '0' }, // Posiciona el modal a la derecha
+      height: '600px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      const insumo : insumo = {
+        id: 0,
+        nombre: result.nombre,
+        cantidad: result.cantidad
+      };
+      this.nuevoInsumo(insumo);
+    });
+  }
+
+  /*
+  * fin metodos modal
+  * */
   public setIsNombreBusqueda(valor : boolean) :void{
     this.isNombreBusqueda = valor;
   }
@@ -56,9 +91,39 @@ export class InsumosComponent implements OnInit{
     this.getAllInsumos();
   }
 
+  public iniciarEdicion(index :number){
+    this.modoEdicion = true;
+    this.insumoEditandoIndex = index;
+    this.cantidadEditada = this.insumos[index].cantidad;
+  }
+  public guardarEdicion(index : number){
+    let dato : insumo = this.insumos[index];
+    dato.cantidad = this.cantidadEditada;
+    this.insumosService.actualizarInsumos(dato)
+      .subscribe();
+    this.cancelarEdicion();
+  }
+  cancelarEdicion(){
+    this.modoEdicion = false;
+    this.cantidadEditada = 0;
+    this.insumoEditandoIndex = null;
+  }
+
   //****************************
   //*******PETICIONES HTTP*******
   //****************************
+
+  public nuevoInsumo(insumo : insumo){
+    this.insumosService.crearInsumo(insumo)
+      .subscribe(
+        (response) =>{
+          console.log(response)
+        },
+        error => {
+          console.log(error.error())
+        }
+      );
+  }
 
   public deleteInsumo( id : number ):void{
     this.insumosService.deleteInsumo(id)
@@ -72,7 +137,6 @@ export class InsumosComponent implements OnInit{
           this.insumos = data.content;
           this.isFirst = data.first;
           this.isLast = data.last;
-          console.log(data)
         },
         error => {
           console.log(error.error())
@@ -92,6 +156,10 @@ export class InsumosComponent implements OnInit{
       this.setIsNombreBusqueda(true);
     }
 
+  }
+
+  public actualizarInsumo(dato: insumo){
+    this.insumosService.actualizarInsumos(dato);
   }
 
 }

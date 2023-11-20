@@ -65,6 +65,9 @@
   text-align: left;
   color: #EBB80D;
 }
+.row-contenido-tabla{
+  text-align: center;
+}
 .row-contenido-tabla:hover{
   background-color: rgba(79, 74, 74, 0.42);
   cursor: pointer;
@@ -118,4 +121,30 @@
 }
 .paginacion img {
   cursor: pointer;
+}
+.row-contenido-element span{
+  font-family: WorkSans-Light, serif;
+  font-size: 1em;
+  margin: 0 .5em;
+}
+.row-contenido-element input{
+  width: 5em;
+  padding: .8em;
+  border: 0;
+}
+.btn-actualizar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+  margin: 0 1em;
+  cursor: pointer;
+}
+.btn-actualizar-element:hover{
+  border: 1px solid #EBB80D;
+}
+.editable:hover{
+  background-color: rgba(85, 135, 73, 0.42);
 }

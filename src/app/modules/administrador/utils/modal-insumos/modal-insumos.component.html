@@ -1,0 +1,19 @@
+<!-- nombre-del-componente.component.html -->
+<h2 mat-dialog-title>Nuevo Insumo</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <input matInput placeholder="Nombre" formControlName="nombre" required>
+      <mat-error *ngIf="form.get('nombre')?.hasError('pattern')">Solo se permiten letras y espacios</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Cantidad" formControlName="cantidad" required>
+      <mat-error *ngIf="form.get('cantidad')?.hasError('pattern')">Solo se permiten números</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="form.value" cdkFocusInitial class="btn-actualizar-element" [disabled]="isSubmitDisabled">Guardar</button>
+  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+</mat-dialog-actions>
+
