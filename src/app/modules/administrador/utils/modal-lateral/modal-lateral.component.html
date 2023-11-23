@@ -1,0 +1,32 @@
+
+<h2 mat-dialog-title>{{ tituloModal }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div *ngFor="let campo of data.campos">
+      <mat-form-field *ngIf="campo.tipo !== 'file' && campo.tipo !== 'selector'">
+        <ng-container [ngSwitch]="campo.tipo">
+          <input *ngSwitchCase="'text'" matInput [placeholder]="campo.label || campo.nombre" [formControlName]="campo.nombre">
+          <input *ngSwitchCase="'number'" matInput [placeholder]="campo.label || campo.nombre" [formControlName]="campo.nombre" type="number">
+          <textarea *ngSwitchCase="'textarea'" matInput [placeholder]="campo.label || campo.nombre" [formControlName]="campo.nombre"></textarea>
+          <!-- Puedes agregar más casos según los tipos de campo que necesites -->
+        </ng-container>
+        <mat-error *ngIf="form.get(campo.nombre)?.hasError('pattern')">{{ campo.errorMensaje || 'Campo inválido' }}</mat-error>
+      </mat-form-field>
+
+      <!-- Campo de tipo 'file' -->
+      <input *ngIf="campo.tipo === 'file'" type="file" [formControlName]="campo.nombre" accept="image/*" id="fileSelect">
+
+      <!-- Campo de tipo 'selector' -->
+      <mat-form-field *ngIf="campo.tipo === 'selector'">
+        <mat-select [formControlName]="campo.nombre">
+          <mat-option *ngFor="let opcion of campo.opciones" [value]="opcion.id">{{ opcion.nombre }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get(campo.nombre)?.hasError('pattern')">{{ campo.errorMensaje || 'Campo inválido' }}</mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="form.value" cdkFocusInitial [disabled]="form.invalid" class="btn-actualizar-element">Guardar</button>
+  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+</mat-dialog-actions>
