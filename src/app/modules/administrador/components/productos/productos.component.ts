@@ -6,21 +6,37 @@ import {DomSanitizer} from "@angular/platform-browser";
 import {CategoriaProducto} from "../../interfaces/categoriaProducto";
 import {CategoriaProductoService} from "../../services/categoria-producto.service";
 import {Router} from "@angular/router";
+import {MatDialog} from "@angular/material/dialog";
+import {Validators} from "@angular/forms";
+import {ModalInsumosComponent} from "../../utils/modal-insumos/modal-insumos.component";
+import {ModalLateralComponent} from "../../utils/modal-lateral/modal-lateral.component";
 
 @Component({
   selector: 'app-productos',
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css', '../../utils/styles/estilosCompartidos.css']
 })
-export class ProductosComponent  implements OnInit{
+export class ProductosComponent  implements OnInit {
   //  VARIABLES
-  public categoriasProductos : CategoriaProducto[] = [];
-  public productos : Producto[] = [];
+  public categoriasProductos: CategoriaProducto[] = [];
+  public productos: Array<any> = [];
+  public nombreBusqueda: string = "";
+  public isNombreBusqueda : boolean = false;
+
+  //parametros paginacion
+  pagina = 0;
+  tamano = 6;
+  order = 'id';
+  asc = true;
+  isFirst = false;
+  isLast = false;
+
   // CONSTRUCTOR E INICIALIZADORES
   constructor(private productosService : ProductosService,
               private sanitizer : DomSanitizer,
               private categoriaProductoService : CategoriaProductoService,
-              private router : Router) {
+              private router : Router,
+              public dialog : MatDialog) {
   }
   ngOnInit(): void {
     this.productosService.refreshNeeded
@@ -37,8 +53,34 @@ export class ProductosComponent  implements OnInit{
   //****************************
   //*******MÉTODOS*******
   //****************************
+
+
+  /*  METODOS MODAL*/
+
+   public openModal() : void{
+     const camposProductos = [
+       {nombre: 'nombre', label: 'Nombre', tipo: 'text', validadores: [Validators.required]},
+       { nombre: 'precio', label: 'Precio', tipo: 'number', validadores: [Validators.required, Validators.pattern(/^[0-9]+$/)] },
+       {nombre: 'imagen', labeñ: 'Imagen del producto', tipo: 'file'},
+       { nombre: 'selector', label: 'Categoría', tipo: 'selector', opciones: this.categoriasProductos },
+       { nombre: 'descripcion', label: 'Descripción', tipo: 'textarea', validadores: [Validators.required] },
+     ];
+
+     const dialogRef = this.dialog.open(ModalLateralComponent, {
+       width: '400px', // Ajusta el ancho según tus necesidades
+       position: { right: '0' }, // Posiciona el modal a la derecha
+       height: '600px',
+       data: {campos: camposProductos, titulo: 'Nuevo Producto'}
+     });
+
+     dialogRef.afterClosed().subscribe(result => {
+
+
+     });
+   }
+
+  /*  FIN METODOS MODAL */
   onImageError(producto: any) {
-    console.error(`Error cargando la imagen para el producto: ${producto.nombre}`);
     // Puedes realizar otras acciones aquí, como establecer una imagen de reemplazo.
     producto.imagenUrl = 'assets/img/placeholder-hamburguesa.png';
   }
@@ -100,6 +142,30 @@ export class ProductosComponent  implements OnInit{
     });
   }
 
+  //cambio de estado para la variable nombre de busqueda
+  public setIsNombreBusqueda(valor : boolean) :void{
+    this.isNombreBusqueda = valor;
+  }
+  //avanzar y retroceder en la paginacion
+  public  nextPage(){
+    this.pagina+=1;
+    this.getAllProductos()
+  }
+  public  previousPage(){
+    this.pagina-=1;
+    this.getAllProductos()
+  }
+
+  //FORNMNATEAR BYTES DE LAS IMAGENES
+  private formatearImagen(productos : any){
+    this.productos.forEach(
+      (item) =>{
+        if(item.imagen){
+          item.imagenUrl = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + item.imagen);
+        }
+      }
+    );
+  }
   //****************************
   //*******PETICIONES HTTP*******
   //****************************
@@ -107,20 +173,36 @@ export class ProductosComponent  implements OnInit{
 
   //consultar todos los productos
   public getAllProductos(){
-    this.productosService.getProductos()
+    this.productosService.getProductosPageable(this.pagina, this.tamano, this.order, this.asc)
       .subscribe(
-        producto => {
-          this.productos = producto.object;
-          this.productos.forEach(
-            (item) =>{
-              if(item.imagen){
-                item.imagenUrl = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + item.imagen);
-              }
-            }
-          )
+        data =>{
+          this.productos = data.content;
+          this.isFirst = data.first;
+          this.isLast = data.last;
+          //formatear la el byte que contiene la imagen
+          this.formatearImagen(this.productos);
+        },
+        error => {
+          console.log(error.error());
         }
       );
   }
+  //BUSCAR POR NOMBRE
+  public buscarProductos(){
+    if(this.nombreBusqueda.length == 0){
+      this.setIsNombreBusqueda(false);
+      this.getAllProductos();
+    }else{
+      this.productosService.buscarPorNombre(this.nombreBusqueda)
+        .subscribe(producto =>{
+          this.productos = producto.object;
+          this.formatearImagen(this.productos);
+        });
+      this.setIsNombreBusqueda(true);
+    }
+  }
+
+
   //consultar todas las categorias de productos
   public getAllCategoriasProductos(){
     this.categoriaProductoService.getCategoriasProductos()

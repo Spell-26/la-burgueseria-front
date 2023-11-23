@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import {Observable, Subject, tap} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Producto, ProductoResponse} from "../interfaces/producto";
 
 @Injectable({
@@ -22,6 +22,16 @@ export class ProductosService {
   getProductos(): Observable<ProductoResponse>{
     return this.http.get<ProductoResponse>(`${this.apiUrl}s`);
   }
+  //paginacion productos
+  getProductosPageable(numeroPagina : number, tamanoPagina : number, order : string, asc : boolean) : Observable<any>{
+    let params : HttpParams = new HttpParams()
+      .set('page', numeroPagina.toString())
+      .set('size', tamanoPagina.toString())
+      .set('order', order)
+      .set('asc', asc);
+
+    return this.http.get<any>('http://localhost:8080/api/v1/productos-page', {params});
+  }
   //crear producto
   crearProducto(producto: FormData):Observable<any>{
 
@@ -33,6 +43,11 @@ export class ProductosService {
           }
         )
       )
+  }
+  //BUSCAR PRODCUTO POR NOMBRE
+  buscarPorNombre(nombre : string) : Observable<ProductoResponse>{
+    const url = `${this.apiUrl}/buscar/${nombre}`;
+    return this.http.get<ProductoResponse>(url);
   }
   //  ELIMINAR PRODUCTO
   deleteProducto(id :number):Observable<any>{

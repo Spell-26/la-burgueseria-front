@@ -1,43 +1,41 @@
-<div class="contenedor-modulo">
-  <div class="contenido-seccion">
-    <header id="cabecera-seccion">
-      <h1 id="titulo-seccion">Productos</h1>
-    </header>
-    <div class="ayuda">
-      <p>En esta sección podrás ver los insumos restantes en el sistema, añadir más insumos, editarlos, eliminarlos
-        o incluso buscar alguno en especifico.</p>
+<div class="container-section">
+  <header class="header-module">
+    <h1>Productos</h1>
+  </header>
+  <div class="actions-container">
+    <div class="search-container">
+      <input type="text" placeholder="Buscar producto..." [(ngModel)]="nombreBusqueda" (keyup)="buscarProductos()"> <!--   -->
     </div>
-    <div id="contenedor-funciones">
-      <div id="buscar">
-        <input type="text" placeholder="Buscar...">
-        <button>
-          <img src="assets/icons/lupa.png" alt="buscar">
-        </button>
-        <!-- <div class="producto-buscado" *ngIf="isNombreBusqueda">
-            <span class="texto-producto-buscado">
-              {{nombreBusqueda}}
-            </span>
-          <span (click)="limpiarBusqueda()" class="limpiar-producto-buscado">
-              <img src="assets/icons/close.svg" alt="cerrar">
-            </span>
-        </div> -->
-      </div>
-      <div class="boton-funciones">
-        <button (click)="modalNuevoProducto()">Nuevo producto</button>
-      </div>
-      <div class="boton-funciones">
-        <button routerLink="categoria">Categorías</button>
-      </div>
-    </div>
-
-    <div class="contenedor-cards">
-      <div *ngIf="!productos || productos.length == 0; else listaProductos">
-        <h2>Buscando...</h2>
-      </div>
+    <div class="btn-black">
+      <button (click)="openModal()"> <!-- (click)="openDialog()" -->
+        Nuevo Producto
+      </button>
+      <button routerLink="categoria">
+        Categorías
+      </button>
     </div>
   </div>
+  <!-- Sección tabla de contenido -->
+  <section class="component-main-content">
+    <div class="cargando" *ngIf="productos.length == 0; else listaProductos ">
+      <h2>No se han encontrado elementos para productos.</h2>
+      <img src="assets/img/running-cat.gif" alt="">
+
+    </div>
+
+    <div class="paginacion" *ngIf="productos.length > 0">
+      <img src="assets/icons/arrow-prev-small-svgrepo-com.svg" alt="anterior" *ngIf="!isFirst" (click)="previousPage()">
+      <h3>Pagina {{pagina+1}}</h3>
+      <img src="assets/icons/arrow-next-small-svgrepo-com.svg" alt="siguiente" *ngIf="!isLast" (click)="nextPage()">
+    </div>
+  </section>
 </div>
+
+
+
+
 <ng-template #listaProductos>
+  <div class="contenedor-cards">
   <div class="card-productos" *ngFor="let producto of productos; let i = index">
     <div class="imagen-productos">
       <img [src]="producto.imagenUrl" alt="logo hamburguesa" (error)="onImageError(producto)">
@@ -60,4 +58,6 @@
 
     </div>
   </div>
+  </div>
 </ng-template>
+
