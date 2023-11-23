@@ -14,6 +14,8 @@ import { CategoriaProductoComponent } from './components/categoria-producto/cate
 import { ModalInsumosComponent } from './utils/modal-insumos/modal-insumos.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatInputModule} from "@angular/material/input";
+import { ModalLateralComponent } from './utils/modal-lateral/modal-lateral.component';
+import {MatSelectModule} from "@angular/material/select";
 
 
 @NgModule({
@@ -23,19 +25,21 @@ import {MatInputModule} from "@angular/material/input";
     ProductosComponent,
     SafePipe,
     CategoriaProductoComponent,
-    ModalInsumosComponent
+    ModalInsumosComponent,
+    ModalLateralComponent
   ],
-  imports: [
-    CommonModule,
-    AdministradorRoutingModule,
-    MenuComponent,
-    FooterComponent,
-    MatTableModule,
-    FormsModule,
-    FileUploadModule,
-    MatDialogModule,
-    MatInputModule,
-    ReactiveFormsModule,
-  ]
+    imports: [
+        CommonModule,
+        AdministradorRoutingModule,
+        MenuComponent,
+        FooterComponent,
+        MatTableModule,
+        FormsModule,
+        FileUploadModule,
+        MatDialogModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatSelectModule,
+    ]
 })
 export class AdministradorModule { }

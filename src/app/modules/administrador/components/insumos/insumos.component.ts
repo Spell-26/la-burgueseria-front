@@ -54,13 +54,14 @@ export class InsumosComponent implements OnInit{
   *
   * metodos modal
   * */
+  //abrir modal vinculado a este componente
   openDialog(): void {
     const dialogRef = this.dialog.open(ModalInsumosComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
       height: '600px'
     });
-
+    //cerrar modal y realizar una acción, en este caso crear un insumo
     dialogRef.afterClosed().subscribe(result => {
       const insumo : insumo = {
         id: 0,
@@ -74,6 +75,7 @@ export class InsumosComponent implements OnInit{
   /*
   * fin metodos modal
   * */
+
   public setIsNombreBusqueda(valor : boolean) :void{
     this.isNombreBusqueda = valor;
   }

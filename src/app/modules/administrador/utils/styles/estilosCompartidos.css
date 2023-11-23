@@ -55,3 +55,95 @@
 .btn-actualizar-element:hover{
   border: 1px solid #EBB80D;
 }
+
+.container-section{
+  width: 100%;
+  min-height: 60vh;
+  margin: 1em 2em 2em 2em;
+}
+.header-module{
+  width: 100%;
+  color: #fff;
+  font-family: WorkSans-Medium, serif;
+}
+.header-module h1{
+  font-size: 2em;
+}
+/* ZONA DE ACCIONES */
+.actions-container{
+  width: 100%;
+  border-bottom: 1px solid #3C3B3B;
+  display: flex;
+  flex-direction: row;
+  padding: .3em 0;
+  justify-content: space-between;
+  align-content: center;
+}
+.search-container{
+  width: 20%;
+}
+.search-container input{
+  width: 100%;
+  padding: .8em;
+  border: 0;
+}
+.btn-black{
+  width: 10%;
+}
+.btn-black button{
+  border: 1px solid #3C3B3B;
+  background-color: black;
+  padding: .25em .6em;
+  color: white;
+  font-family: WorkSans-Medium, serif;
+  font-size: 1em;
+  cursor: pointer;
+}
+.btn-black button:hover{
+  border: 1px solid green;
+}
+.component-main-content{
+  width: 100%;
+  display: flex;
+  margin-top: .5em;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.cargando{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 1em;
+}
+.cargando img{
+  width: 40%;
+  margin: auto;
+}
+.cargando h2{
+  color: #fff;
+  font-family: WorkSans, serif;
+  width: 100%;
+  text-align: center;
+}
+
+
+/*PAGINACION*/
+.paginacion{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  color: white;
+  justify-content: center;
+  padding: .3em;
+  margin: .2em;
+  align-content: center;
+}
+.paginacion h3{
+  margin: 0 .5em;
+  cursor: default;
+}
+.paginacion img {
+  cursor: pointer;
+}
