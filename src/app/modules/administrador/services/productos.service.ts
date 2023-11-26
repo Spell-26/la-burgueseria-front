@@ -44,6 +44,28 @@ export class ProductosService {
         )
       )
   }
+  //actualizar producto
+  actualizarProducto(producto: Producto): Observable<any>{
+
+    const formData : FormData = new FormData();
+
+    formData.append('id', producto.id.toString())
+    formData.append('nombre', producto.nombre);
+    formData.append('precio' , producto.precio.toString());
+    formData.append('imagen', producto.imagen);
+    formData.append('desc', producto.descripcion);
+    formData.append('categoria', producto.categoriaProducto?.id.toString());
+
+
+    return this.http.put(`${this.apiUrl}/${producto.id}`, formData)
+      .pipe(
+        tap(
+          () => {
+            this._refreshNeeded.next();
+          }
+        )
+      );
+  }
   //BUSCAR PRODCUTO POR NOMBRE
   buscarPorNombre(nombre : string) : Observable<ProductoResponse>{
     const url = `${this.apiUrl}/buscar/${nombre}`;

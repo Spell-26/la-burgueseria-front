@@ -16,6 +16,9 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatInputModule} from "@angular/material/input";
 import { ModalLateralComponent } from './utils/modal-lateral/modal-lateral.component';
 import {MatSelectModule} from "@angular/material/select";
+import { ModalEditarProductoComponent } from './utils/modal-editar-producto/modal-editar-producto.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import { ModalIppComponent } from './utils/modal-ipp/modal-ipp.component';
 
 
 @NgModule({
@@ -26,7 +29,9 @@ import {MatSelectModule} from "@angular/material/select";
     SafePipe,
     CategoriaProductoComponent,
     ModalInsumosComponent,
-    ModalLateralComponent
+    ModalLateralComponent,
+    ModalEditarProductoComponent,
+    ModalIppComponent
   ],
     imports: [
         CommonModule,
@@ -40,6 +45,7 @@ import {MatSelectModule} from "@angular/material/select";
         MatInputModule,
         ReactiveFormsModule,
         MatSelectModule,
+        MatCheckboxModule,
     ]
 })
 export class AdministradorModule { }

@@ -1,0 +1,55 @@
+<!-- modal.component.html -->
+
+<h2 mat-dialog-title>{{ producto.nombre }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field>
+      <!-- Cambiar la línea siguiente -->
+      <input matInput placeholder="Nombre" formControlName="nombre">
+    </mat-form-field>
+    <mat-form-field>
+      <!-- Cambiar la línea siguiente -->
+      <input matInput placeholder="Precio" formControlName="precio">
+      <mat-error *ngIf="form.get('precio')?.hasError('required')">Precio es obligatorio</mat-error>
+      <mat-error *ngIf="form.get('precio')?.hasError('pattern')">Precio no válido</mat-error>
+    </mat-form-field>
+    <!-- Otros campos del producto... -->
+
+    <input type="file" accept="image/*" (change)="onFileChange($event)">
+
+    <mat-form-field>
+      <textarea matInput formControlName="descripcion"></textarea>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Categoría</mat-label>
+      <mat-select formControlName="categoria">
+        <mat-option *ngFor="let categoria of categoriasProducto" [value]="categoria.id">
+          {{ categoria.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+
+
+    <ng-container *ngIf="insumosPorProducto">
+      <h2>Ingredientes</h2>
+      <div *ngFor="let ipp of insumosPorProducto; let i = index">
+        <span>{{ipp.insumo.nombre}}</span>
+        <input type="number" placeholder="cantidad" [value]="ipp.cantidad" (click)="iniciarEdicion(i)" *ngIf="!isEditable">
+        <input type="number" placeholder="cantidad" [value]="cantidadEditada"  (input)="onCantidadChange($event)"  autofocus *ngIf="isEditable && i === insumoPorProductoEditandoIndex">
+        <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="guardarIpp(ipp, i)">Guardar</button>
+        <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="terminarEdicion(i)">Cancelar</button>
+        <button *ngIf="!isEditable" (click)="eliminarIpp(ipp.id, i)">Borrar</button>
+      </div>
+    </ng-container>
+    <div class="nuevoIpp">
+      <button (click)="modalAgregarInsumo()">Vincular un nuevo insumo</button>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onGuardarClick()" [disabled]="form.invalid">Guardar</button>
+  <button mat-button (click)="onNoClick()">Cancelar</button>
+</mat-dialog-actions>

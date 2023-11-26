@@ -78,22 +78,25 @@
 }
 .card-productos{
   width: 25%;
-  margin-right: 3em;
-  margin-bottom: 3em;
-  background-color: #EC1515;
-  border-radius: 10px;
-  min-height: 10vh;
-  max-height: 50vh;
+  box-sizing: border-box;
+  background-color: red;
+  margin: 10px;
+  overflow: hidden;
+  min-height: 40vh;
+  max-height: 40vh;
 }
 .imagen-productos{
-  width: 100%;
   position: relative;
+  min-height: 80%;
+  max-height: 80%;
 }
 .imagen-productos img{
   width: 100%;
-  height: auto;
-  border-radius: 10px;
-  display: block;
+  max-width: 100%;
+  min-height: 30vh;
+  max-height: 30vh;
+  object-fit: cover;
+  border: 1px solid red;
 }
 .datos-producto{
   color: white;
@@ -137,7 +140,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
 }
 .btn-editar, .btn-eliminar{
   width: 40%;

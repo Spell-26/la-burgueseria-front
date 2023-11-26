@@ -41,9 +41,18 @@ export class ModalLateralComponent {
 
   onSubmit(): void {
     if (this.form.valid) {
-      // Aquí puedes realizar acciones con los datos del formulario
-      console.log(this.form.value);
-      this.dialogRef.close();
+      // Devolver los valores del formulario al componente que abre el modal
+      this.dialogRef.close(this.form.value);
+    }
+  }
+
+  // Manejar el cambio en el campo de tipo 'file'
+  onFileChange(event: any): void {
+    const fileInput = event.target;
+
+    if (fileInput.files && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      this.form.get('imagen')?.setValue(file);
     }
   }
 }

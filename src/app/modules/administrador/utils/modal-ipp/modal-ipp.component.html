@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Selector de Ingredientes</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Selecciona un ingrediente</mat-label>
+      <mat-select formControlName="insumoSeleccionado">
+        <mat-option *ngFor="let insumo of insumos" [value]="insumo.id">
+          {{ insumo.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Cantidad</mat-label>
+      <input matInput type="number" formControlName="cantidad" placeholder="Cantidad">
+    </mat-form-field>
+    <!-- Puedes agregar otros elementos del formulario aquí -->
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onSubmit()">Aceptar</button>
+  <button mat-button (click)="onNoClick()">Cancelar</button>
+</mat-dialog-actions>

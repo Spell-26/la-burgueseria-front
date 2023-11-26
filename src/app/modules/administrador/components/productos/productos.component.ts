@@ -10,6 +10,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {Validators} from "@angular/forms";
 import {ModalInsumosComponent} from "../../utils/modal-insumos/modal-insumos.component";
 import {ModalLateralComponent} from "../../utils/modal-lateral/modal-lateral.component";
+import {InsumosService} from "../../services/insumos.service";
+import {insumo} from "../../interfaces";
+import {ModalEditarProductoComponent} from "../../utils/modal-editar-producto/modal-editar-producto.component";
 
 @Component({
   selector: 'app-productos',
@@ -20,6 +23,7 @@ export class ProductosComponent  implements OnInit {
   //  VARIABLES
   public categoriasProductos: CategoriaProducto[] = [];
   public productos: Array<any> = [];
+  public insumos: insumo[] = [];
   public nombreBusqueda: string = "";
   public isNombreBusqueda : boolean = false;
 
@@ -35,6 +39,7 @@ export class ProductosComponent  implements OnInit {
   constructor(private productosService : ProductosService,
               private sanitizer : DomSanitizer,
               private categoriaProductoService : CategoriaProductoService,
+              private insumoService : InsumosService,
               private router : Router,
               public dialog : MatDialog) {
   }
@@ -44,11 +49,12 @@ export class ProductosComponent  implements OnInit {
         () =>{
           this.getAllProductos();
           this.getAllCategoriasProductos();
+          this.getAllInsumos();
         }
       );
     this.getAllProductos();
     this.getAllCategoriasProductos();
-
+    this.getAllInsumos();
   }
   //****************************
   //*******MÉTODOS*******
@@ -75,71 +81,65 @@ export class ProductosComponent  implements OnInit {
 
      dialogRef.afterClosed().subscribe(result => {
 
+       //crear instancias de los objetos a guardar en la db
+       const categoriaProducto : CategoriaProducto = {
+         id: result.selector,
+         nombre: ""
+       };
 
+       //peticion para guardar
+       const productoSave : Producto = {
+         imagenUrl: null,
+         id: 0,
+         nombre : result.nombre,
+         precio : result.precio,
+         descripcion: result.descripcion,
+         imagen : result.imagen,
+         categoriaProducto : categoriaProducto,
+       };
+
+       console.log('Valores del formulario:', result);
+       this.crearProducto(productoSave, categoriaProducto.id)
+         .subscribe(
+           respuesta =>{
+             console.log(respuesta)
+           },
+           error => {
+             console.log(error)
+           }
+         );
      });
    }
 
+   //MODAL EDITAR PRODUCTO
+  modalEditarProducto(producto : Producto) : void{
+     const dialogRef = this.dialog.open(ModalEditarProductoComponent, {
+       width: '400px', // Ajusta el ancho según tus necesidades
+       position: { right: '0' }, // Posiciona el modal a la derecha
+       height: '600px',
+       data: {producto : producto},
+     });
+
+     dialogRef.afterClosed().subscribe(
+       (result) => {
+         if(result) {
+            this.productosService.actualizarProducto(result)
+              .subscribe(
+                result =>{
+                  console.log(result)
+                },
+                error => {
+                  console.log(error)
+                }
+              );
+         }
+       }
+     )
+  }
   /*  FIN METODOS MODAL */
   onImageError(producto: any) {
     // Puedes realizar otras acciones aquí, como establecer una imagen de reemplazo.
     producto.imagenUrl = 'assets/img/placeholder-hamburguesa.png';
-  }
-  modalNuevoProducto() {
-
-    const opcionesCategoria: string[] = [];
-    this.categoriasProductos.forEach(categoria =>{
-      opcionesCategoria.push(`<option value="${categoria.id}">${categoria.nombre}</option>`)
-    })
-
-    Swal.fire({
-      title: 'Agregar Producto',
-      html:
-        '<input id="nombre" class="swal2-input" placeholder="Nombre">' +
-        '<input id="precio" class="swal2-input" placeholder="Precio" type="number">' +
-        '<input type="file" id="imagen" class="swal2-file" accept="image/*">' +
-        '<select id="categoria" class="swal2-select">' +
-        '<option value="" disabled selected>Selecciona una categoria</option>'+
-        opcionesCategoria.join('') +
-        '</select>'+
-        '<textarea id="descripcion" class="swal2-textarea" placeholder="Descripción"></textarea>',
-      focusConfirm: false,
-      preConfirm: () => {
-        const nombre = (document.getElementById('nombre') as HTMLInputElement).value;
-        const precio: number = +(document.getElementById('precio') as HTMLInputElement).value;
-        const imagen: File | undefined = (document.getElementById('imagen') as HTMLInputElement).files?.[0];
-        const descripcion = (document.getElementById('descripcion') as HTMLTextAreaElement).value;
-        const categoriaId = (document.getElementById('categoria') as HTMLSelectElement).value;
-        let id:number = parseInt(categoriaId, 10);
-        if(!nombre || !precio){
-          Swal.showValidationMessage('Por favor, completa todos los campos');
-        }else{
-
-          const categoriaProducto : CategoriaProducto = {
-            id: categoriaId,
-            nombre: ""
-          };
-          //peticion para guardar
-          const productoSave : Producto = {
-            imagenUrl: null,
-            id: 0,
-            nombre : nombre,
-            precio : precio,
-            descripcion: descripcion,
-            imagen : imagen,
-            categoriaProducto : null,
-          };
-
-          this.crearProducto(productoSave, id).subscribe(
-            (respuesta) =>{
-              Swal.fire('Éxito', 'Producto agregado correctamente', 'success');
-            },
-            (error) =>{
-              Swal.fire('Error', 'Hubo un problema al agregar el producto', 'error');
-            }
-          )
-        }
-      },
-    });
   }
 
   //cambio de estado para la variable nombre de busqueda
@@ -187,6 +187,19 @@ export class ProductosComponent  implements OnInit {
         }
       );
   }
+  //obtener todos los insumos para
+  //posteriormente enviarlos al modal de editar producto
+  private getAllInsumos(){
+    this.insumoService.getInsumos()
+      .subscribe(
+        data => {
+          this.insumos = data.object;
+        },
+        error =>{
+          console.log(error)
+        }
+      )
+  }
   //BUSCAR POR NOMBRE
   public buscarProductos(){
     if(this.nombreBusqueda.length == 0){
@@ -212,6 +225,8 @@ export class ProductosComponent  implements OnInit {
         }
       )
   }
+
+  //GUARDAR PRODUCTO
   private crearProducto(producto : Producto, categoriaid: number){
     const formData : FormData = new FormData();
 
@@ -221,10 +236,10 @@ export class ProductosComponent  implements OnInit {
     formData.append('desc', producto.descripcion);
     formData.append('categoria', categoriaid.toString());
 
-
-
     return this.productosService.crearProducto(formData);
   }
+
+  //ELIMINAR PRODUCTO
   public deleteProducto(id:number):void{
     this.productosService.deleteProducto(id)
       .subscribe();

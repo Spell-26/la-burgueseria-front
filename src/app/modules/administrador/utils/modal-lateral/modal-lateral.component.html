@@ -1,3 +1,4 @@
+<!-- modales/modal/modal.component.html -->
 
 <h2 mat-dialog-title>{{ tituloModal }}</h2>
 <mat-dialog-content>
@@ -14,14 +15,15 @@
       </mat-form-field>
 
       <!-- Campo de tipo 'file' -->
-      <input *ngIf="campo.tipo === 'file'" type="file" [formControlName]="campo.nombre" accept="image/*" id="fileSelect">
+      <input *ngIf="campo.tipo === 'file'" type="file" [formControlName]="campo.nombre" accept="image/*" id="fileSelect" (change)="onFileChange($event)">
 
       <!-- Campo de tipo 'selector' -->
       <mat-form-field *ngIf="campo.tipo === 'selector'">
-        <mat-select [formControlName]="campo.nombre">
+        <mat-label>{{ campo.label || campo.nombre }}</mat-label>
+        <mat-select [formControlName]="campo.nombre" required>
           <mat-option *ngFor="let opcion of campo.opciones" [value]="opcion.id">{{ opcion.nombre }}</mat-option>
         </mat-select>
-        <mat-error *ngIf="form.get(campo.nombre)?.hasError('pattern')">{{ campo.errorMensaje || 'Campo inválido' }}</mat-error>
+        <mat-error *ngIf="form.get(campo.nombre)?.hasError('required')">Campo obligatorio</mat-error>
       </mat-form-field>
     </div>
   </form>
