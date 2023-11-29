@@ -9,7 +9,6 @@ import {MatTableModule} from '@angular/material/table';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { ProductosComponent } from './components/productos/productos.component';
 import {FileUploadModule} from "primeng/fileupload";
-import {SafePipe} from "./pipes";
 import { CategoriaProductoComponent } from './components/categoria-producto/categoria-producto.component';
 import { ModalInsumosComponent } from './utils/modal-insumos/modal-insumos.component';
 import {MatDialogModule} from "@angular/material/dialog";
@@ -19,6 +18,7 @@ import {MatSelectModule} from "@angular/material/select";
 import { ModalEditarProductoComponent } from './utils/modal-editar-producto/modal-editar-producto.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { ModalIppComponent } from './utils/modal-ipp/modal-ipp.component';
+import { MesasComponent } from './components/mesas/mesas.component';
 
 
 @NgModule({
@@ -26,12 +26,12 @@ import { ModalIppComponent } from './utils/modal-ipp/modal-ipp.component';
     AdministradorComponent,
     InsumosComponent,
     ProductosComponent,
-    SafePipe,
     CategoriaProductoComponent,
     ModalInsumosComponent,
     ModalLateralComponent,
     ModalEditarProductoComponent,
-    ModalIppComponent
+    ModalIppComponent,
+    MesasComponent
   ],
     imports: [
         CommonModule,

@@ -77,7 +77,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #fff;
 }
 
-app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos{
+app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas{
   width:80%;
 }
 
