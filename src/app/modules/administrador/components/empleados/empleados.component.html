@@ -1,0 +1,95 @@
+<div class="container-section">
+  <header class="header-module">
+    <h1>Empleados</h1>
+  </header>
+  <div class="actions-container">
+    <div class="search-container">
+      <input type="text" placeholder="Buscar empleado..." [(ngModel)]="nombreBusqueda" (keyup)="buscarEmpleados()"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
+    </div>
+    <div class="btn-black">
+      <button (click)="crearEmpleadoModal()"> <!-- (click) ="crearMesaModal()" -->
+        Nuevo Empleado
+      </button>
+    </div>
+  </div>
+  <section class="component-main-content">
+    <table class="tabla-listado" *ngIf="empleados.length > 0 ; else buscando">
+      <thead class="cabecera-tabla">
+      <tr class="row-header">
+        <th class="row-header-element">
+          DOCUMENTO
+        </th>
+        <th class="row-header-element">
+          NOMBRE
+        </th>
+        <th class="row-header-element">
+          APELLIDO
+        </th>
+        <th class="row-header-element">
+          ESTADO
+        </th>
+      </tr>
+      </thead>
+      <tbody class="contenido-tabla">
+      <tr class="row-contenido-tabla" *ngFor="let empleado of empleados; let i = index">
+        <td class="row-contenido-element"> <!--   *ngIf="!modoEdicion || (modoEdicion && i !== mesaEditandoIndex)" (click)="iniciarEdicion(i)" -->
+          {{empleado.documento}}
+        </td>
+        <!-- <td class="row-contenido-element" *ngIf="modoEdicion && i === mesaEditandoIndex">
+          {{mesa.numeroMesa}}
+          <span>Nuevo número de mesa:</span>
+          <input type="number" [(ngModel)]="nuevoNumeroMesa">
+        </td> -->
+        <td class="row-contenido-element" > <!-- *ngIf="!modoEdicion || (modoEdicion && i !== mesaEditandoIndex)" (click)="iniciarEdicion(i)"  -->
+          {{empleado.nombre}}
+        </td>
+        <!-- <td class="row-contenido-element" *ngIf="modoEdicion && i === mesaEditandoIndex">
+          {{mesa.numeroMesa}}
+          <span>Nuevo número de mesa:</span>
+          <input type="number" [(ngModel)]="nuevoNumeroMesa">
+        </td> -->
+        <td class="row-contenido-element">
+          {{empleado.apellido}}
+        </td>
+        <td class="row-contenido-element">
+          <span *ngIf="empleado.estado == true">
+            Activo
+          </span>
+          <span *ngIf="empleado.estado == false">
+            Inactivo
+          </span>
+        </td>
+        <td class="row-contenido-element">
+          <button class="btn-eliminar-element" (click)="cambiarEstadoEmpleado(i)"> <!-- (click)="deleteMesa(mesa.id)" *ngIf="!modoEdicion || (modoEdicion && i !== mesaEditandoIndex)" -->
+            <ng-container *ngIf="empleado.estado == true">
+            Inhabilitar
+            </ng-container>
+            <ng-container *ngIf="empleado.estado == false">
+            Activar
+          </ng-container>
+          </button>
+          <!-- <button class="btn-actualizar-element" *ngIf="modoEdicion && i === mesaEditandoIndex" (click)="guardarEdicion(mesa.id)">
+            Guardar
+          </button>
+          <button class="btn-eliminar-element" *ngIf="modoEdicion && i === mesaEditandoIndex" (click)="cancelarEdicion()">
+            Cancelar
+          </button> -->
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="paginacion" *ngIf="empleados.length > 0">
+      <img src="assets/icons/arrow-prev-small-svgrepo-com.svg" alt="anterior" *ngIf="!isFirst" (click)="previousPage()">
+      <h3>Pagina {{pagina+1}}</h3>
+      <img src="assets/icons/arrow-next-small-svgrepo-com.svg" alt="siguiente" *ngIf="!isLast" (click)="nextPage()">
+    </div>
+  </section>
+</div>
+
+<ng-template #buscando >
+  <div class="cargando">
+    <h2>No se han encontrado empleados.</h2>
+    <img src="assets/img/running-cat.gif" alt="">
+
+  </div>
+</ng-template>

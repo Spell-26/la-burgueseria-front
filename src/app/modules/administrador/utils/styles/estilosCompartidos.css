@@ -118,7 +118,7 @@
   margin-top: 1em;
 }
 .cargando img{
-  width: 40%;
+  width: 20%;
   margin: auto;
 }
 .cargando h2{
@@ -146,4 +146,10 @@
 }
 .paginacion img {
   cursor: pointer;
+}
+
+/* ESTILOS TABLA*/
+.tabla-listado, .row-header-element, .row-contenido-element{
+  border: 1px solid #3C3B3B;
+  border-collapse: collapse;
 }

@@ -80,4 +80,27 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas{
   width:80%;
 }
+app-empleados{
+  width: 80%;
+}
 
+
+
+/* SCROLLBAR */
+::-webkit-scrollbar{
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #191919;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #282828;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

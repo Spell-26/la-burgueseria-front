@@ -2,6 +2,7 @@
   background-color: #191919;
   border: 2px solid #3C3B3B;
   min-width: 100%;
+
 }
 #menu header{
   width: 100%;
@@ -42,12 +43,19 @@
   padding: 1em;
   color: white;
   font-family: WorkSans-Medium, serif;
+  overflow-y: scroll;
+  min-height: 60vh;
+  max-height: 60vh;
 }
 .lista-item{
   margin: 1.5em 0 3em 0;
 }.accion-lista{
    cursor: pointer;
    padding: 1em 1em 1em 0.5em;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   color: #ffffff;
  }
 .accion-lista:hover{
   color: #0EAC10;
@@ -55,3 +63,5 @@
 .label-lista{
   margin-left: 0.8em;
 }
+
+

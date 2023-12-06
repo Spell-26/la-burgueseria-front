@@ -106,7 +106,6 @@ export class MesasComponent implements OnInit{
           this.mesas = data.content;
           this.isFirst = data.first;
           this.isLast = data.last;
-          console.log(this.mesas)
         },
         error => {
           console.log(error.error())
@@ -162,8 +161,6 @@ export class MesasComponent implements OnInit{
 
     dialogRef.afterClosed().subscribe(
       result =>{
-        console.log(result)
-
         //estancia del objeto mesa
         const mesa : Mesa = {
           id: 0,

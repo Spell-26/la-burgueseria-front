@@ -19,6 +19,9 @@ import { ModalEditarProductoComponent } from './utils/modal-editar-producto/moda
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { ModalIppComponent } from './utils/modal-ipp/modal-ipp.component';
 import { MesasComponent } from './components/mesas/mesas.component';
+import { EmpleadosComponent } from './components/empleados/empleados.component';
+import { IngresosComponent } from './components/ingresos/ingresos.component';
+import { CuentasComponent } from './components/cuentas/cuentas.component';
 
 
 @NgModule({
@@ -31,7 +34,10 @@ import { MesasComponent } from './components/mesas/mesas.component';
     ModalLateralComponent,
     ModalEditarProductoComponent,
     ModalIppComponent,
-    MesasComponent
+    MesasComponent,
+    EmpleadosComponent,
+    IngresosComponent,
+    CuentasComponent
   ],
     imports: [
         CommonModule,
