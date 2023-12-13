@@ -21,6 +21,7 @@ export class ModalLateralComponent {
 
     // Agregar campos dinámicamente
     if (data && data.campos) {
+      console.log(data)
       data.campos.forEach((campo: any) => {
         const validators = campo.validadores || [];
         this.form.addControl(campo.nombre, this.fb.control('', validators));

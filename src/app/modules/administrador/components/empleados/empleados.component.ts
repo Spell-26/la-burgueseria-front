@@ -159,9 +159,6 @@ export class EmpleadosComponent implements OnInit{
 
         this.crearEmpleado(empleado)
           .subscribe(
-            result => {
-              console.log(result);
-            }
           );
       }
     )

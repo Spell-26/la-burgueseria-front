@@ -80,7 +80,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas{
   width:80%;
 }
-app-empleados{
+app-empleados, app-cuentas, app-ingresos{
   width: 80%;
 }
 

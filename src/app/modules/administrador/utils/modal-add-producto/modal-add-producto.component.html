@@ -1,11 +1,11 @@
-<h2 mat-dialog-title>Selector de Ingredientes</h2>
+<h2 mat-dialog-title>Añadir producto</h2>
 <mat-dialog-content>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-form-field>
-      <mat-label>Selecciona un ingrediente</mat-label>
-      <mat-select formControlName="insumoSeleccionado">
-        <mat-option *ngFor="let insumo of insumos" [value]="insumo.id">
-          {{ insumo.nombre }}
+      <mat-label>Selecciona un producto</mat-label>
+      <mat-select formControlName="producto">
+        <mat-option *ngFor="let producto of productos" [value]="producto">
+          {{ producto.nombre }} ${{producto.precio}}
         </mat-option>
       </mat-select>
     </mat-form-field>

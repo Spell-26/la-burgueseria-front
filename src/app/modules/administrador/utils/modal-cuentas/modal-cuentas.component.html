@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>Nueva Cuenta</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field>
+      <mat-label>Empleado</mat-label>
+      <mat-select formControlName="empleado" (selectionChange)="onEmpleadoSeleccionado($event)">
+        <mat-option *ngFor="let empleado of empleadosActivos" [value]="empleado">
+            {{empleado.nombre}} {{empleado.apellido}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Mesa</mat-label>
+      <mat-select formControlName="mesa" (selectionChange)="onMesaSeleccionada($event)">
+        <mat-option *ngFor="let mesa of mesasDisponibles; let i = index" [value]="mesa">
+          Mesa: {{ mesa.numeroMesa }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!-- Productos vinculados a la cuenta -->
+    <div>
+      <h2>Productos</h2>
+      <div id="productos-list">
+        <table *ngIf="productosCuenta.length > 0">
+          <tr class="fila">
+            <th>
+              Producto
+            </th>
+            <th>
+              Cantidad
+            </th>
+            <th>Precio unitario</th>
+
+            <th></th>
+          </tr>
+          <tr *ngFor="let pc of productosCuenta; let i = index" class="fila">
+            <td>
+              {{pc.obj.nombre}}
+            </td>
+            <td>
+              {{pc.cantidad}}
+            </td>
+            <td>
+              ${{formatearNumeroConPuntos(pc.obj.precio)}}
+            </td>
+
+            <td>
+              <svg (click)="quitarProducto(pc.obj)" width="2em" height="2em" viewBox="0 0 1024 1024" class="icon"  version="1.1" xmlns="http://www.w3.org/2000/svg">
+                <path d="M512 897.6c-108 0-209.6-42.4-285.6-118.4-76-76-118.4-177.6-118.4-285.6 0-108 42.4-209.6 118.4-285.6 76-76 177.6-118.4 285.6-118.4 108 0 209.6 42.4 285.6 118.4 157.6 157.6 157.6 413.6 0 571.2-76 76-177.6 118.4-285.6 118.4z m0-760c-95.2 0-184.8 36.8-252 104-67.2 67.2-104 156.8-104 252s36.8 184.8 104 252c67.2 67.2 156.8 104 252 104 95.2 0 184.8-36.8 252-104 139.2-139.2 139.2-364.8 0-504-67.2-67.2-156.8-104-252-104z" fill="" />
+                <path d="M707.872 329.392L348.096 689.16l-31.68-31.68 359.776-359.768z" fill="" /><path d="M328 340.8l32-31.2 348 348-32 32z" fill="" />
+              </svg>
+            </td>
+          </tr>
+        </table>
+        <span *ngIf="productosCuenta.length == 0">
+          No hay productos vinculados a esta cuenta, puedes agregar uno
+          en el botón "Agregar producto" en la parte inferior
+        </span>
+      </div>
+      <div id="total" *ngIf="productosCuenta.length > 0">
+        Total: ${{formatearNumeroConPuntos(totalCuenta)}}
+      </div>
+      <div id="btn-black">
+        <button (click)="modalAgregarProducto()" >
+          Agregar producto
+        </button>
+
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button  class="btn-actualizar-element" (click)="onSubmit()" [disabled]="productosCuenta.length === 0">Guardar</button>
+  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+</mat-dialog-actions>

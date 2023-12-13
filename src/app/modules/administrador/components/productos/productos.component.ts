@@ -67,7 +67,7 @@ export class ProductosComponent  implements OnInit {
      const camposProductos = [
        {nombre: 'nombre', label: 'Nombre', tipo: 'text', validadores: [Validators.required]},
        { nombre: 'precio', label: 'Precio', tipo: 'number', validadores: [Validators.required, Validators.pattern(/^[0-9]+$/)] },
-       {nombre: 'imagen', labeñ: 'Imagen del producto', tipo: 'file'},
+       {nombre: 'imagen', label: 'Imagen del producto', tipo: 'file'},
        { nombre: 'selector', label: 'Categoría', tipo: 'selector', opciones: this.categoriasProductos },
        { nombre: 'descripcion', label: 'Descripción', tipo: 'textarea', validadores: [Validators.required] },
      ];
@@ -98,11 +98,11 @@ export class ProductosComponent  implements OnInit {
          categoriaProducto : categoriaProducto,
        };
 
-       console.log('Valores del formulario:', result);
+
        this.crearProducto(productoSave, categoriaProducto.id)
          .subscribe(
            respuesta =>{
-             console.log(respuesta)
+
            },
            error => {
              console.log(error)
@@ -126,7 +126,7 @@ export class ProductosComponent  implements OnInit {
             this.productosService.actualizarProducto(result)
               .subscribe(
                 result =>{
-                  console.log(result)
+
                 },
                 error => {
                   console.log(error)

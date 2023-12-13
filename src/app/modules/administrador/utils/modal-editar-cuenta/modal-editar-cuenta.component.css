@@ -1,6 +1,7 @@
 h2{
   width: 100%;
   text-align: center;
+  color: #fff8f8;
 }
 /* nombre-del-componente.component.css */
 :host {
@@ -110,87 +111,4 @@ svg {
 /* Cambia el color a rojo al hacer hover */
 svg:hover {
   fill: #ff0000; /* Cambia a tu color rojo deseado */
-}
-
-/*  estilos de ingredientes (ipp) */
-.contenedor-ingredientes{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  max-height: 60vh;
-  overflow-y: scroll;
-}
-.ingrediente{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.ingrediente-nombre{
-  width: 100%;
-  text-align: center;
-  margin-top: .8em;
-}
-.input-ingrediente{
-  text-align: center;
-}
-.input-ingrediente input{
-  padding: .8em;
-  background-color: rgba(255, 255, 255, 0);
-  color: #fff;
-  font-family: WorkSans, serif;
-  border: 1px solid #3C3B3B;
-  font-size: 1em;
-}
-.actualizar-ingrediente{
-  text-align: center;
-}
-.actualizar-ingrediente button{
-  padding: .6em;
-  background-color: rgba(255, 255, 255, 0);
-  color: #fff;
-  font-family: WorkSans, serif;
-  border: 1px solid #3C3B3B;
-  font-size: .7em;
-  margin: .5em .4em;
-}
-.actualizar-ingrediente button:hover{
-  border: 1px solid rgb(244, 98, 19);
-  color: rgb(244, 98, 19);
-  cursor: pointer;
-}
-.borrar-ingrediente{
-  text-align: center;
-}
-.borrar-ingrediente button{
-  padding: .6em;
-  background-color: rgba(255, 255, 255, 0);
-  color: #fff;
-  font-family: WorkSans, serif;
-  border: 1px solid #3C3B3B;
-  font-size: .7em;
-  margin: .5em .4em;
-}
-.borrar-ingrediente button:hover{
-  border: 1px solid red;
-  color: red;
-  cursor: pointer;
-}
-.nuevoIpp{
-  text-align: center;
-  margin-top: 2.3em;
-}
-.nuevoIpp button{
-  padding: .8em;
-  background-color: rgba(255, 255, 255, 0);
-  color: #fff;
-  font-family: WorkSans, serif;
-  border: 1px solid #3C3B3B;
-  font-size: 1em;
-  margin: 0 1em;
-  cursor: pointer;
-}
-.nuevoIpp button:hover{
-  border: 1px solid green;
-  color: green;
-  cursor: pointer;
 }

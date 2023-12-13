@@ -29,6 +29,9 @@
 
 
 /*    ESTILOS COMPARTIDOS V2 */
+.component-main-component {
+  margin-top: 1.5em;
+}
 .btn-eliminar-element{
   padding: .8em;
   background-color: rgba(255, 255, 255, 0);
@@ -152,4 +155,6 @@
 .tabla-listado, .row-header-element, .row-contenido-element{
   border: 1px solid #3C3B3B;
   border-collapse: collapse;
+  padding: .7em;
+  text-align: center;
 }

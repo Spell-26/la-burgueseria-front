@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
-import {InsumoProducto, InsumoProductoResponse} from "../interfaces";
+import {InsumoProducto, InsumoProductoResponse, Producto} from "../interfaces";
 
 @Injectable({
   providedIn: 'root'
@@ -62,5 +62,10 @@ export class InsumosPorProductoService {
           }
         )
       );
+  }
+  //obtener los ipp de un producto dado
+  getIppByProducto(id : number) : Observable<any>{
+
+    return this.http.get(`${this.apiUrl}/producto/${id}`);
   }
 }

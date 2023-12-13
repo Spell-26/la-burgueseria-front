@@ -1,1 +1,82 @@
-<p>ingresos works!</p>
+<div class="container-section">
+  <header class="header-module">
+    <h1>Ingresos</h1>
+  </header>
+  <div class="actions-container">
+    <div class="search-container">
+      <span style="color:#fff">Desde</span>
+      <input type="date"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
+    </div>
+    <div class="search-container">
+      <span style="color:#fff">Hasta</span>
+      <input type="date"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
+    </div>
+  </div>
+
+  <section class="component-main-component">
+    <table class="tabla-listado" *ngIf="ingresos.length > 0 ; else buscando">
+      <thead class="cabecera-tabla">
+      <tr class="row-header">
+        <th class="row-header-element">
+          FECHA DEL INGRESO
+        </th>
+        <th class="row-header-element">
+          MÉTODO DE PAGO
+        </th>
+        <th class="row-header-element">
+          TOTAL
+        </th>
+        <th class="row-header-element">
+          MESA
+        </th>
+        <th class="row-header-element">
+          EMPLEADO
+        </th>
+        <th class="row-header-element">
+          ACCIONES
+        </th>
+      </tr>
+      </thead>
+      <tbody class="contenido-tabla">
+        <tr class="row-contenido-tabla" *ngFor="let ingreso of ingresos; let i = index">
+          <!-- Validar que efectivamente si tenga una cita asignada -->
+          <ng-container *ngIf="ingreso.cuenta != null">
+          <td class="row-contenido-element">
+            {{ingreso.fecha | date:'dd/MM/yyyy HH:mm:ss'}}
+          </td>
+          <td class="row-contenido-element">
+            {{ingreso.metodoPago}}
+          </td>
+          <td class="row-contenido-element">
+            {{ingreso.total.toLocaleString()}}
+          </td>
+          <td class="row-contenido-element">
+            {{ingreso.cuenta.mesa.numeroMesa}}
+          </td>
+          <td class="row-contenido-element">
+            {{getNombreApellidoEmpleado(ingreso.cuenta.id)}}
+          </td>
+          <td class="row-contenido-element">
+            <button class="ver-cuenta" (click)="verCuenta(ingreso.cuenta)" > <!-- -->
+              Ver
+            </button>
+          </td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </table>
+    <div class="paginacion" *ngIf="ingresos.length > 0">
+      <img src="assets/icons/arrow-prev-small-svgrepo-com.svg" alt="anterior" *ngIf="!isFirst" (click)="previousPage()">
+      <h3>Pagina {{pagina+1}}</h3>
+      <img src="assets/icons/arrow-next-small-svgrepo-com.svg" alt="siguiente" *ngIf="!isLast" (click)="nextPage()">
+    </div>
+  </section>
+</div>
+
+<ng-template #buscando >
+  <div class="cargando">
+    <h2>No se han encontrado ningun ingreso.</h2>
+    <img src="assets/img/running-cat.gif" alt="">
+
+  </div>
+</ng-template>

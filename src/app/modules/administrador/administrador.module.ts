@@ -22,6 +22,10 @@ import { MesasComponent } from './components/mesas/mesas.component';
 import { EmpleadosComponent } from './components/empleados/empleados.component';
 import { IngresosComponent } from './components/ingresos/ingresos.component';
 import { CuentasComponent } from './components/cuentas/cuentas.component';
+import { ModalCuentasComponent } from './utils/modal-cuentas/modal-cuentas.component';
+import { ModalAddProductoComponent } from './utils/modal-add-producto/modal-add-producto.component';
+import { ModalEditarCuentaComponent } from './utils/modal-editar-cuenta/modal-editar-cuenta.component';
+import { ModalIngresosComponent } from './utils/modal-ingresos/modal-ingresos.component';
 
 
 @NgModule({
@@ -37,7 +41,11 @@ import { CuentasComponent } from './components/cuentas/cuentas.component';
     MesasComponent,
     EmpleadosComponent,
     IngresosComponent,
-    CuentasComponent
+    CuentasComponent,
+    ModalCuentasComponent,
+    ModalAddProductoComponent,
+    ModalEditarCuentaComponent,
+    ModalIngresosComponent
   ],
     imports: [
         CommonModule,

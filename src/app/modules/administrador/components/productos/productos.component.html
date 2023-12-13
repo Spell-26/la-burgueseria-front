@@ -41,7 +41,7 @@
       <img [src]="producto.imagenUrl" alt="logo hamburguesa" (error)="onImageError(producto)">
       <div class="datos-producto">
         <span>{{producto.nombre}}</span>
-        <span>{{producto.precio}}</span>
+        <span>{{producto.precio.toLocaleString()}}</span>
       </div>
     </div>
 
