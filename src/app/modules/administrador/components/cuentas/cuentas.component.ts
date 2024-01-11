@@ -8,12 +8,14 @@ import {CuentasService} from "../../services/cuentas.service";
 import {ProductosCuentaService} from "../../services/productos-cuenta.service";
 import {EmpleadoCuentaService} from "../../services/empleado-cuenta.service";
 import {ModalEditarCuentaComponent} from "../../utils/modal-editar-cuenta/modal-editar-cuenta.component";
-import {InsumoProducto, Producto} from "../../interfaces";
+import {insumo, InsumoProducto, Producto} from "../../interfaces";
 import {InsumosPorProductoService} from "../../services/insumos-por-producto.service";
 import {InsumosService} from "../../services/insumos.service";
 import {ModalIngresosComponent} from "../../utils/modal-ingresos/modal-ingresos.component";
 import {Ingreso} from "../../interfaces/ingreso";
 import {IngresoService} from "../../services/ingreso.service";
+import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
+import Swal from "sweetalert2";
 
 
 
@@ -39,6 +41,8 @@ export class CuentasComponent implements OnInit{
   asc = true;
   isFirst = false;
   isLast = false;
+  // Insumos a restar
+  private insumosARestar : { [nombre : string] : number } = {};
   ngOnInit(): void {
     this.cuentaService.refreshNeeded
       .subscribe(
@@ -58,7 +62,8 @@ export class CuentasComponent implements OnInit{
               private empleadoCuentaService : EmpleadoCuentaService,
               private insumosPorProductoService : InsumosPorProductoService,
               private insumoService : InsumosService,
-              private ingresoService : IngresoService) {
+              private ingresoService : IngresoService,
+              private alertaService : AlertasService) {
   }
 
 
@@ -81,6 +86,20 @@ export class CuentasComponent implements OnInit{
   public getNombreApellidoEmpleado(idCita : number) : string {
     const empleado = this.empleadoCuentas.find(e => e.cuenta.id === idCita);
     return empleado ? `${empleado.empleado.nombre} ${empleado.empleado.apellido}` : 'NaN'
+  }
+
+  //Funcion para añadir la cantidad de insumos por restar al array
+  private addInsumosARestar( insumo : {nombre : string; cantidad : number} ) : void {
+    const {nombre, cantidad} = insumo;
+
+    //Verificar si el insumo ya fue agregado a insumosARestar
+    if(this.insumosARestar.hasOwnProperty(nombre)){
+      //si ya existe se suma a la cantidad ya existente
+      this.insumosARestar[nombre] += cantidad;
+    }else{
+      //si no existe se crea junto a la cantidad
+      this.insumosARestar[nombre] = cantidad;
+    }
   }
   //****************************
   //*******PETICIONES HTTP*******
@@ -210,6 +229,9 @@ export class CuentasComponent implements OnInit{
               console.log(error)
             }
           );
+
+        //alerta confirmación creación exitosa
+        this.alertaService.alertaConfirmarCreacion();
       }
     )
   }
@@ -243,181 +265,238 @@ export class CuentasComponent implements OnInit{
 
     dialogRef.afterClosed().subscribe(
       result => {
-        console.log(result)
 
-        //crear instancias
-        const cuenta : Cuenta = result.cuenta;
-        const productosCuenta : ProductoCuenta[] = [];
-        //productos cuenta vinculados a la cuenta con anterioridad
-        let productosCuentaExistentes : ProductoCuenta[] = [];
-        //VALIDAR SI LA CUENTA FUE DESPACHADA
-        // 3 es el id del estado "despachada"
-        if(cuenta.estadoCuenta.id == 3){
-          //CAMBIAR TODOS LOS PRODUCTOS VINCULADOS A ESTA CUENTA A DESPACHADOS
-          this.productosCuentaService.getProductoCuentaByCuentaId(cuenta.id)
-            .subscribe(
-              data => {
-                productosCuentaExistentes = data.object;
-                if(productosCuentaExistentes.length > 0){
+        if(result){
+          //crear instancias
+          const cuenta : Cuenta = result.cuenta;
+          const productosCuenta : ProductoCuenta[] = [];
+          //productos cuenta vinculados a la cuenta con anterioridad
+          let productosCuentaExistentes : ProductoCuenta[] = [];
+          //VALIDAR SI LA CUENTA FUE DESPACHADA
+          // 3 es el id del estado "despachada"
+          if(cuenta.estadoCuenta.id == 3){
+            //CAMBIAR TODOS LOS PRODUCTOS VINCULADOS A ESTA CUENTA A DESPACHADOS
+            this.productosCuentaService.getProductoCuentaByCuentaId(cuenta.id)
+              .subscribe(
+                async data => {
+                  productosCuentaExistentes = data.object;
 
-                  //cambiar el estado de cada producto cuenta a despachado
-                  for(let producto of productosCuentaExistentes){
-                    //variable para validar si el cambio es nuevo y no es redundante
-                    const estadoAntiguo = producto.estado;
-                    producto.estado = "Despachado";
-                    //Actualizar el producto en la base de datos
-                    this.productosCuentaService.actualizarProductoCuenta(producto)
-                      .subscribe(
-                        result =>{
-                          //INICIO DEL PROCESO PARA RESTAR INSUMOS CUANDO SE DESPACHA EL PRODUCTO
-                          //validar que las dos variables sean distintas
-                          if(estadoAntiguo !== producto.estado){
-                            const productoCuentaActualizado : ProductoCuenta = result.object;
-                            const producto : Producto = productoCuentaActualizado.producto;
-                            const cantidad = productoCuentaActualizado.cantidad;
+                  if (productosCuentaExistentes.length > 0) {
+                    //validar si vienen productos cuyo estado no es despachado
+                    //y guardarlos en otro array
+                    const productosCuentaNoDespachados: ProductoCuenta [] = []
+                    //seleccionar los productosCuenta que no han sido despachados
+                    productosCuentaExistentes.forEach(
+                      (productoCuenta) => {
+                        if (productoCuenta.estado != 'Despachado') {
+                          productosCuentaNoDespachados.push(productoCuenta);
+                        }
+                      }
+                    );
 
-                            let ipps : InsumoProducto[] = [];
+                    const insumosProcesados = await this.validarExistenciasDeProductos(productosCuentaNoDespachados);
 
-                            this.insumosPorProductoService.getIppByProducto(producto.id)
-                              .subscribe(
-                                result =>{
-                                  ipps = result.object;
-                                  //validar que si haya campos en los ipp
-                                  if(ipps.length > 0){
-                                    for(let ipp of ipps){
-                                      const cantidadIpp = ipp.cantidad;
-                                      let insumo = ipp.insumo;
-                                      //se debe multiplicar la cantidad del ingrediente por la
-                                      // cantidad de produtos solicitdados y el resultado debe restarse al stock
-                                      // del insumo
-                                      //si el resultado es menor que cero se debe poner un mensaje en consola
-                                      // TODO: mostrar una alerta cuando sea menor que cero
-                                      // TODO: la alerta debe dar la opcion de continuar o abortar la operacion
-                                      // TODO: tal caso el stock se asignara a 0 y no a un numero negativo
+                    //validar si hay insumos que quedaron en negativo
+                    if (insumosProcesados.insuficientes.length > 0) {
+                      //enviar alerta de que existen insumos cuyos existencias quedan en negativo
+                      this.alertaService.alertaInsumosNegativos(insumosProcesados.insuficientes)
+                        .then(
+                          (result) => {
+                            //en caso de que desee continuar
+                            if (result.isConfirmed) {
+                              //cambiar el estado de cada producto cuenta a despachado
+                              for (let producto of productosCuentaNoDespachados) {
 
-                                      const insumosARestar = cantidad * cantidadIpp;
+                                //CAMBIAR EL ESTADO DE CADA PRODUCTO A DESPACHADO
+                                producto.estado = "Despachado";
 
-                                      insumo.cantidad = insumo.cantidad - insumosARestar;
-
-                                      if(insumo.cantidad < 0){
-                                        //TODO: falta alerta
-                                        console.log("Se ha exedido la cantidad de existencias de este insumo")
-                                        insumo.cantidad = 0;
-                                      }
-                                      // ACTUALIZAR EL INSUMO
-                                      this.insumoService.actualizarInsumos(insumo)
-                                        .subscribe(
-                                          result=>{
-
-                                          },
-                                          error => {
-                                            console.log(error)
-                                          }
-                                        )
+                                //Actualizar el productoCuenta en la base de datos
+                                this.productosCuentaService.actualizarProductoCuenta(producto)
+                                  .subscribe(
+                                    result => {
+                                    },
+                                    error => {
+                                      console.log(error)
                                     }
+                                  );
+                              }
+                              //actualizar todos los insumos guardados en insumosProcesados
+                              for (let insumo of insumosProcesados.aDeducir) {
+                                this.insumoService.actualizarInsumos(insumo.insumo)
+                                  .subscribe(
+                                    result => {
+                                    },
+                                    error => {
+                                      console.log(error);
+                                    });
+                              }
+
+                              this.cuentaService.actualizarCuenta(cuenta)
+                                .subscribe(
+                                  data => {
+
+                                  },
+                                  error => {
+                                    console.log(error)
                                   }
-                                },error => {
-                                  console.log(error)
-                                }
-                              )
+                                );
+
+                              //mostrar alerta actualizacion exitosa
+                              this.alertaService.alertaConfirmarCreacion();
+                            }
+                            //en caso de que se cancele la operacion
+                            else if (result.dismiss === Swal.DismissReason.cancel) {
+                              this.alertaService.alertaSinModificaciones();
+                            }
                           }
+                        )
+                    }//si no hay insumos en negativo
+                    else {
+                      this.alertaService.alertaPedirConfirmacionEditar()
+                        .then(
+                          (result) => {
+                            //en caso de querer continuar
+                            if (result.isConfirmed) {
+                              for (let producto of productosCuentaNoDespachados) {
+
+                                //CAMBIAR EL ESTADO DE CADA PRODUCTO A DESPACHADO
+                                producto.estado = "Despachado";
+
+                                //Actualizar el productoCuenta en la base de datos
+                                this.productosCuentaService.actualizarProductoCuenta(producto)
+                                  .subscribe(
+                                    result => {
+                                    },
+                                    error => {
+                                      console.log(error)
+                                    }
+                                  );
+                              }
+                              //actualizar todos los insumos guardados en insumosProcesados
+                              for (let insumo of insumosProcesados.aDeducir) {
+                                console.log(insumo)
+                                this.insumoService.actualizarInsumos(insumo.insumo)
+                                  .subscribe(
+                                    result => {
+                                    },
+                                    error => {
+                                      console.log(error);
+                                    });
+                              }
+                              //actualizar la cuenta
+                              this.cuentaService.actualizarCuenta(cuenta)
+                                .subscribe(
+                                  data => {
+                                  },
+                                  error => {
+                                    console.log(error)
+                                  }
+                                );
+
+                              //mostrar alerta actualizacion exitosa
+                              this.alertaService.alertaConfirmarCreacion();
+                            }//en caso de que se cancele la operacion
+                            else if (result.dismiss === Swal.DismissReason.cancel) {
+                              this.alertaService.alertaSinModificaciones();
+                            }
+                          }
+                        )
+                    }
+
+                  }
+
+                },error => {
+                  console.log(error)
+                }
+              );
+          }
+          //cuando ya se pagó la cuenta
+          else if(cuenta.estadoCuenta.id == 2){
+
+            //crear instancia de ingreso
+            const ingreso : Ingreso = {
+              id : 0,
+              fecha : null,
+              metodoPago : this.metodoDePagoSeleccionado,
+              total: cuenta.total,
+              cuenta: cuenta
+            }
+            //ABRIR MODAL PARA SABER EL TIPO DE MÉTODO DE PAGO
+            // GUARDAR INGRESO
+            this.modalPagar(ingreso)
+            //ACTUALIZAR CUENTA
+            this.cuentaService.actualizarCuenta(cuenta)
+              .subscribe(
+                data => {
+                  this.alertaService.alertaConfirmarCreacion();
+                },
+                error => {
+                  console.log(error)
+                }
+              );
+          }
+          //si no cumple con ninguno de los estados
+          else{
+            this.alertaService.alertaPedirConfirmacionEditar()
+              .then(
+                (result) => {
+                  if(result.isConfirmed){
+                    this.cuentaService.actualizarCuenta(cuenta)
+                      .subscribe(
+                        data => {
+                          this.alertaService.alertaConfirmarCreacion();
                         },
                         error => {
                           console.log(error)
                         }
                       );
                   }
+                  else if (result.dismiss === Swal.DismissReason.cancel) {
+                    this.alertaService.alertaSinModificaciones();
+                  }
                 }
+              )
 
-              },error => {
-                console.log(error)
-              }
-            );
-          this.cuentaService.actualizarCuenta(cuenta)
-            .subscribe(
-              data => {
-                console.log(data)
-              },
-              error => {
-                console.log(error)
-              }
-            );
-        }
-        //cuando ya se pagó la cuenta
-        else if(cuenta.estadoCuenta.id == 2){
-
-          //crear instancia de ingreso
-          const ingreso : Ingreso = {
-            id : 0,
-            fecha : null,
-            metodoPago : this.metodoDePagoSeleccionado,
-            total: cuenta.total,
-            cuenta: cuenta
           }
-          //ABRIR MODAL PARA SABER EL TIPO DE MÉTODO DE PAGO
-          // GUARDAR INGRESO
-          this.modalPagar(ingreso)
-          //ACTUALIZAR CUENTA
-          this.cuentaService.actualizarCuenta(cuenta)
-            .subscribe(
-              data => {
-                console.log(data)
-              },
-              error => {
-                console.log(error)
-              }
-            );
-        }
-        //si no cumple con ninguno de los estados
-        else{
-
-          this.cuentaService.actualizarCuenta(cuenta)
-            .subscribe(
-              data => {
-
-              },
-              error => {
-                console.log(error)
-              }
-            );
-        }
-        //VALIDAR SI SE AÑADIERON MAS PRODUCTOS EN ESTA EDICION
-        if(result.productos.length > 0){
-          //el estado con id 1 es por despachar
-          cuenta.estadoCuenta.id = 1
-          //recorrer el result y asignarlo al array de productoCuenta
-          for (let producto of result.productos){
-            //crear instancia de producto por cuenta
-            const productoXCuenta : ProductoCuenta = {
-              id: 0,
-              cuenta: cuenta,
-              producto: producto.obj,
-              cantidad: producto.cantidad,
-              estado: "Por despachar"
+          //VALIDAR SI SE AÑADIERON MAS PRODUCTOS EN ESTA EDICION
+          if(result.productos.length > 0){
+            //el estado con id 1 es por despachar
+            cuenta.estadoCuenta.id = 1
+            //recorrer el result y asignarlo al array de productoCuenta
+            for (let producto of result.productos){
+              //crear instancia de producto por cuenta
+              const productoXCuenta : ProductoCuenta = {
+                id: 0,
+                cuenta: cuenta,
+                producto: producto.obj,
+                cantidad: producto.cantidad,
+                estado: "Por despachar"
+              };
+              //una vez creado la instancia se añade al arreglo donde se contendrán
+              productosCuenta.push(productoXCuenta);
+            }
+            //guardar todos los neuvos productos
+            for (let pc of productosCuenta){
+              this.productosCuentaService.crearProductoCuenta(pc)
+                .subscribe(
+                  data=> {},
+                  error => {
+                    console.log(error)
+                  }
+                );
             };
-            //una vez creado la instancia se añade al arreglo donde se contendrán
-            productosCuenta.push(productoXCuenta);
-          }
-          //guardar todos los neuvos productos
-          for (let pc of productosCuenta){
-            this.productosCuentaService.crearProductoCuenta(pc)
+            this.cuentaService.actualizarCuenta(cuenta)
               .subscribe(
-                data=> {},
+                data => {
+
+                },
                 error => {
                   console.log(error)
                 }
               );
-          };
-          this.cuentaService.actualizarCuenta(cuenta)
-            .subscribe(
-              data => {
-
-              },
-              error => {
-                console.log(error)
-              }
-            );
+          }
         }
+
       }
     )
   }
@@ -444,4 +523,93 @@ export class CuentasComponent implements OnInit{
       }
     )
   }
+
+
+  //funcion para validar si los insumos dentro de un array de productosxcuenta
+  //son mayores a 0 luego de la deduccion
+  private async validarExistenciasDeProductos(productosCuenta: ProductoCuenta[]): Promise<any> {
+    //array donde se almacenaran los insumos junto a sus cantidades por
+    //restar, en caso de que alguna de las cantidades sea menor a 0,
+    //se debe lanzar la alerta de confirmacion
+    let insumosADeducir: any[] = [];
+    let insumosInsuficientes: any[] = [];
+
+    const promises = productosCuenta.map(async (productoCuenta) => {
+      //almacenar el producto de ProductoCuenta
+      const p = productoCuenta.producto;
+      //almacenar la cantidad del ProductCuenta
+      const c = productoCuenta.cantidad;
+      // array para almacenar los InsumosxProducto
+      let insumosXProducto: InsumoProducto[] = [];
+
+      //obtener los insumos que hacen parte del producto
+      const result = await this.insumosPorProductoService.getIppByProducto(p.id).toPromise();
+
+      //almacenar los insumos x producto
+      insumosXProducto = result.object;
+
+      //validar que no sea nulo
+      if (insumosXProducto != null && insumosXProducto.length > 0) {
+        for (let ixp of insumosXProducto) {
+          const cantidadIpp = ixp.cantidad;
+          let insumo = ixp.insumo;
+
+          // almaceno el resultado del producto entre la cantidad de
+          //productos * la cantidad del insumo asociada al producto
+          const cantidadARestar = c * cantidadIpp;
+          //guardar las existencias anterior a la resta
+          const existenciasAnteriores = insumo.cantidad;
+
+          //instancia de insumo a deducir
+          const insumoADeducir = {
+            insumo: insumo,
+            cantidadARestar: cantidadARestar,
+            resultadoResta: insumo.cantidad - cantidadARestar
+          };
+
+          //resto la cantidad a restar al insumo
+          insumo.cantidad -= cantidadARestar;
+          //añadir la instancia al array
+          insumosADeducir.push(insumoADeducir);
+        }
+
+        //validar si hay algun valor negativo en insumoADeducir.resultadoResta
+        const isResultadoNegativo = insumosADeducir.some((insumo) => insumo.resultadoResta < 0);
+
+        //en caso de que sí haya un negativo
+        if (isResultadoNegativo) {
+          //crear una instancia de un objeto para mostrar cuales son los insumos insuficientes
+          insumosADeducir.forEach((insumo) => {
+            if (insumo.resultadoResta < 0) {
+              insumosInsuficientes.push(insumo);
+              //setear el valor del insumo negativo en cero
+              insumo.insumo.cantidad = 0;
+            } else {
+              insumo.insumo.cantidad = insumo.resultadoResta;
+            }
+          });
+        }
+        //si las cantidades son positivas
+        else {
+          insumosADeducir.forEach((insumo) => {
+            insumo.insumo.cantidad = insumo.resultadoResta;
+          });
+        }
+      }
+    });
+
+    // Esperar a que todas las promesas se resuelvan
+    await Promise.all(promises);
+
+    //armar el objeto a devolver
+    const response = {
+      aDeducir: insumosADeducir,
+      insuficientes: insumosInsuficientes
+    };
+
+    return response;
+  }
+
 }
+
+

@@ -1,12 +1,10 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {InsumosService} from "../../services/insumos.service";
-import {insumo, InsumoPaginacion, insumoResponse} from "../../interfaces";
-import {Observable} from "rxjs";
-import {MatTableDataSource} from "@angular/material/table";
-import {MatPaginator} from "@angular/material/paginator";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {insumo} from "../../interfaces";
+
+import {MatDialog} from "@angular/material/dialog";
 import {ModalInsumosComponent} from "../../utils/modal-insumos/modal-insumos.component";
+import Swal from "sweetalert2";
 
 
 @Component({
@@ -119,7 +117,7 @@ export class InsumosComponent implements OnInit{
     this.insumosService.crearInsumo(insumo)
       .subscribe(
         (response) =>{
-          console.log(response)
+          this.alertaConfirmacionGuardar()
         },
         error => {
           console.log(error.error())
@@ -164,4 +162,207 @@ export class InsumosComponent implements OnInit{
     this.insumosService.actualizarInsumos(dato);
   }
 
+
+  //ALERTAS / TESTING
+
+  //alerta cuando se guarda o se modifica un insumo
+  public alertaConfirmacionGuardar() {
+    let timerInterval: any;
+    // @ts-ignore
+    Swal.fire({
+      title: "Insumo guardado exitosamente!",
+      icon: 'success',
+      timer: 2000,
+      timerProgressBar: true,
+      position: 'center', // Esquina inferior derecha
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      background: '#1e1e1e', // Fondo oscuro
+      didOpen: () => {
+        Swal.showLoading();
+        // @ts-ignore
+        const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+        timerInterval = setInterval(() => {
+          // @ts-ignore
+          const remainingSeconds = Swal.getTimerLeft() / 1000;
+          timer.textContent = remainingSeconds.toFixed(1) + "s";
+        }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      }
+    }).then((result) => {
+      // Lógica adicional después de cerrar la alerta
+    });
+  }
+
+  //alerta de confirmación para eliminar un insumo
+  public alertaConfirmarEliminar(id : number){
+
+    // @ts-ignore
+    Swal.fire({
+      title: "¿Estas seguro de eliminar este insumo?",
+      text: "No podrás revertir esta acción!",
+      icon:"warning",
+      color: "#fff",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, borrar insumo",
+      cancelButtonText:"Cancelar",
+      reverseButtons: true,
+      background: '#1e1e1e', // Fondo oscuro
+    }).then(
+      (result) => {
+        //ACCION A REALIZAR EN CASO DE QUE SE DESEE PROSEGUIR CON
+        // LA ELIMINACION
+        if(result.isConfirmed){
+          //eliminar el insumo con el id asociado
+          this.deleteInsumo(id);
+
+          let timerInterval: any;
+          // @ts-ignore
+          Swal.fire({
+            title: "Se ha eliminado el insumo correctamente.",
+            icon: 'success',
+            timer: 2000,
+            color: "#fff",
+            timerProgressBar: true,
+            position: 'center', // Esquina inferior derecha
+            showConfirmButton: false, // Ocultar el botón de confirmación
+            background: '#1e1e1e', // Fondo oscuro
+            didOpen: () => {
+              Swal.showLoading();
+              // @ts-ignore
+              const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+              timerInterval = setInterval(() => {
+                // @ts-ignore
+                const remainingSeconds = Swal.getTimerLeft() / 1000;
+                timer.textContent = remainingSeconds.toFixed(1) + "s";
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          });
+
+        }
+        //ACCION A REALIZAR SI SE CANCELA LA ACCION
+        else if(result.dismiss === Swal.DismissReason.cancel ){
+          let timerInterval: any;
+          // @ts-ignore
+          Swal.fire({
+            title: "No se ha realizado ningún cambio en el insumo.",
+            icon: 'error',
+            timer: 2000,
+            color: "#fff",
+            timerProgressBar: true,
+            position: 'center', // Esquina inferior derecha
+            showConfirmButton: false, // Ocultar el botón de confirmación
+            background: '#1e1e1e', // Fondo oscuro
+            didOpen: () => {
+              Swal.showLoading();
+              // @ts-ignore
+              const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+              timerInterval = setInterval(() => {
+                // @ts-ignore
+                const remainingSeconds = Swal.getTimerLeft() / 1000;
+                timer.textContent = remainingSeconds.toFixed(1) + "s";
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          });
+
+        }
+      }
+    )
+  }
+
+
+  //ALERTA AL EDITAR UN INSUMO
+  public alertaConfirmarEditar(id : number){
+
+    // @ts-ignore
+    Swal.fire({
+      title: "¿Estas seguro de editar las existencias de este insumo?",
+      icon:"warning",
+      color: "#fff",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, actualizar insumo",
+      cancelButtonText:"Cancelar",
+      reverseButtons: true,
+      background: '#1e1e1e', // Fondo oscuro
+    }).then(
+      (result) => {
+        //ACCION A REALIZAR EN CASO DE QUE SE DESEE PROSEGUIR CON
+        // LA Edicion
+        if(result.isConfirmed){
+
+          //guardar insumo editado
+          this.guardarEdicion(id);
+
+          let timerInterval: any;
+          // @ts-ignore
+          Swal.fire({
+            title: "Se ha actualizado el insumo correctamente.",
+            icon: 'success',
+            timer: 2000,
+            color: "#fff",
+            timerProgressBar: true,
+            position: 'center', // Esquina inferior derecha
+            showConfirmButton: false, // Ocultar el botón de confirmación
+            background: '#1e1e1e', // Fondo oscuro
+            didOpen: () => {
+              Swal.showLoading();
+              // @ts-ignore
+              const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+              timerInterval = setInterval(() => {
+                // @ts-ignore
+                const remainingSeconds = Swal.getTimerLeft() / 1000;
+                timer.textContent = remainingSeconds.toFixed(1) + "s";
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          });
+
+        }
+        //ACCION A REALIZAR SI SE CANCELA LA ACCION
+        else if(result.dismiss === Swal.DismissReason.cancel ){
+          let timerInterval: any;
+          //cancelar edidion
+          this.cancelarEdicion();
+          // @ts-ignore
+          Swal.fire({
+            title: "No se ha realizado ningún cambio en el insumo.",
+            icon: 'error',
+            timer: 2000,
+            color: "#fff",
+            timerProgressBar: true,
+            position: 'center', // Esquina inferior derecha
+            showConfirmButton: false, // Ocultar el botón de confirmación
+            background: '#1e1e1e', // Fondo oscuro
+            didOpen: () => {
+              Swal.showLoading();
+              // @ts-ignore
+              const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+              timerInterval = setInterval(() => {
+                // @ts-ignore
+                const remainingSeconds = Swal.getTimerLeft() / 1000;
+                timer.textContent = remainingSeconds.toFixed(1) + "s";
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          });
+
+        }
+      }
+    )
+  }
 }

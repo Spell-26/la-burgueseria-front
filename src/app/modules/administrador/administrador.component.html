@@ -1,6 +1,11 @@
 <div class="container">
   <main>
-    <app-menu></app-menu>
+    <ng-container *ngIf="desktopView">
+      <app-menu></app-menu>
+    </ng-container>
+    <ng-container *ngIf="mobileView">
+      <h2 style="color: white;">Hola soy mobile!!</h2>
+    </ng-container>
     <router-outlet></router-outlet>
 
   </main>

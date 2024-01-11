@@ -39,18 +39,19 @@
               {{insumo.cantidad}}
             </td>
             <td class="row-contenido-element" *ngIf="modoEdicion && i === insumoEditandoIndex">
+              <span>Stock:</span>
               {{insumo.cantidad}}
-              <span>Nueva cantidad: </span>
+              <span> <b>-</b>  Nueva cantidad: </span>
               <input type="number" [(ngModel)]="cantidadEditada" />
             </td>
             <td class="row-contenido-element">
-                <button class="btn-actualizar-element" *ngIf="modoEdicion && i === insumoEditandoIndex" (click)="guardarEdicion(i)">
+                <button class="btn-actualizar-element" *ngIf="modoEdicion && i === insumoEditandoIndex" (click)="alertaConfirmarEditar(i)">
                   Guardar
                 </button>
               <button class="btn-eliminar-element" *ngIf="modoEdicion && i === insumoEditandoIndex" (click)="cancelarEdicion()">
                 Cancelar
               </button>
-              <button class="btn-eliminar-element" (click)="deleteInsumo(insumo.id)" *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)">
+              <button class="btn-eliminar-element" (click)="alertaConfirmarEliminar(insumo.id)" *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)">
                 Borrar
               </button>
             </td>

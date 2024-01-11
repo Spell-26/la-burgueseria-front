@@ -64,7 +64,7 @@
       <mat-label>
         Estado de la cuenta
       </mat-label>
-      <mat-select [(ngModel)]="estadoSeleccionado" (ngModelChange)="onEstadoChange()" [ngModelOptions]="{standalone: true}">
+      <mat-select [(ngModel)]="estadoSeleccionado"  [ngModelOptions]="{standalone: true}">
         <mat-option *ngFor="let estado of estadosCuenta" [value]="estado.id" >
           {{estado.nombre}}
         </mat-option>

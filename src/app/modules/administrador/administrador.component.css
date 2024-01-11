@@ -1,4 +1,4 @@
-.container{
+.container {
   width: 100%;
   background: black;
   margin: 0;
@@ -10,7 +10,9 @@
   background-size: 437px 449px;
   background-repeat: no-repeat;
   background-position: 95% 35%;
+  background-attachment: fixed; /* Esta propiedad mantiene la imagen fija durante el scroll */
 }
+
 main{
   flex-grow: 1;
   display: flex;

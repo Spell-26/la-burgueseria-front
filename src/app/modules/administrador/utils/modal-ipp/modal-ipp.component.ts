@@ -26,7 +26,10 @@ export class ModalIppComponent implements OnInit{
     private ippService : InsumosPorProductoService
   ) {
 
+  if(data){
     this.productoId = data.id;
+  }
+
 
     this.form = this.fb.group({
       insumoSeleccionado: [null, Validators.required],
@@ -55,8 +58,8 @@ export class ModalIppComponent implements OnInit{
         categoriaProducto: null
       }
       const insumo : insumo = {
-        id: insumoSeleccionado,
-        nombre: "",
+        id: insumoSeleccionado.id,
+        nombre: insumoSeleccionado.nombre,
         cantidad : 0
       }
 
@@ -67,11 +70,7 @@ export class ModalIppComponent implements OnInit{
         insumo: insumo
       }
 
-      //peticion http para crear el ipp
-      this.ippService.createIpp(insumosProducto)
-        .subscribe();
-
-      this.dialogRef.close();
+      this.dialogRef.close(insumosProducto);
     }
   }
 

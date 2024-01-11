@@ -4,6 +4,8 @@ import {MesasService} from "../../services/mesas.service";
 import {MatDialog} from "@angular/material/dialog";
 import {Validators} from "@angular/forms";
 import {ModalLateralComponent} from "../../utils/modal-lateral/modal-lateral.component";
+import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
+import Swal from "sweetalert2";
 
 @Component({
   selector: 'app-mesas',
@@ -28,7 +30,9 @@ export class MesasComponent implements OnInit{
   nuevoEstadoMesa : string = "";
   nuevoNumeroMesa : number = 0;
 
-  constructor(private mesaService : MesasService, public dialog : MatDialog) {
+  constructor(private mesaService : MesasService, public dialog : MatDialog,
+              private alertaService : AlertasService
+  ) {
   }
   ngOnInit(): void {
     this.mesaService.refreshNeeded
@@ -70,7 +74,7 @@ export class MesasComponent implements OnInit{
     this.nuevoEstadoMesa = "";
   }
   onEstadoSeleccionadoChance(){
-    console.log(this.nuevoEstadoMesa)
+
   }
   guardarEdicion(index : number){
 
@@ -82,10 +86,22 @@ export class MesasComponent implements OnInit{
         qr: null
       };
 
+      this.alertaService.alertaPedirConfirmacionEditar()
+        .then(
+          (result) => {
+            if(result.isConfirmed){
+              this.alertaService.alertaConfirmarCreacion();
+              this.mesaService.actualizarMesa(mesa)
+                .subscribe();
+            }else if(result.dismiss === Swal.DismissReason.cancel ){
+              this.alertaService.alertaSinModificaciones();
+            }
+          }
+        )
+
       this.cancelarEdicion();
 
-      this.mesaService.actualizarMesa(mesa)
-        .subscribe();
+
 
     }
 
@@ -115,8 +131,20 @@ export class MesasComponent implements OnInit{
 
   //eliminar mesa
   public deleteMesa(id : number) : void{
-    this.mesaService.deleteMesa(id)
-      .subscribe();
+
+    this.alertaService.alertaConfirmarEliminar()
+      .then(
+        (result) => {
+          if(result.isConfirmed){
+            this.alertaService.alertaEliminadoCorrectamente();
+            this.mesaService.deleteMesa(id)
+              .subscribe();
+          }else if(result.dismiss === Swal.DismissReason.cancel ){
+            this.alertaService.alertaSinModificaciones();
+          }
+        }
+      )
+
   }
 
   //crear mesa
@@ -172,7 +200,7 @@ export class MesasComponent implements OnInit{
         this.createMesa(mesa)
           .subscribe(
             respuesta =>{
-              console.log(respuesta)
+              this.alertaService.alertaConfirmarCreacion()
             },
             error => {
               console.log(error)

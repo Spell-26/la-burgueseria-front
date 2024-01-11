@@ -9,7 +9,6 @@ import {MatTableModule} from '@angular/material/table';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { ProductosComponent } from './components/productos/productos.component';
 import {FileUploadModule} from "primeng/fileupload";
-import { CategoriaProductoComponent } from './components/categoria-producto/categoria-producto.component';
 import { ModalInsumosComponent } from './utils/modal-insumos/modal-insumos.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatInputModule} from "@angular/material/input";
@@ -26,6 +25,8 @@ import { ModalCuentasComponent } from './utils/modal-cuentas/modal-cuentas.compo
 import { ModalAddProductoComponent } from './utils/modal-add-producto/modal-add-producto.component';
 import { ModalEditarCuentaComponent } from './utils/modal-editar-cuenta/modal-editar-cuenta.component';
 import { ModalIngresosComponent } from './utils/modal-ingresos/modal-ingresos.component';
+import { ModalNuevoProductoComponent } from './utils/modal-nuevo-producto/modal-nuevo-producto.component';
+import { ModalAgregarCategoriaComponent } from './utils/modal-agregar-categoria/modal-agregar-categoria.component';
 
 
 @NgModule({
@@ -33,7 +34,6 @@ import { ModalIngresosComponent } from './utils/modal-ingresos/modal-ingresos.co
     AdministradorComponent,
     InsumosComponent,
     ProductosComponent,
-    CategoriaProductoComponent,
     ModalInsumosComponent,
     ModalLateralComponent,
     ModalEditarProductoComponent,
@@ -45,7 +45,9 @@ import { ModalIngresosComponent } from './utils/modal-ingresos/modal-ingresos.co
     ModalCuentasComponent,
     ModalAddProductoComponent,
     ModalEditarCuentaComponent,
-    ModalIngresosComponent
+    ModalIngresosComponent,
+    ModalNuevoProductoComponent,
+    ModalAgregarCategoriaComponent
   ],
     imports: [
         CommonModule,

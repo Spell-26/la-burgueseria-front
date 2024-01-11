@@ -4,6 +4,8 @@ import {EmpleadosService} from "../../services/empleados.service";
 import {MatDialog} from "@angular/material/dialog";
 import {Validators} from "@angular/forms";
 import {ModalLateralComponent} from "../../utils/modal-lateral/modal-lateral.component";
+import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
+import Swal from "sweetalert2";
 
 @Component({
   selector: 'app-empleados',
@@ -30,7 +32,8 @@ export class EmpleadosComponent implements OnInit{
 
 
   //CONSTRUCTOR
-  constructor(private empleadoService : EmpleadosService, public dialog : MatDialog) {
+  constructor(private empleadoService : EmpleadosService, public dialog : MatDialog,
+              private alertaService : AlertasService) {
   }
 
   ngOnInit(): void {
@@ -75,8 +78,21 @@ export class EmpleadosComponent implements OnInit{
       estado: !this.empleados[index].estado
     };
 
-    //enviar a la base de datos los cambios
-    this.actualizarEmpleado(empleado);
+    //alerta confirmar edicion
+    this.alertaService.alertaPedirConfirmacionEditar()
+      .then(
+        (result) => {
+          if(result.isConfirmed){
+            //enviar a la base de datos los cambios
+            this.actualizarEmpleado(empleado);
+            this.alertaService.alertaConfirmarCreacion();
+          }else if(result.dismiss === Swal.DismissReason.cancel ){
+            this.alertaService.alertaSinModificaciones();
+          }
+        }
+      )
+
+
 
 
     //reset de variables.
@@ -156,6 +172,8 @@ export class EmpleadosComponent implements OnInit{
           apellido: result.apellido,
           estado: true
         };
+
+        this.alertaService.alertaConfirmarCreacion();
 
         this.crearEmpleado(empleado)
           .subscribe(

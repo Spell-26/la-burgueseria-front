@@ -1,14 +1,14 @@
-<!-- modal.component.html -->
+<h2 mat-dialog-title>Nuevo producto</h2>
+<mat-dialog-content #modalContent>
+  <form [formGroup] = "form">
 
-<h2 mat-dialog-title>Editando producto: {{ producto.nombre }}</h2>
-<mat-dialog-content>
-  <form [formGroup]="form">
     <mat-form-field>
       <mat-label>Nombre del producto</mat-label>
       <input matInput placeholder="Nombre" formControlName="nombre">
       <mat-error *ngIf="form.get('nombre')?.hasError('required')">El nombre es obligatorio</mat-error>
       <mat-error *ngIf="form.get('nombre')?.hasError('pattern')">Nombre no válido</mat-error>
     </mat-form-field>
+
     <mat-form-field>
       <mat-label>Precio del producto</mat-label>
       <input matInput placeholder="Precio" formControlName="precio">
@@ -24,7 +24,7 @@
     <mat-form-field class="selector-con-parrafo">
       <mat-label>Categoría</mat-label>
       <mat-select formControlName="categoria" (selectionChange)="onCategoriaSeleccionada($event)" (openedChange)="onMenuDesplegado($event)">
-        <mat-option *ngFor="let categoria of categoriasProducto" [value]="categoria.id">
+        <mat-option *ngFor="let categoria of categorias" [value]="categoria">
           {{ categoria.nombre }}
           <!-- Agrega un botón al final de cada opción -->
           <button *ngIf="menuDesplegado" (click)="quitarCategoria(categoria)"><img src="assets/icons/close.svg" alt=""></button>
@@ -35,40 +35,43 @@
       <p>No encuentras la categoría que buscas? Crea una <b (click)="modalNuevaCategoria()">acá</b> </p>
     </div>
 
-    <div class="img-selector">
-      <label class="file-upload-button" for="file-upload">Selecciona la imagen del producto</label>
-      <input type="file" accept="image/*" (change)="onFileChange($event)" id="file-upload">
-      <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
-      <div class="error-message" *ngIf="fileError">{{ fileError }}</div>
-    </div>
+  </form>
+  <!-- Imagen -->
+  <div class="img-selector">
+    <label class="file-upload-button" for="file-upload">Selecciona la imagen del producto</label>
+    <input type="file" accept="image/*" (change)="onFileChange($event)" id="file-upload">
+    <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
+    <div class="error-message" *ngIf="fileError">{{ fileError }}</div>
+  </div>
+  <div *ngIf="selectedImage" class="selected-image">
+    <img [src]="selectedImage" alt="Imagen seleccionada">
+  </div>
 
-    <div *ngIf="selectedImage" class="selected-image">
-      <img [src]="selectedImage" alt="Imagen seleccionada" (error)="onImageError()">
-    </div>
-
-    <ng-container *ngIf="insumosPorProducto" >
-      <div class="contenedor-ingredientes">
+  <!-- INGREDIENTES -->
+  <div class="nuevoIpp">
+    <button (click)="modalAgregarInsumo()">Vincular un nuevo ingrediente</button>
+  </div>
+  <ng-container *ngIf="insumos.length > 0" >
+    <div class="contenedor-ingredientes">
       <h2>Ingredientes</h2>
-      <div *ngFor="let ipp of insumosPorProducto; let i = index" class="ingrediente">
+      <div *ngFor="let ipp of insumos; let i = index" class="ingrediente">
         <span class="ingrediente-nombre">{{ipp.insumo.nombre}}</span>
         <div class="input-ingrediente">
           <input type="number" placeholder="cantidad" [value]="ipp.cantidad" (click)="iniciarEdicion(i)" *ngIf="!isEditable">
           <input type="number" placeholder="cantidad" [value]="cantidadEditada"  (input)="onCantidadChange($event)"  autofocus *ngIf="isEditable && i === insumoPorProductoEditandoIndex">
         </div>
         <div class="actualizar-ingrediente" *ngIf="isEditable && i === insumoPorProductoEditandoIndex">
-          <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="guardarIpp(ipp, i)">Guardar</button>
+          <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="guardarIpp(i)">Guardar</button>
           <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="terminarEdicion(i)">Cancelar</button>
         </div>
         <div class="borrar-ingrediente" *ngIf="!isEditable">
-          <button *ngIf="!isEditable" (click)="eliminarIpp(ipp.id, i)">Borrar</button>
+          <button *ngIf="!isEditable" (click)="eliminarIpp(i)">Borrar</button>
         </div>
       </div>
-      </div>
-    </ng-container>
-    <div class="nuevoIpp">
-      <button (click)="modalAgregarInsumo()">Vincular un nuevo ingrediente</button>
     </div>
-  </form>
+  </ng-container>
+
+
   <div id="fixed-scroll-icon" *ngIf="showScrollIcon">
     <img src="assets/icons/scroll-down.gif" alt="">
   </div>

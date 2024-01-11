@@ -11,8 +11,11 @@ import {Validators} from "@angular/forms";
 import {ModalInsumosComponent} from "../../utils/modal-insumos/modal-insumos.component";
 import {ModalLateralComponent} from "../../utils/modal-lateral/modal-lateral.component";
 import {InsumosService} from "../../services/insumos.service";
-import {insumo} from "../../interfaces";
+import {insumo, InsumoProducto} from "../../interfaces";
 import {ModalEditarProductoComponent} from "../../utils/modal-editar-producto/modal-editar-producto.component";
+import {ModalNuevoProductoComponent} from "../../utils/modal-nuevo-producto/modal-nuevo-producto.component";
+import {InsumosPorProductoService} from "../../services/insumos-por-producto.service";
+import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 
 @Component({
   selector: 'app-productos',
@@ -23,36 +26,32 @@ export class ProductosComponent  implements OnInit {
   //  VARIABLES
   public categoriasProductos: CategoriaProducto[] = [];
   public productos: Array<any> = [];
+  public productosAgrupados: { [p: string]: Producto[] } = {}
   public insumos: insumo[] = [];
   public nombreBusqueda: string = "";
   public isNombreBusqueda : boolean = false;
+  public mostrarBotones : boolean = false;
 
-  //parametros paginacion
-  pagina = 0;
-  tamano = 6;
-  order = 'id';
-  asc = true;
-  isFirst = false;
-  isLast = false;
 
   // CONSTRUCTOR E INICIALIZADORES
   constructor(private productosService : ProductosService,
               private sanitizer : DomSanitizer,
               private categoriaProductoService : CategoriaProductoService,
               private insumoService : InsumosService,
-              private router : Router,
-              public dialog : MatDialog) {
+             private ippService : InsumosPorProductoService,
+              public dialog : MatDialog,
+              private alertaService : AlertasService) {
   }
   ngOnInit(): void {
     this.productosService.refreshNeeded
       .subscribe(
         () =>{
-          this.getAllProductos();
+          this.getProductos()
           this.getAllCategoriasProductos();
           this.getAllInsumos();
         }
       );
-    this.getAllProductos();
+    this.getProductos()
     this.getAllCategoriasProductos();
     this.getAllInsumos();
   }
@@ -60,56 +59,77 @@ export class ProductosComponent  implements OnInit {
   //*******MÉTODOS*******
   //****************************
 
+  //Funcion para agrupar los productos por categoria
+  private agruparProductosPorCategoria(productos: Producto[]): { [key: string]: Producto[] } {
+    return productos.reduce((agrupados : any, producto) => {
+      const categoriaNombre = producto.categoriaProducto?.nombre || 'Sin Categoría';
+
+      if (!agrupados[categoriaNombre]) {
+        agrupados[categoriaNombre] = [];
+      }
+
+      agrupados[categoriaNombre].push(producto);
+
+      return agrupados;
+    }, {});
+  }
+  // Método para obtener las claves de un objeto
+  keys(obj: any): string[] {
+    return Object.keys(obj);
+  }
 
   /*  METODOS MODAL*/
 
-   public openModal() : void{
-     const camposProductos = [
-       {nombre: 'nombre', label: 'Nombre', tipo: 'text', validadores: [Validators.required]},
-       { nombre: 'precio', label: 'Precio', tipo: 'number', validadores: [Validators.required, Validators.pattern(/^[0-9]+$/)] },
-       {nombre: 'imagen', label: 'Imagen del producto', tipo: 'file'},
-       { nombre: 'selector', label: 'Categoría', tipo: 'selector', opciones: this.categoriasProductos },
-       { nombre: 'descripcion', label: 'Descripción', tipo: 'textarea', validadores: [Validators.required] },
-     ];
+   //MODAL NUEVO PRODUCTO V2
+  public modalNuevoProducto(){
+    const dialogRef = this.dialog.open(ModalNuevoProductoComponent, {
+      width: '400px',
+      position: {right: '0'},
+      height: '600px',
+    });
 
-     const dialogRef = this.dialog.open(ModalLateralComponent, {
-       width: '400px', // Ajusta el ancho según tus necesidades
-       position: { right: '0' }, // Posiciona el modal a la derecha
-       height: '600px',
-       data: {campos: camposProductos, titulo: 'Nuevo Producto'}
-     });
+    dialogRef.afterClosed().subscribe(
+      //acciones y peticiones http luego de confirmar el submit del modal
+      result => {
+        if(result){
+          const categoriaId = result.producto.categoriaProducto.id;
+          const producto : Producto = result.producto;
+          let insumosProducto :InsumoProducto[]  = result.ingredientes;
 
-     dialogRef.afterClosed().subscribe(result => {
+          this.crearProducto(producto, categoriaId)
+            .subscribe(
+              result => {
+                //id del producto para asignarlo dentro de cada ipp
+                const idProducto = result.object.id;
+                if(insumosProducto.length > 0){
+                  for(let i = 0; i < insumosProducto.length; i++){
+                    //asignar el id del producto a todos los ipp
+                    insumosProducto[i].producto.id = idProducto;
+                    //crear el ipp de la iteración actual
+                    this.ippService.createIpp(insumosProducto[i])
+                      .subscribe(
+                        result => {
 
-       //crear instancias de los objetos a guardar en la db
-       const categoriaProducto : CategoriaProducto = {
-         id: result.selector,
-         nombre: ""
-       };
+                        },
+                        error => {
+                          console.log(error);
+                        }
+                      );
+                  }
+                }
 
-       //peticion para guardar
-       const productoSave : Producto = {
-         imagenUrl: null,
-         id: 0,
-         nombre : result.nombre,
-         precio : result.precio,
-         descripcion: result.descripcion,
-         imagen : result.imagen,
-         categoriaProducto : categoriaProducto,
-       };
+                //alerta de confirmacion al crear
+                this.alertaService.alertaConfirmarCreacion();
+              },
+              error => {
+                console.log(error)
+              }
+            )
+        }
 
-
-       this.crearProducto(productoSave, categoriaProducto.id)
-         .subscribe(
-           respuesta =>{
-
-           },
-           error => {
-             console.log(error)
-           }
-         );
-     });
-   }
+      }
+    )
+  }
 
    //MODAL EDITAR PRODUCTO
   modalEditarProducto(producto : Producto) : void{
@@ -122,17 +142,40 @@ export class ProductosComponent  implements OnInit {
 
      dialogRef.afterClosed().subscribe(
        (result) => {
-         if(result) {
-            this.productosService.actualizarProducto(result)
-              .subscribe(
-                result =>{
+         if (result) {
 
-                },
-                error => {
-                  console.log(error)
-                }
-              );
+           // Verificar si la imagen cumple con la característica de base64
+           if (typeof result.imagen === 'string' && /^[A-Za-z0-9+/]+={0,2}$/.test(result.imagen)) {
+             // Devolver la imagen que está en formato BloB (Binary Large Object) a un archivo
+             // Crear un Blob desde la cadena base64
+             const byteCharacters = atob(result.imagen);
+             const byteNumbers = new Array(byteCharacters.length);
+
+             for (let i = 0; i < byteCharacters.length; i++) {
+               byteNumbers[i] = byteCharacters.charCodeAt(i);
+             }
+
+             const byteArray = new Uint8Array(byteNumbers);
+             const blob = new Blob([byteArray], { type: "image/png" });
+
+             // Crear un archivo desde el BloB
+             const file = new File([blob], "imagen.png", { type: "image/png" });
+
+             result.imagen = file;
+           }
+
+           this.productosService.actualizarProducto(result)
+             .subscribe(
+               updatedResult => {
+                 // Lógica después de actualizar el producto
+                 this.alertaService.alertaConfirmarCreacion();
+               },
+               error => {
+                 console.log(error);
+               }
+             );
          }
+
        }
      )
   }
@@ -145,15 +188,6 @@ export class ProductosComponent  implements OnInit {
   //cambio de estado para la variable nombre de busqueda
   public setIsNombreBusqueda(valor : boolean) :void{
     this.isNombreBusqueda = valor;
-  }
-  //avanzar y retroceder en la paginacion
-  public  nextPage(){
-    this.pagina+=1;
-    this.getAllProductos()
-  }
-  public  previousPage(){
-    this.pagina-=1;
-    this.getAllProductos()
   }
 
   //FORNMNATEAR BYTES DE LAS IMAGENES
@@ -171,22 +205,20 @@ export class ProductosComponent  implements OnInit {
   //****************************
 
 
-  //consultar todos los productos
-  public getAllProductos(){
-    this.productosService.getProductosPageable(this.pagina, this.tamano, this.order, this.asc)
+  //obtener todos los productos
+  public getProductos(){
+    this.productosService.getProductos()
       .subscribe(
-        data =>{
-          this.productos = data.content;
-          this.isFirst = data.first;
-          this.isLast = data.last;
+        data => {
+          this.productos = data.object;
           //formatear la el byte que contiene la imagen
           this.formatearImagen(this.productos);
-        },
-        error => {
-          console.log(error.error());
+          //agrupar los productos por categoria
+          this.productosAgrupados = this.agruparProductosPorCategoria(this.productos);
         }
-      );
+      )
   }
+
   //obtener todos los insumos para
   //posteriormente enviarlos al modal de editar producto
   private getAllInsumos(){
@@ -204,12 +236,13 @@ export class ProductosComponent  implements OnInit {
   public buscarProductos(){
     if(this.nombreBusqueda.length == 0){
       this.setIsNombreBusqueda(false);
-      this.getAllProductos();
+      this.getProductos()
     }else{
       this.productosService.buscarPorNombre(this.nombreBusqueda)
         .subscribe(producto =>{
           this.productos = producto.object;
           this.formatearImagen(this.productos);
+          this.productosAgrupados = this.agruparProductosPorCategoria(this.productos);
         });
       this.setIsNombreBusqueda(true);
     }
@@ -241,8 +274,20 @@ export class ProductosComponent  implements OnInit {
 
   //ELIMINAR PRODUCTO
   public deleteProducto(id:number):void{
-    this.productosService.deleteProducto(id)
-      .subscribe();
+    this.alertaService.alertaConfirmarEliminar()
+      .then(
+        (result) => {
+          if(result.isConfirmed){
+
+            this.productosService.deleteProducto(id)
+              .subscribe();
+
+            this.alertaService.alertaEliminadoCorrectamente();
+          }else if( result.dismiss === Swal.DismissReason.cancel){
+            this.alertaService.alertaSinModificaciones()
+          }
+        }
+      )
   }
 
 }

@@ -87,20 +87,30 @@ app-empleados, app-cuentas, app-ingresos{
 
 
 /* SCROLLBAR */
-::-webkit-scrollbar{
-  width: 10px;
+/* SCROLLBAR */
+/* SCROLLBARS */
+::-webkit-scrollbar {
+  width: 6px; /* Ancho de la scrollbar vertical */
+  height: 6px; /* Altura de la scrollbar horizontal */
+  background: #191919;
+
 }
+
 ::-webkit-scrollbar-track {
   background: #191919;
 }
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #282828;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
+  background: #bebebe;
   border-radius: 5px;
+  transition: box-shadow 0.2s; /* Duración de la animación */
+  z-index: 1; /* Asegura que el thumb esté encima del track */
 }
+
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #bebebe;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Aumenta la sombra al hacer hover */
 }
+

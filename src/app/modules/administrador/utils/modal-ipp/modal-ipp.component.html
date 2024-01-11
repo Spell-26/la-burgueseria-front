@@ -4,7 +4,7 @@
     <mat-form-field>
       <mat-label>Selecciona un ingrediente</mat-label>
       <mat-select formControlName="insumoSeleccionado">
-        <mat-option *ngFor="let insumo of insumos" [value]="insumo.id">
+        <mat-option *ngFor="let insumo of insumos" [value]="insumo">
           {{ insumo.nombre }}
         </mat-option>
       </mat-select>

@@ -35,19 +35,10 @@
         <td class="row-contenido-element"> <!--   *ngIf="!modoEdicion || (modoEdicion && i !== mesaEditandoIndex)" (click)="iniciarEdicion(i)" -->
           {{empleado.documento}}
         </td>
-        <!-- <td class="row-contenido-element" *ngIf="modoEdicion && i === mesaEditandoIndex">
-          {{mesa.numeroMesa}}
-          <span>Nuevo número de mesa:</span>
-          <input type="number" [(ngModel)]="nuevoNumeroMesa">
-        </td> -->
         <td class="row-contenido-element" > <!-- *ngIf="!modoEdicion || (modoEdicion && i !== mesaEditandoIndex)" (click)="iniciarEdicion(i)"  -->
           {{empleado.nombre}}
         </td>
-        <!-- <td class="row-contenido-element" *ngIf="modoEdicion && i === mesaEditandoIndex">
-          {{mesa.numeroMesa}}
-          <span>Nuevo número de mesa:</span>
-          <input type="number" [(ngModel)]="nuevoNumeroMesa">
-        </td> -->
+
         <td class="row-contenido-element">
           {{empleado.apellido}}
         </td>

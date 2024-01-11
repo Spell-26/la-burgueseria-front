@@ -68,3 +68,23 @@
 .editable:hover{
   background-color: rgba(85, 135, 73, 0.42);
 }
+
+
+/*ESTILOS CUSTOM ALERTAS*/
+/* styles.css */
+.dark-mode-popup {
+  background-color: #1e1e1e; /* Fondo oscuro */
+}
+
+.dark-mode-text {
+  color: #fff; /* Letras blancas */
+}
+
+.dark-mode-button {
+  background-color: #1e1e1e; /* Fondo oscuro */
+  color: #fff; /* Letras blancas */
+}
+
+.dark-mode-timer {
+  color: #fff; /* Letras blancas */
+}

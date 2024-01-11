@@ -164,3 +164,143 @@
 .btn-black button{
   margin: 0 1em;
 }
+
+
+/* ESTILOS LISTADO PRODUCTOS */
+/* app.component.css */
+
+#contenedor-lista-productos {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 3em 0 2em 2em;
+}
+
+.categoria-container {
+  width: 65%;
+  justify-content: flex-start;
+}
+
+.contenedor-cabecera-categoria {
+  width: 100%;
+  margin-bottom: 1.5em;
+  border-bottom: 1.5px solid #fff;
+  padding-bottom: .6em;
+}
+
+.nombre-categoria {
+  font-family: WorkSans-Medium, serif;
+  font-size: 2em;
+  margin: 0;
+  padding: 0;
+}
+
+.cantidad-productos-categoria {
+  font-family: WorkSans-Light, serif;
+  margin-left: .2em;
+}
+
+.listado-productos {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(22, 22, 22, 0.77);
+  border-radius: 8px;
+  padding: .6em;
+  margin-bottom: .8em;
+}
+
+.contenedor-producto {
+  width: 100%;
+  height: 10em;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: .5em;
+  position: relative;
+}
+
+.contenedor-producto:hover {
+  cursor: pointer;
+}
+
+.informacion-producto {
+  width: 70%;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.imagen-producto {
+  width: 30%;
+  text-align: center;
+}
+
+.imagen-producto img {
+  width: 80%;
+  height: 8em;
+  object-fit: fill;
+  border-radius: 1em;
+}
+
+.borde-superior {
+  border-top: 1px solid black;
+  padding-top: .5em;
+}
+
+.nombre-producto,
+.precio-producto,
+.descripcion-producto {
+  margin: 0;
+  padding: 0;
+}
+
+.descripcion-producto {
+  margin: .4em 0 0 0 !important;
+  font-family: WorkSans-Light, serif;
+}
+
+.nombre-producto {
+  font-family: WorkSans-Medium, serif;
+  font-size: 1.4em;
+}
+
+.botones {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: none;
+  overflow: hidden;
+}
+
+.botones button {
+  margin-bottom: .8em;
+  cursor: pointer;
+  border-radius: 50%;
+
+  transition: all 0.3s ease-in-out; /* Agregamos una transición para el efecto de crecimiento */
+  transform-origin: center center; /* Definimos el punto de origen de la transformación */
+}
+
+.editar, .eliminar{
+  background-color: rgba(0, 0, 0, 0.67);
+  padding: .5em;
+  text-align: center;
+  border: 1px solid #049e04;
+}
+
+
+.botones button:hover {
+  transform: scale(1.2); /* Efecto de crecimiento */
+}
+
+.contenedor-producto:hover .botones {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 4px;
+  padding: 5px;
+  z-index: 1; /* Asegura que los botones estén sobre el contenido */
+}
+
+

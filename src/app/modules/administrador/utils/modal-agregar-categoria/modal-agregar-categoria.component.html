@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Nueva categoría</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Nombre de la categoria</mat-label>
+      <input matInput formControlName="categoria" placeholder="Categoria">
+    </mat-form-field>
+    <!-- Puedes agregar otros elementos del formulario aquí -->
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onSubmit()" class="btn-actualizar-element">Aceptar</button>
+  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+</mat-dialog-actions>
+

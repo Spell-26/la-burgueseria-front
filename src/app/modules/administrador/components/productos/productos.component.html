@@ -7,11 +7,8 @@
       <input type="text" placeholder="Buscar producto..." [(ngModel)]="nombreBusqueda" (keyup)="buscarProductos()"> <!--   -->
     </div>
     <div class="btn-black">
-      <button (click)="openModal()"> <!-- (click)="openDialog()" -->
+      <button (click)="modalNuevoProducto()">
         Nuevo Producto
-      </button>
-      <button routerLink="categoria">
-        Categorías
       </button>
     </div>
   </div>
@@ -22,12 +19,6 @@
       <img src="assets/img/running-cat.gif" alt="">
 
     </div>
-
-    <div class="paginacion" *ngIf="productos.length > 0">
-      <img src="assets/icons/arrow-prev-small-svgrepo-com.svg" alt="anterior" *ngIf="!isFirst" (click)="previousPage()">
-      <h3>Pagina {{pagina+1}}</h3>
-      <img src="assets/icons/arrow-next-small-svgrepo-com.svg" alt="siguiente" *ngIf="!isLast" (click)="nextPage()">
-    </div>
   </section>
 </div>
 
@@ -35,25 +26,42 @@
 
 
 <ng-template #listaProductos>
-  <div class="contenedor-cards">
-  <div class="card-productos" *ngFor="let producto of productos; let i = index">
-    <div class="imagen-productos">
-      <img [src]="producto.imagenUrl" alt="logo hamburguesa" (error)="onImageError(producto)">
-      <div class="datos-producto">
-        <span>{{producto.nombre}}</span>
-        <span>{{producto.precio.toLocaleString()}}</span>
+
+  <!--  LISTADO PRODUCTOS AGRUPADOS POR CATEGORIAS -->
+  <div id="contenedor-lista-productos">
+    <div class="categoria-container" *ngFor="let categoriaNombre of keys(productosAgrupados)" style="color: #fff;">
+      <div class="contenedor-cabecera-categoria">
+        <h2 class="nombre-categoria">{{categoriaNombre}}</h2>
+        <span class="cantidad-productos-categoria">Productos: {{productosAgrupados[categoriaNombre].length}}</span>
+      </div>
+      <div class="listado-productos">
+        <div *ngFor="let producto of productosAgrupados[categoriaNombre]; let first = first" class="contenedor-producto" [ngClass]="{'borde-superior' : !first}" (mouseenter)="mostrarBotones = true" (mouseleave)="mostrarBotones = false">
+          <div class="informacion-producto">
+            <h3 class="nombre-producto">{{producto.nombre}}</h3>
+            <span class="precio-producto">$ {{producto.precio.toLocaleString()}}</span>
+            <p class="descripcion-producto">
+              {{ producto.descripcion.length > 100 ? producto.descripcion.slice(0, 100) : producto.descripcion }}
+              <span *ngIf="producto.descripcion.length > 100">
+              ...<a href="#">Ver más</a>
+            </span>
+            </p>
+            <!-- Botones que aparecerán en hover -->
+            <div class="botones" *ngIf="mostrarBotones">
+              <button class="editar" (click)="modalEditarProducto(producto)">
+                <img src="assets/icons/edit.svg" alt="">
+              </button>
+              <button class="eliminar" (click)="deleteProducto(producto.id)">
+                <img src="assets/icons/trashcan.svg" alt="">
+              </button>
+            </div>
+          </div>
+          <div class="imagen-producto">
+            <img [src]="producto.imagenUrl" alt="logo hamburguesa" (error)="onImageError(producto)">
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-      <div class="btn-container">
-        <div class="btn-editar">
-          <button (click)="modalEditarProducto(producto)">Editar</button>
-        </div>
-        <div class="btn-eliminar">
-          <button (click)="deleteProducto(producto.id)">Eliminar</button>
-        </div>
-    </div>
-  </div>
-  </div>
 </ng-template>
 

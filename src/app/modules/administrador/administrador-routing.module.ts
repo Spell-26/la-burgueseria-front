@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {AdministradorComponent} from "./administrador.component";
 import {
-  CategoriaProductoComponent, CuentasComponent,
+  CuentasComponent,
   EmpleadosComponent, IngresosComponent,
   InsumosComponent,
   MesasComponent,
@@ -16,7 +16,6 @@ const routes: Routes = [
     children: [
       {path: 'insumos', component: InsumosComponent},
       {path: 'productos', component: ProductosComponent},
-      {path: 'productos/categoria', component: CategoriaProductoComponent},
       {path: 'mesas', component: MesasComponent},
       {path: 'empleados', component: EmpleadosComponent},
       {path: 'cuentas', component: CuentasComponent},

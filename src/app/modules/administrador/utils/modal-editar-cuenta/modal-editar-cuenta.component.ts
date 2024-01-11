@@ -45,6 +45,9 @@ export class ModalEditarCuentaComponent implements OnInit{
   totalCuenta : number = 0;
   //estados cuenta
   estadosCuenta : EstadoCuenta[] = [];
+  //tests
+  // Debes inicializarla con el id del estado actual o null
+  estadoSeleccionado: number | undefined ;
   ngOnInit(): void {
     this.productoCuentaService.getProductoCuentaByCuentaId(this.data.cuenta.id)
       .subscribe(
@@ -103,6 +106,9 @@ export class ModalEditarCuentaComponent implements OnInit{
   quitarProducto(producto: Obj): void {
     this.cuentaProductosAgg = this.cuentaProductosAgg.filter(p => p.obj.id !== producto.id);
     this.calcularTotal();
+    if(this.cuentaProductosAgg.length == 0){
+      this.estadoSeleccionado = this.cuentaData?.estadoCuenta.id;
+    }
   }
 
   private calcularTotal(){
@@ -164,6 +170,8 @@ export class ModalEditarCuentaComponent implements OnInit{
         this.cuentaProductosAgg.push(object);
 
         this.calcularTotal();
+        //cambia a estado 1 (por despachar)
+        this.estadoSeleccionado = 1;
       }
     )
   }
@@ -181,11 +189,7 @@ export class ModalEditarCuentaComponent implements OnInit{
       )
   }
 
-  //tests
-  estadoSeleccionado: number | undefined ; // Debes inicializarla con el id del estado actual o null
 
-  onEstadoChange() {
-    console.log('Nuevo estado seleccionado:', this.estadoSeleccionado);
-    // Puedes realizar acciones adicionales cuando cambia el estado
-  }
+
+
 }
