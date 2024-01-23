@@ -3,14 +3,7 @@
     <h1>Ingresos</h1>
   </header>
   <div class="actions-container">
-    <div class="search-container">
-      <span style="color:#fff">Desde</span>
-      <input type="date"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
-    </div>
-    <div class="search-container">
-      <span style="color:#fff">Hasta</span>
-      <input type="date"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
-    </div>
+    <bootstrap-range-calendar (fechasEnviadas) = "recibirDatosCalendario($event)" ></bootstrap-range-calendar>
   </div>
 
   <section class="component-main-component">
@@ -42,7 +35,7 @@
           <!-- Validar que efectivamente si tenga una cita asignada -->
           <ng-container *ngIf="ingreso.cuenta != null">
           <td class="row-contenido-element">
-            {{ingreso.fecha | date:'dd/MM/yyyy HH:mm:ss'}}
+            {{fechaService.convertirUTCAFechaHoraLocal(ingreso.fecha?.toLocaleString())}}
           </td>
           <td class="row-contenido-element">
             {{ingreso.metodoPago}}
@@ -75,7 +68,7 @@
 
 <ng-template #buscando >
   <div class="cargando">
-    <h2>No se han encontrado ningun ingreso.</h2>
+    <h2>No se ha encontrado ningún ingreso.</h2>
     <img src="assets/img/running-cat.gif" alt="">
 
   </div>

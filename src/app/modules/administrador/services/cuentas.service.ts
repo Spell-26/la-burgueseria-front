@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
 import {Cuenta} from "../interfaces/cuenta";
 
@@ -29,6 +29,18 @@ export class CuentasService {
         );
   }
 
+  //OBTENER CUENTAS POR FECHA
+  cuentasByFecha(fechaInicio: string, fechaFin: string | null): Observable<any> {
+
+    let headers: HttpHeaders = new HttpHeaders()
+      .set('fechaInicio', new Date(fechaInicio).toISOString());
+
+    if (fechaFin != null) {
+      headers = headers.set('fechaFin', new Date(fechaFin).toISOString());
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/fechas`, { headers });
+  }
   //PAGINACION CUENTAS
   getCuentasPageable(numeroPagina: number, tamanoPagina: number, order : string, asc : boolean) : Observable<any>{
     let params : HttpParams = new HttpParams()

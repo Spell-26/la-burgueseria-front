@@ -77,6 +77,27 @@
   border: 1px solid #3C3B3B;
   cursor: pointer;
 }
+
 .ver-cuenta:hover{
   border: 1px solid green;
+}
+
+/* Colores para cada estado cuenta*/
+
+/* 1 : Por despachar*/
+.estado1{
+  color:  #FF9900
+;
+}
+/* 2: Pagada*/
+.estado2{
+  color: #4CAF50 ;
+}
+/* 3: despachada*/
+.estado3{
+  color:  #3366CC ;
+}
+/* 4: cancelada*/
+.estado4{
+  color:  #FF3333;
 }

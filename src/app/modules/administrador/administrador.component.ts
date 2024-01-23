@@ -3,7 +3,7 @@ import {Component, HostListener, OnInit} from '@angular/core';
 @Component({
   selector: 'app-administrador',
   templateUrl: './administrador.component.html',
-  styleUrls: ['./administrador.component.css']
+  styleUrls: ['./administrador.component.css', 'utils/styles/estilosCompartidos.css']
 })
 export class AdministradorComponent implements OnInit{
   public getScreenWidth : any;

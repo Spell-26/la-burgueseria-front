@@ -1,0 +1,106 @@
+<nav class="navbar  navbar-light navbar-oscuro">
+  <div class="container-fluid">
+
+    <!-- Menú hamburguesa izquierdo -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      aria-controls="navbarLeftContent"
+      [attr.aria-expanded]="!leftCollapsed"
+      aria-label="Toggle navigation"
+      (click)="leftCollapsed = !leftCollapsed"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Contenido en el centro (puedes reemplazar el texto con una imagen) -->
+    <div id="logo">
+      <img src="assets/logoburgueseria.png" alt="Logo la burgueseria">
+    </div>
+
+
+    <!-- Menú hamburguesa derecho -->
+    <button
+      class="navbar-toggler navbar-light"
+      type="button"
+      aria-controls="navbarRightContent"
+      [attr.aria-expanded]="!rightCollapsed"
+      aria-label="Toggle navigation"
+      (click)="rightCollapsed = !rightCollapsed"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+
+    <!-- Contenido del menú izquierdo -->
+    <div class="navbar-collapse" [ngClass]="{ 'collapse': leftCollapsed }" id="navbarLeftContent"> <!-- Eliminados z-index y position -->
+      <ul class="navbar-nav">
+        <!-- Nuevas opciones divididas en 3 columnas -->
+        <div class="row">
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link" href="#" style="color: white;">Inicio</a>
+            </li>
+          </div>
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['cuentas']" style="color: white;">Cuentas</a>
+            </li>
+          </div>
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link" style="color: white;" [routerLink]="['productos']">Productos</a>
+            </li>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['insumos']" style="color: white;">Insumos</a>
+            </li>
+          </div>
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link"style="color: white;" [routerLink]="['mesas']">Mesas</a>
+            </li>
+          </div>
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['empleados']" style="color: white;">Empleados</a>
+            </li>
+          </div>
+        </div>
+
+        <!-- Continuación de opciones en la siguiente fila -->
+        <div class="row">
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="['ingresos']" style="color: white;">Ingresos</a>
+            </li>
+          </div>
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link" href="#" style="color: white;">Egresos</a>
+            </li>
+          </div>
+        </div>
+      </ul>
+    </div>
+
+
+
+    <!-- Contenido del menú derecho -->
+    <div class="navbar-collapse" [ngClass]="{ 'collapse': rightCollapsed }" id="navbarRightContent">
+      <ul class="navbar-nav ms-auto">
+        <!--  opciones -->
+        <div class="row">
+          <div class="col-4">
+            <li class="nav-item">
+              <a class="nav-link" href="#" style="color: white;">Cerrar sesión</a>
+            </li>
+          </div>
+        </div>
+      </ul>
+    </div>
+  </div>
+</nav>

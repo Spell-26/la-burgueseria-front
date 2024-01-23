@@ -78,6 +78,7 @@
   border-bottom: 1px solid #3C3B3B;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   padding: .3em 0;
   justify-content: space-between;
   align-content: center;
@@ -157,4 +158,81 @@
   border-collapse: collapse;
   padding: .7em;
   text-align: center;
+}
+
+.calendario-container{
+  width: 60%;
+}
+.filtroYBoton{
+  width: 40%;
+  display: flex;
+  flex-direction: row;
+}
+.filtroYBoton .btn-black{
+  margin-left: 8em;
+}
+
+/*
+  RESPONSIVE
+
+*/
+
+
+@media screen and (max-width: 1200px){
+  .calendario-container{
+    width: 100%;
+  }
+  .filtroYBoton{
+    width: 100%;
+    margin-top: 1.5em;
+  }
+}
+
+/*
+pantallas superiores a 960px
+*/
+@media screen and (min-width: 960px) {
+  /* Estilos*/
+}
+
+/* Pantallas menores a 959px */
+@media screen and (max-width: 959px){
+  main{
+    flex-direction: column;
+  }
+  .container-admin{
+    padding: 0;
+  }
+  app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas {
+    width: 100% !important;
+  }
+  .imagen-producto{
+    width: 50%;
+  }
+  .search-container{
+    width: 40%;
+  }
+  .categoria-container{
+    width: 80%;
+  }
+  .btn-black{
+    margin-right: 4.5em;
+  }
+  .component-main-content{
+    max-width: -webkit-fill-available;
+    overflow-x: scroll;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .btn-actualizar-element{
+    margin-bottom: .5em;
+  }
+}
+
+/*media querie para los productos*/
+@media screen and (max-width: 400px) {
+  .categoria-container{
+    width: 96%;
+  }
 }

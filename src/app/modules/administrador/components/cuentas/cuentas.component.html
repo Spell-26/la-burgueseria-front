@@ -3,92 +3,154 @@
     <h1>Cuentas</h1>
   </header>
   <div class="actions-container">
-    <div class="search-container">
-      <input type="text" placeholder="Buscar cuenta por empleado..."> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
+
+    <div class="calendario-container">
+      <bootstrap-range-calendar (fechasEnviadas) = "recibirDatosCalendario($event)" ></bootstrap-range-calendar>
     </div>
-    <div class="btn-black">
-      <button (click)="modalCrearCuenta()"> <!-- (click) ="crearMesaModal()" -->
-        Nueva Cuenta
-      </button>
+
+    <!-- opcion para filtrar por estado de cuenta -->
+    <div class="filtroYBoton">
+      <mat-form-field>
+        <mat-label>Filtro</mat-label>
+        <mat-select [(value)] = "filtrarEstado">
+          <mat-option value="">Todas las cuentas</mat-option>
+          <mat-option value="Por despachar">Cuentas por despachar</mat-option>
+          <mat-option value="Despachada">Cuentas despachadas</mat-option>
+          <mat-option value="Pagada">Cuentas pagadas</mat-option>
+          <mat-option value="Cancelada">Cuentas canceladas</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="btn-black">
+        <button (click)="modalCrearCuenta()"> <!-- (click) ="crearMesaModal()" -->
+          Nueva Cuenta
+        </button>
+      </div>
     </div>
+
   </div>
 
   <section class="component-main-component">
-    <table class="tabla-listado" *ngIf="cuentas.length > 0; else buscando">
-      <thead class="cabecera-tabla">
-      <tr class="row-header">
-        <th class="row-header-element">
-          MESA
-        </th>
-        <th class="row-header-element">
-          EMPLEADO
-        </th>
-        <th class="row-header-element">
-          SUBTOTAL
-        </th>
-        <th class="row-header-element">
-          ABONO
-        </th>
-        <th class="row-header-element">
-          TOTAL
-        </th>
-        <th class="row-header-element">
-          ESTADO
-        </th>
-        <th class="row-header-element">
-          FECHA
-        </th>
-        <th class="row-header-element">
-          ACCIONES
-        </th>
-      </tr>
-      </thead>
-      <tbody class="contenido-tabla">
-      <tr class="row-contenido-tabla" *ngFor="let cuenta of cuentas; let i = index">
+    <ng-container *ngIf="cuentasFecha.length > 0; else buscando; let isContenido">
+      <table class="tabla-listado" >
+        <thead class="cabecera-tabla">
+        <tr class="row-header">
+          <th class="row-header-element">
+            MESA
+          </th>
+          <th class="row-header-element">
+            EMPLEADO
+          </th>
+          <th class="row-header-element">
+            SUBTOTAL
+          </th>
+          <th class="row-header-element">
+            ABONO
+          </th>
+          <th class="row-header-element">
+            TOTAL
+          </th>
+          <th class="row-header-element">
+            ESTADO
+          </th>
+          <th class="row-header-element">
+            FECHA
+          </th>
+          <th class="row-header-element">
+            ACCIONES
+          </th>
+        </tr>
+        </thead>
+        <ng-container *ngIf="filtrarEstado == ''; then cuentasSinFiltro; else cuentasConFiltro;">
+          <!--  Se muestra un contenido dependiendo del filtro seleccionado -->
+        </ng-container>
 
-        <td class="row-contenido-element">
-          {{cuenta.mesa.numeroMesa}}
-        </td>
-        <td class="row-contenido-element">
-          <!-- AQUI QUIERO QUE SE MUESTRE EL NOMBRE Y APELLIDO DEL EMPLEADO VINCULADO A ESTA CUENTA -->
-          {{getNombreApellidoEmpleado(cuenta.id)}}
-        </td>
-        <td class="row-contenido-element">
-          {{cuenta.total.toLocaleString()}}
-        </td>
-        <td class="row-contenido-element">
-          {{cuenta.abono.toLocaleString()}}
-        </td>
-        <td class="row-contenido-element">
-          {{(cuenta.total - cuenta.abono).toLocaleString()}}
-        </td>
-        <td class="row-contenido-element">
-          {{cuenta.estadoCuenta.nombre}}
-        </td>
-        <td class="row-contenido-element">
-          <!-- Utilizar el pipe date para formatear la fecha -->
-          {{ cuenta.fecha | date:'dd/MM/yyyy HH:mm:ss' }}
-        </td>
-        <td class="row-contenido-element">
-          <button class="ver-cuenta" (click)="verCuenta(cuenta)">
-            Ver
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <div class="paginacion" *ngIf="cuentas.length > 0">
-      <img src="assets/icons/arrow-prev-small-svgrepo-com.svg" alt="anterior" *ngIf="!isFirst" (click)="previousPage()">
-      <h3>Pagina {{pagina+1}}</h3>
-      <img src="assets/icons/arrow-next-small-svgrepo-com.svg" alt="siguiente" *ngIf="!isLast" (click)="nextPage()">
-    </div>
+      </table>
+    </ng-container>
   </section>
 </div>
 
 <ng-template #buscando >
   <div class="cargando">
-    <h2>No se han encontrado ninguna cuenta.</h2>
+    <h2>No se han encontrado ninguna cuenta en las fechas dadas.</h2>
     <img src="assets/img/running-cat.gif" alt="">
 
   </div>
+</ng-template>
+
+<!-- Mostrar todas las cuentas nomalmente -->
+<ng-template #cuentasSinFiltro>
+  <tbody class="contenido-tabla">
+  <tr class="row-contenido-tabla" *ngFor="let cuenta of cuentasFecha; let i = index">
+
+    <td class="row-contenido-element">
+      {{cuenta.mesa.numeroMesa}}
+    </td>
+    <td class="row-contenido-element">
+      <!-- AQUI QUIERO QUE SE MUESTRE EL NOMBRE Y APELLIDO DEL EMPLEADO VINCULADO A ESTA CUENTA -->
+      {{getNombreApellidoEmpleado(cuenta.id)}}
+    </td>
+    <td class="row-contenido-element">
+      {{cuenta.total.toLocaleString()}}
+    </td>
+    <td class="row-contenido-element">
+      {{cuenta.abono.toLocaleString()}}
+    </td>
+    <td class="row-contenido-element">
+      {{(cuenta.total - cuenta.abono).toLocaleString()}}
+    </td>
+    <td class="row-contenido-element" ngClass="estado{{cuenta.estadoCuenta.id}}">
+      {{cuenta.estadoCuenta.nombre}}
+    </td>
+    <td class="row-contenido-element">
+      <!-- Convierte la hora UTC a hora local -->
+      {{ fechaService.convertirUTCAFechaHoraLocal(cuenta.fecha?.toLocaleString()) }}
+    </td>
+    <td class="row-contenido-element">
+      <button class="ver-cuenta" (click)="verCuenta(cuenta)">
+        Ver
+      </button>
+    </td>
+  </tr>
+  </tbody>
+</ng-template>
+
+<!-- Mostrar las cuentas filtradas -->
+<ng-template #cuentasConFiltro>
+  <tbody class="contenido-tabla">
+  <tr class="row-contenido-tabla" *ngFor="let cuenta of cuentasFecha; let i = index; let last = last">
+    <!-- Contenedor para mostrar solo las cuentas que cumplen con el criterio -->
+    <ng-container *ngIf="cuenta.estadoCuenta.nombre == filtrarEstado;">
+      <td class="row-contenido-element">
+        {{cuenta.mesa.numeroMesa}}
+      </td>
+      <td class="row-contenido-element">
+        <!-- AQUI QUIERO QUE SE MUESTRE EL NOMBRE Y APELLIDO DEL EMPLEADO VINCULADO A ESTA CUENTA -->
+        {{getNombreApellidoEmpleado(cuenta.id)}}
+      </td>
+      <td class="row-contenido-element">
+        {{cuenta.total.toLocaleString()}}
+      </td>
+      <td class="row-contenido-element">
+        {{cuenta.abono.toLocaleString()}}
+      </td>
+      <td class="row-contenido-element">
+        {{(cuenta.total - cuenta.abono).toLocaleString()}}
+      </td>
+      <td class="row-contenido-element" ngClass="estado{{cuenta.estadoCuenta.id}}">
+        {{cuenta.estadoCuenta.nombre}}
+      </td>
+      <td class="row-contenido-element">
+        <!-- Convierte la hora UTC a hora local -->
+        {{ fechaService.convertirUTCAFechaHoraLocal(cuenta.fecha?.toLocaleString()) }}
+      </td>
+      <td class="row-contenido-element">
+        <button class="ver-cuenta" (click)="verCuenta(cuenta)">
+          Ver
+        </button>
+      </td>
+    </ng-container>
+  </tr>
+
+  </tbody>
 </ng-template>

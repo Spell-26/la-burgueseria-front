@@ -48,6 +48,8 @@ export class ModalEditarCuentaComponent implements OnInit{
   //tests
   // Debes inicializarla con el id del estado actual o null
   estadoSeleccionado: number | undefined ;
+  //saber cuando el modal es solo lectura
+  isReadOnly : boolean = false;
   ngOnInit(): void {
     this.productoCuentaService.getProductoCuentaByCuentaId(this.data.cuenta.id)
       .subscribe(
@@ -80,6 +82,9 @@ export class ModalEditarCuentaComponent implements OnInit{
       this.cuentaData = data.cuenta;
       if(data.cuenta.abono > 0){
         this.abonoData = data.cuenta.abono;
+      }
+      if(data.readOnly){
+        this.isReadOnly = data.readOnly
       }
     }
 

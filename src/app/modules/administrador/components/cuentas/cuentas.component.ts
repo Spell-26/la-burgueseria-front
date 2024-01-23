@@ -16,6 +16,8 @@ import {Ingreso} from "../../interfaces/ingreso";
 import {IngresoService} from "../../services/ingreso.service";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 import Swal from "sweetalert2";
+import {format} from "date-fns";
+import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
 
 
 
@@ -26,34 +28,58 @@ import Swal from "sweetalert2";
   styleUrls: ['./cuentas.component.css', '../../utils/styles/estilosCompartidos.css']
 })
 export class CuentasComponent implements OnInit{
-  cuentas : Cuenta[] = [];
+  //cuentas filtradas por fecha
+  cuentasFecha : Cuenta[] = [];
+
   empleadoCuentas : EmpleadoCuenta[] = [];
-  //instancia de empleadoCuenta
-  empleadoCuenta : EmpleadoCuenta | null = null;
   //metodo de pago
   //por defecto efectivo
   metodoDePagoSeleccionado = "Efectivo";
-  canCreateIngresoNow = false;
-  //parametros paginacion
-  pagina = 0;
-  tamano = 10;
-  order = 'id';
-  asc = true;
-  isFirst = false;
-  isLast = false;
-  // Insumos a restar
-  private insumosARestar : { [nombre : string] : number } = {};
+
+  //DATOS RECIBIDOS DEL COMPONENTE DE CALENDARIO
+    datosRecibidos! : { fromDate: Date | null, toDate : Date | null }
+
+    //variables de fecha
+    horaActual = this.fechaService.obtenerFechaHoraLocalActual();
+    fechaHoraInicioUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.horaActual);
+    fechaHoraFinUTC : string | null = null;
+  // Variable para el filtro de estados de cuenta
+  filtrarEstado : string = '';
+
   ngOnInit(): void {
     this.cuentaService.refreshNeeded
       .subscribe(
         () =>{
-          this.getAllCuentas();
+          this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+          this.getEmpleadoCuentas();
         }
       );
-    this.getAllCuentas();
+    //obtener las cuentas del dia de hoy.
+    this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
     this.getEmpleadoCuentas();
 
+  }
 
+  //recibir datos del componente calendario
+    //si la la variable FROMDate es valida, se realizar una conversion de hora local a UTC
+    // y se realiza la consulta a la base de datos
+  recibirDatosCalendario(datos : {fromDate: Date | null, toDate : Date | null }){
+      this.datosRecibidos = datos;
+      const pattern = 'yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX';
+
+      if(this.datosRecibidos.fromDate != null){
+          this.fechaHoraInicioUTC = format(this.datosRecibidos.fromDate, pattern);
+          //converir a UTC
+          this.fechaHoraInicioUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.fechaHoraInicioUTC);
+          if(this.datosRecibidos.toDate != null){
+              this.fechaHoraFinUTC = format(this.datosRecibidos.toDate, pattern);
+              //convertir a UTC
+              this.fechaHoraFinUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.fechaHoraFinUTC);
+          }else{
+            this.fechaHoraFinUTC = null;
+          }
+          this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+      }
   }
 
   constructor(public dialog : MatDialog,
@@ -63,24 +89,14 @@ export class CuentasComponent implements OnInit{
               private insumosPorProductoService : InsumosPorProductoService,
               private insumoService : InsumosService,
               private ingresoService : IngresoService,
-              private alertaService : AlertasService) {
+              private alertaService : AlertasService,
+              public fechaService : FechaHoraService) {
   }
 
 
   //****************************
   //*******MÉTODOS*******
   //****************************
-  //proxima pagina
-  public  nextPage(){
-    this.pagina+=1;
-    this.getAllCuentas();
-  }
-
-  //pagina anterior
-  public  previousPage(){
-    this.pagina-=1;
-    this.getAllCuentas();
-  }
 
   //obtener el nombre y apellido del empleado vinculado a una cita dada por el ID
   public getNombreApellidoEmpleado(idCita : number) : string {
@@ -88,37 +104,106 @@ export class CuentasComponent implements OnInit{
     return empleado ? `${empleado.empleado.nombre} ${empleado.empleado.apellido}` : 'NaN'
   }
 
-  //Funcion para añadir la cantidad de insumos por restar al array
-  private addInsumosARestar( insumo : {nombre : string; cantidad : number} ) : void {
-    const {nombre, cantidad} = insumo;
+  //funcion para validar si los insumos dentro de un array de productosxcuenta
+  //son mayores a 0 luego de la deduccion
+  private async validarExistenciasDeProductos(productosCuenta: ProductoCuenta[]): Promise<any> {
+    //array donde se almacenaran los insumos junto a sus cantidades por
+    //restar, en caso de que alguna de las cantidades sea menor a 0,
+    //se debe lanzar la alerta de confirmacion
+    let insumosADeducir: any[] = [];
+    let insumosInsuficientes: any[] = [];
 
-    //Verificar si el insumo ya fue agregado a insumosARestar
-    if(this.insumosARestar.hasOwnProperty(nombre)){
-      //si ya existe se suma a la cantidad ya existente
-      this.insumosARestar[nombre] += cantidad;
-    }else{
-      //si no existe se crea junto a la cantidad
-      this.insumosARestar[nombre] = cantidad;
-    }
+    const promises = productosCuenta.map(async (productoCuenta) => {
+      //almacenar el producto de ProductoCuenta
+      const p = productoCuenta.producto;
+      //almacenar la cantidad del ProductCuenta
+      const c = productoCuenta.cantidad;
+      // array para almacenar los InsumosxProducto
+      let insumosXProducto: InsumoProducto[] = [];
+
+      //obtener los insumos que hacen parte del producto
+      const result = await this.insumosPorProductoService.getIppByProducto(p.id).toPromise();
+
+      //almacenar los insumos x producto
+      insumosXProducto = result.object;
+
+      //validar que no sea nulo
+      if (insumosXProducto != null && insumosXProducto.length > 0) {
+        for (let ixp of insumosXProducto) {
+          const cantidadIpp = ixp.cantidad;
+          let insumo = ixp.insumo;
+
+          // almaceno el resultado del producto entre la cantidad de
+          //productos * la cantidad del insumo asociada al producto
+          const cantidadARestar = c * cantidadIpp;
+          //guardar las existencias anterior a la resta
+          const existenciasAnteriores = insumo.cantidad;
+
+          //instancia de insumo a deducir
+          const insumoADeducir = {
+            insumo: insumo,
+            cantidadARestar: cantidadARestar,
+            resultadoResta: insumo.cantidad - cantidadARestar
+          };
+
+          //resto la cantidad a restar al insumo
+          insumo.cantidad -= cantidadARestar;
+          //añadir la instancia al array
+          insumosADeducir.push(insumoADeducir);
+        }
+
+        //validar si hay algun valor negativo en insumoADeducir.resultadoResta
+        const isResultadoNegativo = insumosADeducir.some((insumo) => insumo.resultadoResta < 0);
+
+        //en caso de que sí haya un negativo
+        if (isResultadoNegativo) {
+          //crear una instancia de un objeto para mostrar cuales son los insumos insuficientes
+          insumosADeducir.forEach((insumo) => {
+            if (insumo.resultadoResta < 0) {
+              insumosInsuficientes.push(insumo);
+              //setear el valor del insumo negativo en cero
+              insumo.insumo.cantidad = 0;
+            } else {
+              insumo.insumo.cantidad = insumo.resultadoResta;
+            }
+          });
+        }
+        //si las cantidades son positivas
+        else {
+          insumosADeducir.forEach((insumo) => {
+            insumo.insumo.cantidad = insumo.resultadoResta;
+          });
+        }
+      }
+    });
+
+    // Esperar a que todas las promesas se resuelvan
+    await Promise.all(promises);
+
+    //armar el objeto a devolver
+    const response = {
+      aDeducir: insumosADeducir,
+      insuficientes: insumosInsuficientes
+    };
+
+    return response;
   }
+
   //****************************
   //*******PETICIONES HTTP*******
   //****************************
-  private getAllCuentas(){
-    this.cuentaService.getCuentasPageable(this.pagina, this.tamano, this.order, this.asc)
-      .subscribe(
-        data =>{
 
-          this.cuentas = data.content;
-          this.isFirst = data.first;
-          this.isLast = data.last;
-        },
-        error => {
-          console.log(error.error())
+  private getCuentasByFecha(fechaInicio : string, fechaFin :string | null){
+
+    this.cuentaService.cuentasByFecha(fechaInicio, fechaFin)
+      .subscribe(
+        data => {
+          this.cuentasFecha = data.object
+        }, error => {
+          console.log(error)
         }
       )
   }
-
 
   private getEmpleadoCuentas(){
     this.empleadoCuentaService.getEmpleadoCuenta()
@@ -136,8 +221,6 @@ export class CuentasComponent implements OnInit{
     this.cuentaService.actualizarCuenta(cuenta)
       .subscribe();
   }
-
-
 
   //****************************
   //*******MODALES*******
@@ -524,91 +607,6 @@ export class CuentasComponent implements OnInit{
     )
   }
 
-
-  //funcion para validar si los insumos dentro de un array de productosxcuenta
-  //son mayores a 0 luego de la deduccion
-  private async validarExistenciasDeProductos(productosCuenta: ProductoCuenta[]): Promise<any> {
-    //array donde se almacenaran los insumos junto a sus cantidades por
-    //restar, en caso de que alguna de las cantidades sea menor a 0,
-    //se debe lanzar la alerta de confirmacion
-    let insumosADeducir: any[] = [];
-    let insumosInsuficientes: any[] = [];
-
-    const promises = productosCuenta.map(async (productoCuenta) => {
-      //almacenar el producto de ProductoCuenta
-      const p = productoCuenta.producto;
-      //almacenar la cantidad del ProductCuenta
-      const c = productoCuenta.cantidad;
-      // array para almacenar los InsumosxProducto
-      let insumosXProducto: InsumoProducto[] = [];
-
-      //obtener los insumos que hacen parte del producto
-      const result = await this.insumosPorProductoService.getIppByProducto(p.id).toPromise();
-
-      //almacenar los insumos x producto
-      insumosXProducto = result.object;
-
-      //validar que no sea nulo
-      if (insumosXProducto != null && insumosXProducto.length > 0) {
-        for (let ixp of insumosXProducto) {
-          const cantidadIpp = ixp.cantidad;
-          let insumo = ixp.insumo;
-
-          // almaceno el resultado del producto entre la cantidad de
-          //productos * la cantidad del insumo asociada al producto
-          const cantidadARestar = c * cantidadIpp;
-          //guardar las existencias anterior a la resta
-          const existenciasAnteriores = insumo.cantidad;
-
-          //instancia de insumo a deducir
-          const insumoADeducir = {
-            insumo: insumo,
-            cantidadARestar: cantidadARestar,
-            resultadoResta: insumo.cantidad - cantidadARestar
-          };
-
-          //resto la cantidad a restar al insumo
-          insumo.cantidad -= cantidadARestar;
-          //añadir la instancia al array
-          insumosADeducir.push(insumoADeducir);
-        }
-
-        //validar si hay algun valor negativo en insumoADeducir.resultadoResta
-        const isResultadoNegativo = insumosADeducir.some((insumo) => insumo.resultadoResta < 0);
-
-        //en caso de que sí haya un negativo
-        if (isResultadoNegativo) {
-          //crear una instancia de un objeto para mostrar cuales son los insumos insuficientes
-          insumosADeducir.forEach((insumo) => {
-            if (insumo.resultadoResta < 0) {
-              insumosInsuficientes.push(insumo);
-              //setear el valor del insumo negativo en cero
-              insumo.insumo.cantidad = 0;
-            } else {
-              insumo.insumo.cantidad = insumo.resultadoResta;
-            }
-          });
-        }
-        //si las cantidades son positivas
-        else {
-          insumosADeducir.forEach((insumo) => {
-            insumo.insumo.cantidad = insumo.resultadoResta;
-          });
-        }
-      }
-    });
-
-    // Esperar a que todas las promesas se resuelvan
-    await Promise.all(promises);
-
-    //armar el objeto a devolver
-    const response = {
-      aDeducir: insumosADeducir,
-      insuficientes: insumosInsuficientes
-    };
-
-    return response;
-  }
 
 }
 

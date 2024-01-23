@@ -64,7 +64,7 @@
       <mat-label>
         Estado de la cuenta
       </mat-label>
-      <mat-select [(ngModel)]="estadoSeleccionado"  [ngModelOptions]="{standalone: true}">
+      <mat-select [(ngModel)]="estadoSeleccionado"  [ngModelOptions]="{standalone: true}" [disabled] = "isReadOnly">
         <mat-option *ngFor="let estado of estadosCuenta" [value]="estado.id" >
           {{estado.nombre}}
         </mat-option>
@@ -73,23 +73,26 @@
 
     <mat-form-field>
       <mat-label>Abono</mat-label>
-      <input type="number"  matInput [(ngModel)]="abonoData" [ngModelOptions]="{standalone: true}" >
+      <input type="number"  matInput [(ngModel)]="abonoData" [ngModelOptions]="{standalone: true}" [readonly]="isReadOnly">
     </mat-form-field>
 
     <div id="total" *ngIf="cuentaProductosData.length > 0 || cuentaProductosAgg.length > 0">
       Total: ${{formatearNumeroConPuntos(totalCuenta - abonoData)}}
     </div>
+    <ng-container *ngIf="!isReadOnly">
+      <div id="btn-black">
+        <button (click)="modalAgregarProducto()" >
+          Agregar producto
+        </button>
+      </div>
+    </ng-container>
 
-    <div id="btn-black">
-      <button (click)="modalAgregarProducto()" >
-        Agregar producto
-      </button>
-
-    </div>
   </div>
 </form>
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button  class="btn-actualizar-element" (click)="onSubmit()">Guardar</button>
-  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
-</mat-dialog-actions>
+<ng-container *ngIf="!isReadOnly">
+  <mat-dialog-actions>
+    <button mat-button  class="btn-actualizar-element" (click)="onSubmit()">Guardar</button>
+    <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+  </mat-dialog-actions>
+</ng-container>

@@ -27,6 +27,8 @@ import { ModalEditarCuentaComponent } from './utils/modal-editar-cuenta/modal-ed
 import { ModalIngresosComponent } from './utils/modal-ingresos/modal-ingresos.component';
 import { ModalNuevoProductoComponent } from './utils/modal-nuevo-producto/modal-nuevo-producto.component';
 import { ModalAgregarCategoriaComponent } from './utils/modal-agregar-categoria/modal-agregar-categoria.component';
+import { BootstrapRangeCalendarComponent } from './utils/widgets/bootstrap-range-calendar/bootstrap-range-calendar.component';
+import {MenuResponsiveComponent} from "./utils/menu-responsive/menu-responsive.component";
 
 
 @NgModule({
@@ -47,7 +49,8 @@ import { ModalAgregarCategoriaComponent } from './utils/modal-agregar-categoria/
     ModalEditarCuentaComponent,
     ModalIngresosComponent,
     ModalNuevoProductoComponent,
-    ModalAgregarCategoriaComponent
+    ModalAgregarCategoriaComponent,
+
   ],
     imports: [
         CommonModule,
@@ -62,6 +65,8 @@ import { ModalAgregarCategoriaComponent } from './utils/modal-agregar-categoria/
         ReactiveFormsModule,
         MatSelectModule,
         MatCheckboxModule,
+        BootstrapRangeCalendarComponent,
+        MenuResponsiveComponent
     ]
 })
 export class AdministradorModule { }

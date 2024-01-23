@@ -85,6 +85,13 @@ app-empleados, app-cuentas, app-ingresos{
 }
 
 
+@media screen and (max-width: 959px){
+  app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas, app-empleados, app-cuentas, app-ingresos {
+    width: 95%;
+  }
+}
+
+
 
 /* SCROLLBAR */
 /* SCROLLBAR */

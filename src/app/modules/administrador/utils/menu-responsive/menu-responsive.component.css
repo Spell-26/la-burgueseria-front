@@ -1,0 +1,16 @@
+.navbar-oscuro{
+  background-color: rgba(0, 0, 0, 0.77);
+  border-bottom: 1px solid #69e669;
+}
+
+#logo{
+  display: flex;
+  width: 30%;
+  flex-direction: row;
+  padding-right: .5em;
+  text-align: center;
+}
+#logo img{
+  margin: 0 auto;
+  width: 5em;
+}

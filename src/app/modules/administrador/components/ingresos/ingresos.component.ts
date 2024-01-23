@@ -13,6 +13,8 @@ import {InsumosPorProductoService} from "../../services/insumos-por-producto.ser
 import {InsumosService} from "../../services/insumos.service";
 import {CuentasService} from "../../services/cuentas.service";
 import {ModalIngresosComponent} from "../../utils/modal-ingresos/modal-ingresos.component";
+import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
+import {format} from "date-fns";
 
 @Component({
   selector: 'app-ingresos',
@@ -31,16 +33,22 @@ export class IngresosComponent implements OnInit{
   ingresos : Ingreso[] = [];
   empleadoCuentas : EmpleadoCuenta[] = [];
   // metodo
-  metodoDePagoSeleccionado = "Efectivo"
+  metodoDePagoSeleccionado = "Efectivo";
+  //variables de fecha
+  horaActual = this.fechaService.obtenerFechaHoraLocalActual();
+  fechaHoraInicioUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.horaActual);
+  fechaHoraFinUTC : string | null = null;
+  //DATOS RECIBIDOS DEL COMPONENTE DE CALENDARIO
+  datosRecibidos! : { fromDate: Date | null, toDate : Date | null }
 
   ngOnInit(): void {
     this.ingresoService.refreshNeeded
       .subscribe(
         () => {
-          this.getIngresosPage();
+          this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
         }
       );
-    this.getIngresosPage();
+    this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
     this.getEmpleadoCuentas();
   }
 
@@ -50,24 +58,24 @@ export class IngresosComponent implements OnInit{
               private productosCuentaService : ProductosCuentaService,
               private insumosPorProductoService : InsumosPorProductoService,
               private insumoService : InsumosService,
-              private cuentaService : CuentasService) {
+              private cuentaService : CuentasService,
+              public fechaService : FechaHoraService) {
   }
 
 
-  //PETICIONES HTTT
-  getIngresosPage(){
-    this.ingresoService.getIngresosPageable(this.pagina, this.tamano, this.order, this.asc)
+  //PETICIONES HTTP
+  private getIngresoByFechaPage(fechaInicio : string, fechaFin :string | null){
+    this.ingresoService.getIngresoPagableByFecha(fechaInicio, fechaFin, this.pagina, this.tamano, this.order, this.asc)
       .subscribe(
-        data =>{
-          this.ingresos = data.content;
-          this.isFirst = data.first;
-          this.isLast = data.last;
-          console.log(this.ingresos)
+        data => {
+          this.ingresos = data.object.content;
+          this.isFirst = data.object.first;
+          this.isLast = data.object.last;
         }, error => {
-          console.log(error)
+          console.log(error);
         }
       )
-  };
+  }
   private getEmpleadoCuentas(){
     this.empleadoCuentaService.getEmpleadoCuenta()
       .subscribe(
@@ -81,15 +89,34 @@ export class IngresosComponent implements OnInit{
 
   //METODOS
 
+  recibirDatosCalendario(datos : {fromDate: Date | null, toDate : Date | null }){
+    this.datosRecibidos = datos;
+    const pattern = 'yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX';
+
+    if(this.datosRecibidos.fromDate != null){
+      this.fechaHoraInicioUTC = format(this.datosRecibidos.fromDate, pattern);
+      //converir a UTC
+      this.fechaHoraInicioUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.fechaHoraInicioUTC);
+      if(this.datosRecibidos.toDate != null){
+        this.fechaHoraFinUTC = format(this.datosRecibidos.toDate, pattern);
+        //convertir a UTC
+        this.fechaHoraFinUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.fechaHoraFinUTC);
+      }else{
+        this.fechaHoraFinUTC = null;
+      }
+      this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+    }
+  }
+
   public  nextPage(){
     this.pagina+=1;
-    this.getIngresosPage();
+    this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
   }
 
   //pagina anterior
   public  previousPage(){
     this.pagina-=1;
-    this.getIngresosPage();
+    this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
   }
   //obtener el nombre y apellido del empleado vinculado a una cita dada por el ID
   public getNombreApellidoEmpleado(idCita : number) : string {
@@ -116,6 +143,7 @@ export class IngresosComponent implements OnInit{
       cuenta: cuenta,
       empleado: empleado,
       productos : productosCuenta,
+      readOnly : true
     }
 
 

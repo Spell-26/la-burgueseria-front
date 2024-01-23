@@ -61,12 +61,14 @@ export class InsumosComponent implements OnInit{
     });
     //cerrar modal y realizar una acción, en este caso crear un insumo
     dialogRef.afterClosed().subscribe(result => {
-      const insumo : insumo = {
-        id: 0,
-        nombre: result.nombre,
-        cantidad: result.cantidad
-      };
-      this.nuevoInsumo(insumo);
+      if(result){
+        const insumo : insumo = {
+          id: 0,
+          nombre: result.nombre,
+          cantidad: result.cantidad
+        };
+        this.nuevoInsumo(insumo);
+      }
     });
   }
 

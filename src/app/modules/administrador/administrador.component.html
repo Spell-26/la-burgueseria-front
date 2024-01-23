@@ -1,10 +1,10 @@
-<div class="container">
+<div class="container-admin">
   <main>
     <ng-container *ngIf="desktopView">
       <app-menu></app-menu>
     </ng-container>
     <ng-container *ngIf="mobileView">
-      <h2 style="color: white;">Hola soy mobile!!</h2>
+      <app-menu-responsive></app-menu-responsive>
     </ng-container>
     <router-outlet></router-outlet>
 
