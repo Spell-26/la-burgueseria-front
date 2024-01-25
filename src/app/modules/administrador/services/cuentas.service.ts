@@ -10,7 +10,7 @@ export class CuentasService {
 
   private _refreshNeeded = new Subject<void>();
 
-  private apiUrl = 'http://localhost:8080/api/v1/cuenta';
+  private apiUrl = 'http://localhost:8090/api/v1/cuenta';
   get refreshNeeded(){
     return this._refreshNeeded
   }

@@ -210,11 +210,14 @@ export class ProductosComponent  implements OnInit {
     this.productosService.getProductos()
       .subscribe(
         data => {
-          this.productos = data.object;
-          //formatear la el byte que contiene la imagen
-          this.formatearImagen(this.productos);
-          //agrupar los productos por categoria
-          this.productosAgrupados = this.agruparProductosPorCategoria(this.productos);
+          if(data){
+            this.productos = data.object;
+            //formatear la el byte que contiene la imagen
+            this.formatearImagen(this.productos);
+            //agrupar los productos por categoria
+            this.productosAgrupados = this.agruparProductosPorCategoria(this.productos);
+          }
+
         }
       )
   }

@@ -80,7 +80,9 @@ export class IngresosComponent implements OnInit{
     this.empleadoCuentaService.getEmpleadoCuenta()
       .subscribe(
         data =>{
-          this.empleadoCuentas = data.object
+          if(data){
+            this.empleadoCuentas = data.object
+          }
         },error => {
           console.log(error)
         }

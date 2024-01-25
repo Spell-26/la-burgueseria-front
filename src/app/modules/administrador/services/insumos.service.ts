@@ -15,12 +15,12 @@ export class InsumosService {
     return this._refreshNeeded
   }
 
-  private apiUrl = 'http://localhost:8080/api/v1/insumo';
+  private apiUrl = 'http://localhost:8090/api/v1/insumo';
 
   constructor( private http : HttpClient) { }
 
   getInsumos(): Observable<insumoResponse>{
-    return this.http.get<insumoResponse>('http://localhost:8080/api/v1/insumos');
+    return this.http.get<insumoResponse>('http://localhost:8090/api/v1/insumos');
   }
   getInsumosPageable(numeroPagina : number, tamanoPagina : number, order: string, asc : boolean) : Observable<any>{
     let params = new HttpParams()
@@ -29,11 +29,11 @@ export class InsumosService {
       .set('order', order)
       .set('asc', asc);
 
-    return this.http.get<any>('http://localhost:8080/api/v1/insumos2', {params})
+    return this.http.get<any>('http://localhost:8090/api/v1/insumos2', {params})
   }
 
   deleteInsumo(id : number):Observable<any>{
-    return this.http.delete(`http://localhost:8080/api/v1/insumo/${id}`)
+    return this.http.delete(`http://localhost:8090/api/v1/insumo/${id}`)
       .pipe(
         tap(
           () =>{

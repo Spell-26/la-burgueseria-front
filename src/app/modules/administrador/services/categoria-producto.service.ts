@@ -13,12 +13,12 @@ export class CategoriaProductoService {
   get refreshNeeded(){
     return this._refreshNeeded
   }
-  private apiUrl = 'http://localhost:8080/api/v1/categoria-producto';
+  private apiUrl = 'http://localhost:8090/api/v1/categoria-producto';
   constructor(private http : HttpClient) { }
 
   //eliminar categoria
   getCategoriasProductos():Observable<CategoriaProductoResponse>{
-    return this.http.get<CategoriaProductoResponse>('http://localhost:8080/api/v1/categorias-productos');
+    return this.http.get<CategoriaProductoResponse>('http://localhost:8090/api/v1/categorias-productos');
   }
   //crear categoria
   crearCategoria(categoriaProducto : CategoriaProducto) : Observable<any>{

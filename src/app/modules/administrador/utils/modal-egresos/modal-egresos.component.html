@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Nuevo Egreso</h2>
+<mat-dialog-content #modalContent>
+  <form [formGroup] = "form">
+
+    <mat-form-field>
+      <mat-label>Total egreso</mat-label>
+      <input matInput placeholder="Total" formControlName="egreso">
+      <mat-error *ngIf="form.get('egreso')?.hasError('required')">Egreso es obligatorio</mat-error>
+      <mat-error *ngIf="form.get('egreso')?.hasError('pattern')">Cantidad de egreso no válido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Tipo de egreso</mat-label>
+      <mat-select formControlName="tipoEgreso">
+        <mat-option *ngFor="let tipo of tiposEstados" [value]="tipo">
+          {{tipo}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </form>
+
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onSubmit()" class="btn-actualizar-element">Guardar</button>
+  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+</mat-dialog-actions>

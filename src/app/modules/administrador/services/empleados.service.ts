@@ -15,7 +15,7 @@ export class EmpleadosService {
   }
   constructor( private http : HttpClient) { }
 
-  private apiUrl = 'http://localhost:8080/api/v1/empleado';
+  private apiUrl = 'http://localhost:8090/api/v1/empleado';
 
   getEmpleados() : Observable<EmpleadoResponse>{
     return this.http.get<EmpleadoResponse>(`${this.apiUrl}s`)

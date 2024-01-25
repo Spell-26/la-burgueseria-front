@@ -15,7 +15,7 @@ export class InsumosPorProductoService {
   }
 
   //url api
-  private apiUrl = 'http://localhost:8080/api/v1/insumo-por-producto';
+  private apiUrl = 'http://localhost:8090/api/v1/insumo-por-producto';
   constructor(private http : HttpClient) { }
 
   getInsumosPorProducto(id : number) : Observable<any>{

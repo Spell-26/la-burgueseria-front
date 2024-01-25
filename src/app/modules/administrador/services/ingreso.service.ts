@@ -15,7 +15,7 @@ export class IngresoService {
   }
   constructor(private http : HttpClient) { }
 
-  private apiUrl = 'http://localhost:8080/api/v1/ingreso';
+  private apiUrl = 'http://localhost:8090/api/v1/ingreso';
 
   //CREAR INGRESO
   crearIngreso(ingreso : Ingreso) : Observable<any>{

@@ -16,7 +16,7 @@ export class MesasService {
   }
   constructor( private http : HttpClient) { }
 
-  private apiUrl = 'http://localhost:8080/api/v1/mesa';
+  private apiUrl = 'http://localhost:8090/api/v1/mesa';
 
   //obtener todas las mesas sin paginación
   public getMesas() : Observable<MesaResponse>{

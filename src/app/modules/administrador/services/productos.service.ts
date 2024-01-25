@@ -16,7 +16,7 @@ export class ProductosService {
     return this._refreshNeeded
   }
   //url de la api
-  private apiUrl = 'http://localhost:8080/api/v1/producto';
+  private apiUrl = 'http://localhost:8090/api/v1/producto';
   constructor( private http : HttpClient) { }
 
   getProductos(): Observable<ProductoResponse>{
@@ -30,7 +30,7 @@ export class ProductosService {
       .set('order', order)
       .set('asc', asc);
 
-    return this.http.get<any>('http://localhost:8080/api/v1/productos-page', {params});
+    return this.http.get<any>('http://localhost:8090/api/v1/productos-page', {params});
   }
   //crear producto
   crearProducto(producto: FormData):Observable<any>{

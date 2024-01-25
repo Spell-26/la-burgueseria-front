@@ -8,7 +8,7 @@ import {HttpClient} from "@angular/common/http";
 export class EstadoCuentaService {
 
   private _refreshNeeded = new Subject<void>();
-  private apiUrl = 'http://localhost:8080/api/v1/estado-cuenta';
+  private apiUrl = 'http://localhost:8090/api/v1/estado-cuenta';
 
   get refreshNeeded(){
     return this._refreshNeeded
