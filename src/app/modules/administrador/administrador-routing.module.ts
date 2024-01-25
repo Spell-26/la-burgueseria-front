@@ -8,6 +8,7 @@ import {
   MesasComponent,
   ProductosComponent
 } from "./components";
+import {EgresosComponent} from "./components/egresos/egresos.component";
 
 const routes: Routes = [
   {
@@ -19,7 +20,8 @@ const routes: Routes = [
       {path: 'mesas', component: MesasComponent},
       {path: 'empleados', component: EmpleadosComponent},
       {path: 'cuentas', component: CuentasComponent},
-      {path: 'ingresos', component: IngresosComponent}
+      {path: 'ingresos', component: IngresosComponent},
+      {path: 'egresos', component: EgresosComponent},
     ],
   },
 ];

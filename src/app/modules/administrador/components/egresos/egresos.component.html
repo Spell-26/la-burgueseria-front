@@ -1,0 +1,49 @@
+<div class="container-section">
+  <header class="header-module">
+    <h1>Egresos</h1>
+  </header>
+  <div class="actions-container">
+    <bootstrap-range-calendar (fechasEnviadas) = "recibirDatosCalendario($event)" ></bootstrap-range-calendar>
+    <!-- FALTA EL BOTÓN PARA CREAR UN NUEVO EGRESO -->
+  </div>
+
+  <section class="component-main-component">
+    <table class="tabla-listado" *ngIf="egresos.length > 0 ; else buscando">
+      <thead class="cabecera-tabla">
+        <tr class="row-header">
+          <th class="row-header-element">FECHA DEL EGRESO</th>
+          <th class="row-header-element">TOTAL DEL EGRESO</th>
+          <th class="row-header-element">CATEGORÍA</th>
+          <th class="row-header-element">ACCIONES</th>
+        </tr>
+      </thead>
+      <tbody class="contenido-tabla">
+      <tr class="row-contenido-tabla" *ngFor="let egreso of egresos; let i = index">
+        <td class="row-contenido-element">
+          {{fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toLocaleString())}}
+        </td>
+        <td class="row-contenido-element">
+          {{egreso.total}}
+        </td>
+        <td class="row-contenido-element">
+          {{egreso.categoria}}
+        </td>
+        <td class="row-contenido-element">
+          <button class="ver-cuenta">
+            Ver detalles
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+
+<ng-template #buscando >
+  <div class="cargando">
+    <h2>No se ha encontrado ningún egreso.</h2>
+    <img src="assets/img/running-cat.gif" alt="">
+  </div>
+</ng-template>

@@ -29,6 +29,7 @@ import { ModalNuevoProductoComponent } from './utils/modal-nuevo-producto/modal-
 import { ModalAgregarCategoriaComponent } from './utils/modal-agregar-categoria/modal-agregar-categoria.component';
 import { BootstrapRangeCalendarComponent } from './utils/widgets/bootstrap-range-calendar/bootstrap-range-calendar.component';
 import {MenuResponsiveComponent} from "./utils/menu-responsive/menu-responsive.component";
+import { EgresosComponent } from './components/egresos/egresos.component';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import {MenuResponsiveComponent} from "./utils/menu-responsive/menu-responsive.c
     ModalIngresosComponent,
     ModalNuevoProductoComponent,
     ModalAgregarCategoriaComponent,
+    EgresosComponent,
 
   ],
     imports: [

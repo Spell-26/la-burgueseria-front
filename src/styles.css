@@ -80,13 +80,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas{
   width:80%;
 }
-app-empleados, app-cuentas, app-ingresos{
+app-empleados, app-cuentas, app-ingresos, app-egresos{
   width: 80%;
 }
 
 
 @media screen and (max-width: 959px){
-  app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas, app-empleados, app-cuentas, app-ingresos {
+  app-nuevo-insumo, app-insumos, app-categoria-producto, app-egresos, app-productos, app-mesas, app-empleados, app-cuentas, app-ingresos {
     width: 95%;
   }
 }
