@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Observable, Subject, tap} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {CategoriaProducto, CategoriaProductoResponse} from "../interfaces/categoriaProducto";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +14,12 @@ export class CategoriaProductoService {
   get refreshNeeded(){
     return this._refreshNeeded
   }
-  private apiUrl = 'http://localhost:8090/api/v1/categoria-producto';
-  constructor(private http : HttpClient) { }
+  private apiUrl = `${this.env.getUrl()}/categoria-producto`;
+  constructor(private http : HttpClient, private env : EnvService) { }
 
   //eliminar categoria
   getCategoriasProductos():Observable<CategoriaProductoResponse>{
-    return this.http.get<CategoriaProductoResponse>('http://localhost:8090/api/v1/categorias-productos');
+    return this.http.get<CategoriaProductoResponse>(`${this.env.getUrl()}/categorias-productos`);
   }
   //crear categoria
   crearCategoria(categoriaProducto : CategoriaProducto) : Observable<any>{

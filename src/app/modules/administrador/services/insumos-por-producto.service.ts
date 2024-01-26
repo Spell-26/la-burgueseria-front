@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
 import {InsumoProducto, InsumoProductoResponse, Producto} from "../interfaces";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,8 @@ export class InsumosPorProductoService {
   }
 
   //url api
-  private apiUrl = 'http://localhost:8090/api/v1/insumo-por-producto';
-  constructor(private http : HttpClient) { }
+  private apiUrl = `${this.env.getUrl()}/insumo-por-producto`;
+  constructor(private http : HttpClient, private env : EnvService) { }
 
   getInsumosPorProducto(id : number) : Observable<any>{
     return this.http.get<InsumoProductoResponse>(`${this.apiUrl}/producto/${id}`)

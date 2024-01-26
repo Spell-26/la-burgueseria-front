@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
 import {Egreso} from "../interfaces/egreso";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EgresoService {
 
-  constructor(private http : HttpClient) { }
+  constructor(private http : HttpClient, private env : EnvService) { }
 
   private _refreshNeeded = new Subject<void>();
 
@@ -16,7 +17,7 @@ export class EgresoService {
     return this._refreshNeeded
   }
 
-  private apiUrl = 'http://localhost:8090/api/v1/egreso';
+  private apiUrl = `${this.env.getUrl()}/egreso`;
 
   //Crear egreso
   crearEgreso(egreso : Egreso) : Observable<any>{

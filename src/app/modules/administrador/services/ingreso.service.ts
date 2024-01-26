@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Observable, Subject, tap} from "rxjs";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Ingreso} from "../interfaces/ingreso";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +14,9 @@ export class IngresoService {
   get refreshNeeded(){
     return this._refreshNeeded
   }
-  constructor(private http : HttpClient) { }
+  constructor(private http : HttpClient, private env : EnvService) { }
 
-  private apiUrl = 'http://localhost:8090/api/v1/ingreso';
+  private apiUrl = `${this.env.getUrl()}/ingreso`;
 
   //CREAR INGRESO
   crearIngreso(ingreso : Ingreso) : Observable<any>{

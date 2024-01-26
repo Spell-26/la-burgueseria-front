@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
 import {EmpleadoCuenta} from "../interfaces/empleadoCuenta";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +11,13 @@ export class EmpleadoCuentaService {
 
   private _refreshNeeded = new Subject<void>();
 
-  private apiUrl = 'http://localhost:8090/api/v1/empleado-cuenta';
+  private apiUrl = `${this.env.getUrl()}/empleado-cuenta`;
 
   get refreshNeeded(){
     return this._refreshNeeded
   }
 
-  constructor(private http : HttpClient) { }
+  constructor(private http : HttpClient, private env : EnvService) { }
 
   //CREAR EMPLEADO POR CUENTA
   public crearEmpleadoCuenta(empleadoCuenta : EmpleadoCuenta) : Observable<any>{

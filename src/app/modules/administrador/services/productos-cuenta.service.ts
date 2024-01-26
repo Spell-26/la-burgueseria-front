@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
 import {ProductoCuenta} from "../interfaces/productosCuenta";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +10,11 @@ import {ProductoCuenta} from "../interfaces/productosCuenta";
 export class ProductosCuentaService {
 
   private _refreshNeeded = new Subject<void>();
-  private apiUrl = 'http://localhost:8090/api/v1/cuenta-productos';
+  private apiUrl = `${this.env.getUrl()}/cuenta-productos`;
   get refreshNeeded(){
     return this._refreshNeeded
   }
-  constructor(private http : HttpClient) { }
+  constructor(private http : HttpClient, private env : EnvService) { }
 
   //CREAR PRODUCTO CUENTA
   public crearProductoCuenta(productoCuenta : ProductoCuenta) : Observable<any>{

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
 import {insumoResponse, insumo} from "../interfaces";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 
 @Injectable({
@@ -15,12 +16,12 @@ export class InsumosService {
     return this._refreshNeeded
   }
 
-  private apiUrl = 'http://localhost:8090/api/v1/insumo';
+  private apiUrl = `${this.env.getUrl()}/insumo`;
 
-  constructor( private http : HttpClient) { }
+  constructor( private http : HttpClient, private env : EnvService) { }
 
   getInsumos(): Observable<insumoResponse>{
-    return this.http.get<insumoResponse>('http://localhost:8090/api/v1/insumos');
+    return this.http.get<insumoResponse>(`${this.apiUrl}s`);
   }
   getInsumosPageable(numeroPagina : number, tamanoPagina : number, order: string, asc : boolean) : Observable<any>{
     let params = new HttpParams()
@@ -29,11 +30,11 @@ export class InsumosService {
       .set('order', order)
       .set('asc', asc);
 
-    return this.http.get<any>('http://localhost:8090/api/v1/insumos2', {params})
+    return this.http.get<any>(`${this.apiUrl}s2`, {params})
   }
 
   deleteInsumo(id : number):Observable<any>{
-    return this.http.delete(`http://localhost:8090/api/v1/insumo/${id}`)
+    return this.http.delete(`${this.apiUrl}/${id}`)
       .pipe(
         tap(
           () =>{

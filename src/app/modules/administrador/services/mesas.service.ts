@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable, Subject, tap} from "rxjs";
 import {Mesa, MesaResponse} from "../interfaces";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +15,9 @@ export class MesasService {
   get refreshNeeded(){
     return this._refreshNeeded
   }
-  constructor( private http : HttpClient) { }
+  constructor( private http : HttpClient, private env : EnvService) { }
 
-  private apiUrl = 'http://localhost:8090/api/v1/mesa';
+  private apiUrl = `${this.env.getUrl()}/mesa`;
 
   //obtener todas las mesas sin paginación
   public getMesas() : Observable<MesaResponse>{

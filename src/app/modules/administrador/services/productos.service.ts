@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import {Observable, Subject, tap} from "rxjs";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Producto, ProductoResponse} from "../interfaces/producto";
+import {EnvService} from "../utils/sharedMethods/env/env.service";
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +17,8 @@ export class ProductosService {
     return this._refreshNeeded
   }
   //url de la api
-  private apiUrl = 'http://localhost:8090/api/v1/producto';
-  constructor( private http : HttpClient) { }
+  private apiUrl = `${this.env.getUrl()}/producto`;
+  constructor( private http : HttpClient, private env : EnvService) { }
 
   getProductos(): Observable<ProductoResponse>{
     return this.http.get<ProductoResponse>(`${this.apiUrl}s`);
@@ -30,7 +31,7 @@ export class ProductosService {
       .set('order', order)
       .set('asc', asc);
 
-    return this.http.get<any>('http://localhost:8090/api/v1/productos-page', {params});
+    return this.http.get<any>(`${this.apiUrl}s-page`, {params});
   }
   //crear producto
   crearProducto(producto: FormData):Observable<any>{
