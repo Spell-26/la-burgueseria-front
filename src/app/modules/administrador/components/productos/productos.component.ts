@@ -5,11 +5,8 @@ import Swal from "sweetalert2";
 import {DomSanitizer} from "@angular/platform-browser";
 import {CategoriaProducto} from "../../interfaces/categoriaProducto";
 import {CategoriaProductoService} from "../../services/categoria-producto.service";
-import {Router} from "@angular/router";
+
 import {MatDialog} from "@angular/material/dialog";
-import {Validators} from "@angular/forms";
-import {ModalInsumosComponent} from "../../utils/modal-insumos/modal-insumos.component";
-import {ModalLateralComponent} from "../../utils/modal-lateral/modal-lateral.component";
 import {InsumosService} from "../../services/insumos.service";
 import {insumo, InsumoProducto} from "../../interfaces";
 import {ModalEditarProductoComponent} from "../../utils/modal-editar-producto/modal-editar-producto.component";
@@ -31,6 +28,8 @@ export class ProductosComponent  implements OnInit {
   public nombreBusqueda: string = "";
   public isNombreBusqueda : boolean = false;
   public mostrarBotones : boolean = false;
+  //flag para el popo over de la descripcion
+  mostrarTextoCompleto: boolean = false;
 
 
   // CONSTRUCTOR E INICIALIZADORES
@@ -54,6 +53,7 @@ export class ProductosComponent  implements OnInit {
     this.getProductos()
     this.getAllCategoriasProductos();
     this.getAllInsumos();
+
   }
   //****************************
   //*******MÉTODOS*******
@@ -112,7 +112,6 @@ export class ProductosComponent  implements OnInit {
 
                         },
                         error => {
-                          console.log(error);
                         }
                       );
                   }
@@ -122,7 +121,10 @@ export class ProductosComponent  implements OnInit {
                 this.alertaService.alertaConfirmarCreacion();
               },
               error => {
-                console.log(error)
+                if(error.status === 409){
+                  const mensaje : string = "¡Parece que ya existe un producto con el mismo nombre!";
+                  this.alertaService.alertaErrorMensajeCustom(mensaje);
+                }
               }
             )
         }

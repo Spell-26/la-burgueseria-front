@@ -167,18 +167,20 @@ export class ModalCuentasComponent implements OnInit{
     const dialogRef = this.dialog.open(ModalAddProductoComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '600px',
+      height: '350px',
     });
     dialogRef.afterClosed().subscribe(
       result =>{
-        const object : ProductoDeCuenta = {
-          obj: result.producto,
-          cantidad: result.cantidad
+        if(result){
+          const object : ProductoDeCuenta = {
+            obj: result.producto,
+            cantidad: result.cantidad
+          }
+
+          this.productosCuenta.push(object);
+
+          this.calcularTotal();
         }
-
-        this.productosCuenta.push(object);
-
-        this.calcularTotal();
       }
     )
   }

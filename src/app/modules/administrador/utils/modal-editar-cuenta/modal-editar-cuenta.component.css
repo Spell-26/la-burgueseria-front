@@ -101,6 +101,11 @@ th,td {
   border: 1px solid #EBB80D;
 }
 
+.boton-solito{
+  width: 30%;
+  margin: 0 auto;
+}
+
 /* Establece el color blanco por defecto */
 svg {
   fill: #fff;

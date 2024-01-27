@@ -9,12 +9,19 @@ import {
   ProductosComponent
 } from "./components";
 import {EgresosComponent} from "./components/egresos/egresos.component";
+import {PanelDeGestionComponent} from "./components/panel-de-gestion/panel-de-gestion.component";
 
 const routes: Routes = [
+  {
+    path: '',
+    redirectTo: 'dashboard', // Redirige a la ruta 'insumos' por defecto
+    pathMatch: 'full', // Asegura que solo redireccione cuando la ruta está vacía
+  },
   {
     path : '',
     component: AdministradorComponent,
     children: [
+      {path: 'dashboard', component: PanelDeGestionComponent},
       {path: 'insumos', component: InsumosComponent},
       {path: 'productos', component: ProductosComponent},
       {path: 'mesas', component: MesasComponent},

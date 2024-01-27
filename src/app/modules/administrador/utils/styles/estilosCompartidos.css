@@ -222,11 +222,21 @@ pantallas superiores a 960px
     max-width: -webkit-fill-available;
     overflow-x: scroll;
   }
+  .ver-cuenta{
+    margin-bottom: .5em;
+  }
 }
 
 @media screen and (max-width: 650px) {
   .btn-actualizar-element{
     margin-bottom: .5em;
+  }
+  .responsive{
+    margin-top: .5em;
+    width: 30%;
+  }
+  .responsive button {
+    padding: .7em;
   }
 }
 

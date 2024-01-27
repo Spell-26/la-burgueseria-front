@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Nuevo Egreso</h2>
+<h2 mat-dialog-title>Egreso</h2>
 <mat-dialog-content #modalContent>
   <form [formGroup] = "form">
 
@@ -16,12 +16,34 @@
           {{tipo}}
         </mat-option>
       </mat-select>
+      <mat-error *ngIf="form.get('egreso')?.hasError('required')">La categoría del egreso es obligatoria</mat-error>
     </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Descripción del egreso</mat-label>
+      <textarea matInput formControlName="descripcion"></textarea>
+      <mat-error *ngIf="form.get('descripcion')?.hasError('required')">Ingresa la descripción del egreso</mat-error>
+    </mat-form-field>
+
+    <ng-container *ngIf="data">
+      <mat-form-field>
+        <mat-label>Fecha</mat-label>
+        <input matInput placeholder="Total" formControlName="fecha">
+      </mat-form-field>
+
+    </ng-container>
+
 
   </form>
 
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button (click)="onSubmit()" class="btn-actualizar-element">Guardar</button>
-  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
-</mat-dialog-actions>
+<ng-container *ngIf="!deshabilitarBotones; else botonCerrar">
+  <mat-dialog-actions >
+    <button mat-button (click)="onSubmit()" class="btn-actualizar-element">Guardar</button>
+    <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+  </mat-dialog-actions>
+</ng-container>
+
+<ng-template #botonCerrar>
+  <button mat-button (click)="onNoClick()" class="btn-actualizar-element boton-solito" style="">Cerrar</button>
+</ng-template>

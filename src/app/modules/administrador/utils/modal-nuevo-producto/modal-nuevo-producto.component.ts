@@ -37,6 +37,8 @@ export class ModalNuevoProductoComponent implements OnInit {
   selectedImage = '';
   //listener para el selector
   menuDesplegado = false;
+  // Variable para almacenar la descripción
+  descripcionValue: string = '';
   constructor(
     public dialogRef: MatDialogRef<ModalNuevoProductoComponent>,
     @Inject(MAT_DIALOG_DATA) public data : any,
@@ -48,9 +50,9 @@ export class ModalNuevoProductoComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       nombre: [null, [Validators.required, Validators.pattern(/^[a-zA-Z ]+$/)]],
-      precio: [null, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      precio: [null,[Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
       imagen: [null],
-      descripcion: [null],
+      descripcion: ['', [Validators.required, Validators.maxLength(150)]],
       categoria: ['', Validators.required]
     });
     this.form.statusChanges.subscribe(
@@ -216,6 +218,20 @@ export class ModalNuevoProductoComponent implements OnInit {
       );
   }
 
+  //caracteres disponibles en la dewscripcion
+  onDescripcionInput(event: Event) {
+    const descripcionControl = this.form.get('descripcion');
+    const value = (event.target as HTMLInputElement).value;
+
+    // Almacenar la descripción en la variable aparte
+    this.descripcionValue = value;
+
+    // Verificar si se supera la longitud máxima
+    if (this.descripcionValue.length > 150) {
+      // Truncar la descripción si es necesario y asignarla al control del formulario
+      descripcionControl?.setValue(this.descripcionValue.slice(0, 150), { emitEvent: false });
+    }
+  }
 
 
 

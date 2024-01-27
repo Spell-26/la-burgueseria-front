@@ -303,4 +303,8 @@
   z-index: 1; /* Asegura que los botones estén sobre el contenido */
 }
 
-
+.ver-mas {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}

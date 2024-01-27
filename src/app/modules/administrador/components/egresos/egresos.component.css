@@ -30,6 +30,7 @@
   font-family: WorkSans, serif;
   border: 1px solid #3C3B3B;
   font-size: 1em;
+  margin-left: .5em;
 }
 .btn-eliminar-element:hover{
   border: 1px solid red;

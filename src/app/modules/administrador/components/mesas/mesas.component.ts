@@ -92,17 +92,25 @@ export class MesasComponent implements OnInit{
             if(result.isConfirmed){
               this.alertaService.alertaConfirmarCreacion();
               this.mesaService.actualizarMesa(mesa)
-                .subscribe();
+                .subscribe(
+                  result => {
+
+                  }, error => {
+                    if(error.status === 409){
+                      //mostrar alerta con mensaje custom
+                      const mensaje = "Ups! este número de mesa ya esta asignado a otra mesa, intenta con otro."
+                      this.alertaService.alertaErrorMensajeCustom(mensaje);
+                    }
+                  }
+                );
+
             }else if(result.dismiss === Swal.DismissReason.cancel ){
               this.alertaService.alertaSinModificaciones();
             }
           }
         )
-
+      //volver el listado a su estado original
       this.cancelarEdicion();
-
-
-
     }
 
   }
@@ -183,29 +191,31 @@ export class MesasComponent implements OnInit{
     const dialogRef = this.dialog.open(ModalLateralComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '600px',
+      height: '300px',
       data: {campos: camposMesas, titulo: 'Nueva Mesa'}
     });
 
     dialogRef.afterClosed().subscribe(
       result =>{
-        //estancia del objeto mesa
-        const mesa : Mesa = {
-          id: 0,
-          numeroMesa: result.numero,
-          estado : "Disponible",
-          qr : null
-        };
+        if(result){
+          //estancia del objeto mesa
+          const mesa : Mesa = {
+            id: 0,
+            numeroMesa: result.numero,
+            estado : "Disponible",
+            qr : null
+          };
 
-        this.createMesa(mesa)
-          .subscribe(
-            respuesta =>{
-              this.alertaService.alertaConfirmarCreacion()
-            },
-            error => {
-              console.log(error)
-            }
-          )
+          this.createMesa(mesa)
+            .subscribe(
+              respuesta =>{
+                this.alertaService.alertaConfirmarCreacion()
+              },
+              error => {
+                console.log(error)
+              }
+            )
+        }
       }
     )
   }

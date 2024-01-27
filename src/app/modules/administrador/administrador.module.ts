@@ -31,6 +31,7 @@ import { BootstrapRangeCalendarComponent } from './utils/widgets/bootstrap-range
 import {MenuResponsiveComponent} from "./utils/menu-responsive/menu-responsive.component";
 import { EgresosComponent } from './components/egresos/egresos.component';
 import { ModalEgresosComponent } from './utils/modal-egresos/modal-egresos.component';
+import { PanelDeGestionComponent } from './components/panel-de-gestion/panel-de-gestion.component';
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import { ModalEgresosComponent } from './utils/modal-egresos/modal-egresos.compo
     ModalAgregarCategoriaComponent,
     EgresosComponent,
     ModalEgresosComponent,
+    PanelDeGestionComponent,
 
   ],
     imports: [

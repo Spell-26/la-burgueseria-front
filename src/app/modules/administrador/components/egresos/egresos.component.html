@@ -5,8 +5,8 @@
   <div class="actions-container">
     <bootstrap-range-calendar (fechasEnviadas) = "recibirDatosCalendario($event)" ></bootstrap-range-calendar>
     <!-- FALTA EL BOTÓN PARA CREAR UN NUEVO EGRESO -->
-    <div class="btn-black">
-      <button> <!-- (click) ="crearMesaModal()" -->
+    <div class="btn-black responsive">
+      <button (click)="nuevoEgreso()"> <!-- (click) ="crearMesaModal()" -->
         Nuevo Egreso
       </button>
     </div>
@@ -28,14 +28,17 @@
           {{fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toLocaleString())}}
         </td>
         <td class="row-contenido-element">
-          {{egreso.total}}
+          {{egreso.total.toLocaleString()}}
         </td>
         <td class="row-contenido-element">
           {{egreso.categoria}}
         </td>
         <td class="row-contenido-element">
-          <button class="ver-cuenta">
+          <button class="ver-cuenta" (click)="verEgreso(egreso)">
             Ver detalles
+          </button>
+          <button class="btn-eliminar-element" (click)="deleteEgreso(egreso.id)">
+            Borrar
           </button>
         </td>
       </tr>

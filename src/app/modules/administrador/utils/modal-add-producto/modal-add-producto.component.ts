@@ -48,7 +48,6 @@ export class ModalAddProductoComponent implements OnInit{
       .subscribe(
         data =>{
           this.productos = data.object;
-          console.log(this.productos);
         }
       )
   }

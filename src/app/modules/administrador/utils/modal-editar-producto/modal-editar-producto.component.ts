@@ -36,7 +36,8 @@ export class ModalEditarProductoComponent implements OnInit{
   showScrollIcon : boolean = true;
   //listener para el selector
   menuDesplegado = false;
-
+  // Variable para almacenar la descripción
+  descripcionValue: string = '';
 
   ngOnInit(): void {
 
@@ -74,12 +75,13 @@ export class ModalEditarProductoComponent implements OnInit{
     if(this.producto){
       this.formatearImagen(this.producto);
       this.selectedImage = this.producto.imagenUrl;
+      this.descripcionValue = this.producto.descripcion;
     }
     this.form = this.fb.group({
       nombre: [this.producto.nombre, [Validators.required, Validators.pattern(/^[a-zA-Z ]+$/)]],
-      precio: [this.producto.precio, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      precio: [this.producto.precio, [Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
       imagen: [this.producto.imagen],
-      descripcion: [this.producto.descripcion],
+      descripcion: [this.producto.descripcion, [Validators.required, Validators.maxLength(150)]],
       categoria: [this.producto.categoriaProducto?.id, Validators.required],
       imagenUrl: [this.producto.imagenUrl],
       nuevaImagen : [null]
@@ -105,6 +107,20 @@ export class ModalEditarProductoComponent implements OnInit{
   onImageError() {
     // Puedes realizar otras acciones aquí, como establecer una imagen de reemplazo.
     this.selectedImage = 'assets/img/placeholder-hamburguesa.png';
+  }
+  //caracteres disponibles en la dewscripcion
+  onDescripcionInput(event: Event) {
+    const descripcionControl = this.form.get('descripcion');
+    const value = (event.target as HTMLInputElement).value;
+
+    // Almacenar la descripción en la variable aparte
+    this.descripcionValue = value;
+
+    // Verificar si se supera la longitud máxima
+    if (this.descripcionValue.length > 150) {
+      // Truncar la descripción si es necesario y asignarla al control del formulario
+      descripcionControl?.setValue(this.descripcionValue.slice(0, 150), { emitEvent: false });
+    }
   }
 
 

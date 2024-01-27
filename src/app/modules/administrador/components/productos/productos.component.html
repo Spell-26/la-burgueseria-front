@@ -40,10 +40,12 @@
             <h3 class="nombre-producto">{{producto.nombre}}</h3>
             <span class="precio-producto">$ {{producto.precio.toLocaleString()}}</span>
             <p class="descripcion-producto">
-              {{ producto.descripcion.length > 100 ? producto.descripcion.slice(0, 100) : producto.descripcion }}
+              {{ producto.descripcion.length > 100 ? (mostrarTextoCompleto ? producto.descripcion : producto.descripcion.slice(0, 100) + '...') : producto.descripcion }}
               <span *ngIf="producto.descripcion.length > 100">
-              ...
-            </span>
+                <button type="button" class="btn btn-link" (click)="mostrarTextoCompleto = !mostrarTextoCompleto">
+                  {{ mostrarTextoCompleto ? 'Ver menos' : 'Ver más' }}
+                </button>
+              </span>
             </p>
             <!-- Botones que aparecerán en hover -->
             <div class="botones" *ngIf="mostrarBotones">

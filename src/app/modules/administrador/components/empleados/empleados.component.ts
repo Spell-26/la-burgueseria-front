@@ -152,32 +152,42 @@ export class EmpleadosComponent implements OnInit{
   //****************************
   public crearEmpleadoModal() : void{
     const camposEmpleado = [
-      {nombre : 'documento', label: 'Número de documento', tipo: 'number', validadores: [Validators.required, Validators.pattern(/^[0-9]+$/)]},
+      {nombre : 'documento', label: 'Número de documento', tipo: 'number', validadores: [Validators.required, Validators.pattern(/^[0-9]{7,}$/)]},
       {nombre: 'nombre', label: 'Nombre del empleado', tipo: 'text', validadores: [Validators.required]},
       {nombre: 'apellido', label: 'Apellido del empleado', tipo: 'text', validadores: [Validators.required]},
     ];
     const dialogRef = this.dialog.open(ModalLateralComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '600px',
+      height: '500px',
       data: {campos: camposEmpleado, titulo: 'Nuevo Empleado'}
     });
 
     dialogRef.afterClosed().subscribe(
       result => {
-        const empleado : Empleado = {
-          id: 0,
-          documento: result.documento,
-          nombre: result.nombre,
-          apellido: result.apellido,
-          estado: true
-        };
+        if(result){
+          const empleado : Empleado = {
+            id: 0,
+            documento: result.documento,
+            nombre: result.nombre,
+            apellido: result.apellido,
+            estado: true
+          };
 
-        this.alertaService.alertaConfirmarCreacion();
-
-        this.crearEmpleado(empleado)
-          .subscribe(
-          );
+          this.crearEmpleado(empleado)
+            .subscribe(
+              result => {
+                // en caso de que le creacion haya sido exitosa
+                this.alertaService.alertaConfirmarCreacion();
+              }, error => {
+                if(error.status === 409){
+                  //mostrar alerta de error 409 con mensaje custom
+                  const mensaje : string = "Ups! ya existe un empleado con este número de documento."
+                  this.alertaService.alertaErrorMensajeCustom(mensaje);
+                }
+              }
+            );
+        }
       }
     )
   }

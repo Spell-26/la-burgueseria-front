@@ -90,9 +90,15 @@
   </div>
 </form>
 </mat-dialog-content>
-<ng-container *ngIf="!isReadOnly">
+<ng-container *ngIf="!isReadOnly; else botonCerrar">
   <mat-dialog-actions>
     <button mat-button  class="btn-actualizar-element" (click)="onSubmit()">Guardar</button>
     <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
   </mat-dialog-actions>
 </ng-container>
+
+<ng-template #botonCerrar>
+  <mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" class="btn-actualizar-element boton-solito" style="">Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>

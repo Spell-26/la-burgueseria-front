@@ -50,4 +50,18 @@ export class EgresoService {
 
     return this.http.get(`${this.apiUrl}s-page/fecha`, {headers, params})
   }
+
+  //eliminar egreso
+  deleteEgreso(id : number) : Observable<any>{
+    return this.http.delete(`${this.apiUrl}/${id}`)
+      .pipe(
+        tap(
+          () => {
+            this._refreshNeeded.next();
+          }
+        )
+      )
+  }
+
+
 }

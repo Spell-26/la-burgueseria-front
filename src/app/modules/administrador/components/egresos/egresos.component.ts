@@ -4,6 +4,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
 import {EgresoService} from "../../services/egreso.service";
 import {format} from "date-fns";
+import {ModalEgresosComponent} from "../../utils/modal-egresos/modal-egresos.component";
+import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
+import Swal from "sweetalert2";
 
 @Component({
   selector: 'app-egresos',
@@ -14,7 +17,8 @@ export class EgresosComponent implements OnInit{
   constructor(
     public dialog : MatDialog,
     public fechaService : FechaHoraService,
-    private egresoService : EgresoService
+    private egresoService : EgresoService,
+    private alertaService : AlertasService
   ) {
   }
 
@@ -36,6 +40,13 @@ export class EgresosComponent implements OnInit{
   datosRecibidos! : { fromDate: Date | null, toDate : Date | null }
 
   ngOnInit(): void {
+    this.egresoService.refreshNeeded
+      .subscribe(
+        () => {
+          this.getEgresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+        }
+      );
+    this.getEgresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
   }
 
 
@@ -88,6 +99,78 @@ export class EgresosComponent implements OnInit{
   public  previousPage(){
     this.pagina-=1;
     this.getEgresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+  }
+
+  //PETICIONES HTTP
+
+  //eliminar egreso
+  public deleteEgreso( id : number) : void {
+
+    this.alertaService.alertaConfirmarEliminar()
+      .then(
+        (result) => {
+          if(result.isConfirmed){
+            this.egresoService.deleteEgreso(id)
+              .subscribe()
+          }else if( result.dismiss === Swal.DismissReason.cancel){
+            this.alertaService.alertaSinModificaciones()
+          }
+        }
+      )
+
+
+  }
+
+  //MODALES
+  public nuevoEgreso() : void {
+    const dialogRef = this.dialog.open(ModalEgresosComponent, {
+      width: '400px', // Ajusta el ancho según tus necesidades
+      position: { right: '0' }, // Posiciona el modal a la derecha
+      height: '500px',
+    });
+
+    dialogRef.afterClosed().subscribe(
+      result => {
+        if(result){
+          //crear la entidad egreso
+          const egreso : Egreso = {
+            id: 0,
+            fecha : null,
+            descripcion : result.descripcion,
+            total : result.egreso,
+            categoria : result.tipoEgreso
+          }
+
+          //llamar al servicio de egreso y crear el egreso
+          this.egresoService.crearEgreso(egreso)
+            .subscribe(
+              resul => {
+                //cuando se crea mostrar alerta de creado correctamente
+                this.alertaService.alertaConfirmarCreacion();
+              }, error => {
+                console.log(error)
+              }
+            )
+        }
+      }
+    )
+  }
+
+  //modal para ver el egreso
+  public verEgreso(egreso : Egreso) {
+    const dialogRef = this.dialog.open(ModalEgresosComponent, {
+      width: '400px', // Ajusta el ancho según tus necesidades
+      position: { right: '0' }, // Posiciona el modal a la derecha
+      height: '500px',
+      data : {
+        tipoEgreso : egreso.categoria,
+        egreso : egreso.total.toLocaleString(),
+        descripcion : egreso.descripcion,
+        fecha : this.fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toLocaleString())
+      }
+    });
+
+    dialogRef.afterClosed().subscribe()
   }
 
 }

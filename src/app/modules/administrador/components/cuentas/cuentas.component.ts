@@ -235,59 +235,71 @@ export class CuentasComponent implements OnInit{
 
     dialogRef.afterClosed().subscribe(
       result =>{
-        // crear instancias
-        //estado de la cuenta
-        //todas las cuentas se crean con estado ::por despachar::
-        const estadoCuenta : EstadoCuenta = {
-          id: 1,
-          nombre: "Por despachar"
-        }
-        //cuenta
-        const cuenta : Cuenta = {
-          id: 0,
-          mesa: result.mesa,
-          estadoCuenta: estadoCuenta,
-          fecha: null,
-          total: result.total,
-          abono: 0
-        }
-        //Estancia de empleado por cuenta
-        const empleadoCuenta : EmpleadoCuenta = {
-          id : 0,
-          cuenta: cuenta,
-          empleado: result.empleado
-        }
-        //creando las instancias de productos por cuenta
-        //estos se guardan un array para poder ser guardados secuancialmente
-        const productosCuenta : ProductoCuenta [] = [];
-        //recorrer el result y asignarlo al array de productoCuenta
-        for (let producto of result.productos){
-          //crear instancia de producto por cuenta
-          const productoXCuenta : ProductoCuenta = {
+        if(result){
+          // crear instancias
+          //estado de la cuenta
+          //todas las cuentas se crean con estado ::por despachar::
+          const estadoCuenta : EstadoCuenta = {
+            id: 1,
+            nombre: "Por despachar"
+          }
+          //cuenta
+          const cuenta : Cuenta = {
             id: 0,
+            mesa: result.mesa,
+            estadoCuenta: estadoCuenta,
+            fecha: null,
+            total: result.total,
+            abono: 0
+          }
+          //Estancia de empleado por cuenta
+          const empleadoCuenta : EmpleadoCuenta = {
+            id : 0,
             cuenta: cuenta,
-            producto: producto.obj,
-            cantidad: producto.cantidad,
-            estado: "Por despachar"
-          };
-          //una vez creado la instancia se añade al arreglo donde se contendrán
-          productosCuenta.push(productoXCuenta);
-        }
+            empleado: result.empleado
+          }
+          //creando las instancias de productos por cuenta
+          //estos se guardan un array para poder ser guardados secuancialmente
+          const productosCuenta : ProductoCuenta [] = [];
+          //recorrer el result y asignarlo al array de productoCuenta
+          for (let producto of result.productos){
+            //crear instancia de producto por cuenta
+            const productoXCuenta : ProductoCuenta = {
+              id: 0,
+              cuenta: cuenta,
+              producto: producto.obj,
+              cantidad: producto.cantidad,
+              estado: "Por despachar"
+            };
+            //una vez creado la instancia se añade al arreglo donde se contendrán
+            productosCuenta.push(productoXCuenta);
+          }
 
-        //ORDEN PARA LA CREACION DE UNA CUENTA
-        //1 crear cuenta
-        // 2 crear productos por cuenta
-        // 3 crear empleado cuenta
+          //ORDEN PARA LA CREACION DE UNA CUENTA
+          //1 crear cuenta
+          // 2 crear productos por cuenta
+          // 3 crear empleado cuenta
 
-        //CREAR CUENTA
-        this.cuentaService.crearCuenta(cuenta)
-          .subscribe(
-            data=> {
-              //asignarle a la cuenta el id de la cuenta que ha sido recien creada
-              cuenta.id = data.object.id;
-              //CREAR PRODUCTOS POR CUENTA
-              for (let pc of productosCuenta){
-                this.productosCuentaService.crearProductoCuenta(pc)
+          //CREAR CUENTA
+          this.cuentaService.crearCuenta(cuenta)
+            .subscribe(
+              data=> {
+                //asignarle a la cuenta el id de la cuenta que ha sido recien creada
+                cuenta.id = data.object.id;
+                //CREAR PRODUCTOS POR CUENTA
+                for (let pc of productosCuenta){
+                  this.productosCuentaService.crearProductoCuenta(pc)
+                    .subscribe(
+                      data=> {
+
+                      },
+                      error => {
+                        console.log(error)
+                      }
+                    );
+                };
+                //CREAR EMPLEADO X CUENTA
+                this.empleadoCuentaService.crearEmpleadoCuenta(empleadoCuenta)
                   .subscribe(
                     data=> {
 
@@ -296,25 +308,16 @@ export class CuentasComponent implements OnInit{
                       console.log(error)
                     }
                   );
-              };
-              //CREAR EMPLEADO X CUENTA
-              this.empleadoCuentaService.crearEmpleadoCuenta(empleadoCuenta)
-                .subscribe(
-                  data=> {
+              },
+              error => {
+                console.log(error)
+              }
+            );
 
-                  },
-                  error => {
-                    console.log(error)
-                  }
-                );
-            },
-            error => {
-              console.log(error)
-            }
-          );
+          //alerta confirmación creación exitosa
+          this.alertaService.alertaConfirmarCreacion();
+        }
 
-        //alerta confirmación creación exitosa
-        this.alertaService.alertaConfirmarCreacion();
       }
     )
   }
@@ -332,12 +335,21 @@ export class CuentasComponent implements OnInit{
         }
       );
 
-    const datos = {
-      cuenta: cuenta,
-      empleado: empleado,
-      productos : productosCuenta,
+    let datos = {}
+    if(cuenta.estadoCuenta.nombre == 'Pagada'){
+      datos = {
+        cuenta: cuenta,
+        empleado: empleado,
+        productos : productosCuenta,
+        readOnly : true
+      }
+    }else{
+      datos = {
+        cuenta: cuenta,
+        empleado: empleado,
+        productos : productosCuenta,
+      }
     }
-
 
     const dialogRef = this.dialog.open(ModalEditarCuentaComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
@@ -350,6 +362,7 @@ export class CuentasComponent implements OnInit{
       result => {
 
         if(result){
+          console.log(result)
           //crear instancias
           const cuenta : Cuenta = result.cuenta;
           const productosCuenta : ProductoCuenta[] = [];

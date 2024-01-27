@@ -184,10 +184,7 @@ export class InsumosComponent implements OnInit{
         // @ts-ignore
         const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
         timerInterval = setInterval(() => {
-          // @ts-ignore
-          const remainingSeconds = Swal.getTimerLeft() / 1000;
-          timer.textContent = remainingSeconds.toFixed(1) + "s";
-        }, 100);
+        }, 200);
       },
       willClose: () => {
         clearInterval(timerInterval);
@@ -237,9 +234,6 @@ export class InsumosComponent implements OnInit{
               // @ts-ignore
               const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
               timerInterval = setInterval(() => {
-                // @ts-ignore
-                const remainingSeconds = Swal.getTimerLeft() / 1000;
-                timer.textContent = remainingSeconds.toFixed(1) + "s";
               }, 100);
             },
             willClose: () => {
@@ -266,9 +260,6 @@ export class InsumosComponent implements OnInit{
               // @ts-ignore
               const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
               timerInterval = setInterval(() => {
-                // @ts-ignore
-                const remainingSeconds = Swal.getTimerLeft() / 1000;
-                timer.textContent = remainingSeconds.toFixed(1) + "s";
               }, 100);
             },
             willClose: () => {
@@ -322,10 +313,7 @@ export class InsumosComponent implements OnInit{
               // @ts-ignore
               const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
               timerInterval = setInterval(() => {
-                // @ts-ignore
-                const remainingSeconds = Swal.getTimerLeft() / 1000;
-                timer.textContent = remainingSeconds.toFixed(1) + "s";
-              }, 100);
+              }, 200);
             },
             willClose: () => {
               clearInterval(timerInterval);
@@ -353,10 +341,7 @@ export class InsumosComponent implements OnInit{
               // @ts-ignore
               const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
               timerInterval = setInterval(() => {
-                // @ts-ignore
-                const remainingSeconds = Swal.getTimerLeft() / 1000;
-                timer.textContent = remainingSeconds.toFixed(1) + "s";
-              }, 100);
+              }, 200);
             },
             willClose: () => {
               clearInterval(timerInterval);

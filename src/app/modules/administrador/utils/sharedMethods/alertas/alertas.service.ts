@@ -47,7 +47,7 @@ export class AlertasService {
         if(result.isConfirmed){
           return Swal.fire({
             title: "¡Esta acción es irreversible!",
-            text: "Todas las entidades asociadas a esta tambien serán eliminadas",
+            text: "Todas las entidades asociadas a esta también serán eliminadas",
             icon:"warning",
             color: "#d33",
             showCancelButton: true,
@@ -163,6 +163,23 @@ export class AlertasService {
     });
   }
 
+  //alerta pedir confirmacion para crear
+  public alertaPedirConfirmacionCrear(): Promise<SweetAlertResult>{
+    // @ts-ignore
+    return Swal.fire({
+      title : "¿Deseas guardar?",
+      html: "<p>Aún puedes hacer cambios si lo deseas.</p>",
+      icon: "question",
+      color: "#fff",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, guardar.",
+      cancelButtonText:"Aún tengo cambios por hacer.",
+      reverseButtons: true,
+      background: '#1e1e1e', // Fondo oscuro
+    })
+  }
 
   //alerta temporal confirmar eliminacion
   public alertaEliminadoCorrectamente(){
@@ -185,6 +202,36 @@ export class AlertasService {
           // @ts-ignore
           const remainingSeconds = Swal.getTimerLeft() / 1000;
         }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      }
+    });
+  }
+
+  //Alerta con mensajes customs para errores
+  public alertaErrorMensajeCustom(mensaje : string){
+    let timerInterval: any;
+    // @ts-ignore
+    Swal.fire({
+      title: "¡Error!",
+      html: `<p>${mensaje}</p>`,
+      icon: 'error',
+      timer: 5000,
+      color: "#fff",
+      timerProgressBar: true,
+      position: 'center', // Esquina inferior derecha
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      background: '#1e1e1e', // Fondo oscuro
+      didOpen: () => {
+        Swal.showLoading();
+        // @ts-ignore
+        const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+        timerInterval = setInterval(() => {
+          // @ts-ignore
+          const remainingSeconds = Swal.getTimerLeft() / 1000;
+
+        }, 500);
       },
       willClose: () => {
         clearInterval(timerInterval);

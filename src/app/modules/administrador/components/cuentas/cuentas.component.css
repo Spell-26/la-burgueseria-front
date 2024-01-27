@@ -41,6 +41,9 @@
   cursor: pointer;
 }
 
+.btn-black button {
+  padding: .5em 1em !important;
+}
 
 .row-contenido-element span{
   font-family: WorkSans-Light, serif;
