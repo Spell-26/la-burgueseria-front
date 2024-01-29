@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>{{tituloModal}}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <!-- Campo de ingresar base del dia cuando se inicia el día -->
+    <ng-container>
+      <mat-form-field *ngIf="isIniciarDia">
+        <mat-label>Base del día</mat-label>
+        <input matInput  formControlName="saldoInicioCajaMenor">
+        <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('required')">La base del día es obligatoria.</mat-error>
+        <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('pattern')">Cantidad ingresada no es válida.</mat-error>
+      </mat-form-field>
+    </ng-container>
+  </form>
+</mat-dialog-content>
+
+<!-- Botones accion modal -->
+<ng-container *ngIf="!deshabilitarBotones; else botonCerrar">
+  <mat-dialog-actions >
+    <button mat-button (click)="onSubmit()" class="btn-actualizar-element">Guardar</button>
+    <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+  </mat-dialog-actions>
+</ng-container>
+
+<ng-template #botonCerrar>
+  <button mat-button (click)="onNoClick()" class="btn-actualizar-element boton-solito" style="">Cerrar</button>
+</ng-template>
