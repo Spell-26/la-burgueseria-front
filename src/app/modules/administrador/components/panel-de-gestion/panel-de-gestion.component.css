@@ -1,0 +1,50 @@
+
+.btn-eliminar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+  margin-left: .5em;
+}
+.btn-eliminar-element:hover{
+  border: 1px solid red;
+  color: red;
+  cursor: pointer;
+}
+
+.btn-actualizar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+  margin: 0 1em;
+  cursor: pointer;
+}
+.btn-actualizar-element:hover{
+  border: 1px solid #EBB80D;
+}
+
+/* Estiulos dashboard */
+
+.dashboard-header{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.header-element{
+  width: 100%;
+}
+.acciones-header{
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.btn-black{
+  width: 20% !important;
+}

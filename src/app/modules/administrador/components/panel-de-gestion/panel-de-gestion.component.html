@@ -1,1 +1,28 @@
-<p>panel-de-gestion works!</p>
+<div class="container-section">
+  <header class="header-module dashboard-header">
+    <div class="header-element">
+      <h1>Dashboard</h1>
+    </div>
+    <div class="header-element">
+      <!-- Fecha del dia actual y la hora es dinamica -->
+
+      <h2><span>{{tiempoActual}}</span></h2>
+    </div>
+    <div class="header-element acciones-header">
+      <ng-container *ngIf="isDiaIniciado">
+        <h3>Saldo del inicio del día de hoy: <span>3millones chorrocientos</span></h3>
+      </ng-container>
+      <div class="btn-black">
+        <button (click)="iniciarOTerminarDia()">
+          <span *ngIf="!isDiaIniciado">
+            Iniciar día
+          </span>
+          <span *ngIf="isDiaIniciado">
+            Finalizar día
+          </span>
+        </button>
+      </div>
+    </div>
+
+  </header>
+</div>
