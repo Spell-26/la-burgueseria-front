@@ -7,7 +7,7 @@ export class EnvService {
 
   constructor() { }
 
-  port : number = 8080;
+  port : number = 8090;
   url : string = `http://localhost:${this.port}/api/v1`;
   getPort() : number {
     return this.port;

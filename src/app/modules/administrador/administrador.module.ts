@@ -32,6 +32,7 @@ import {MenuResponsiveComponent} from "./utils/menu-responsive/menu-responsive.c
 import { EgresosComponent } from './components/egresos/egresos.component';
 import { ModalEgresosComponent } from './utils/modal-egresos/modal-egresos.component';
 import { PanelDeGestionComponent } from './components/panel-de-gestion/panel-de-gestion.component';
+import { ModalDashboardComponent } from './utils/modal-dashboard/modal-dashboard.component';
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import { PanelDeGestionComponent } from './components/panel-de-gestion/panel-de-
     EgresosComponent,
     ModalEgresosComponent,
     PanelDeGestionComponent,
+    ModalDashboardComponent,
 
   ],
     imports: [

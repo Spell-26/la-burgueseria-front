@@ -162,6 +162,34 @@ export class AlertasService {
       // Lógica adicional después de cerrar la alerta
     });
   }
+  public alertaDiaIniciadoCorrectamente(){
+    let timerInterval: any;
+    // @ts-ignore
+    Swal.fire({
+      title: "¡Se ha iniciado el dia laboral correctamente!",
+      icon: 'success',
+      timer: 2000,
+      timerProgressBar: true,
+      position: 'center', // Esquina inferior derecha
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      background: '#1e1e1e', // Fondo oscuro
+      didOpen: () => {
+        Swal.showLoading();
+        // @ts-ignore
+        const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+        timerInterval = setInterval(() => {
+          // @ts-ignore
+          const remainingSeconds = Swal.getTimerLeft() / 1000;
+
+        }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      }
+    }).then((result) => {
+      // Lógica adicional después de cerrar la alerta
+    });
+  }
 
   //alerta pedir confirmacion para crear
   public alertaPedirConfirmacionCrear(): Promise<SweetAlertResult>{

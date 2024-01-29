@@ -9,18 +9,24 @@
       <h2><span>{{tiempoActual}}</span></h2>
     </div>
     <div class="header-element acciones-header">
-      <ng-container *ngIf="isDiaIniciado">
-        <h3>Saldo del inicio del día de hoy: <span>3millones chorrocientos</span></h3>
+      <ng-container *ngIf="isDiaIniciado && gestionCaja.length > 0">
+        <h3>Saldo base del día de hoy: <span>${{gestionCaja[0].saldoInicioCajaMenor.toLocaleString()}}</span></h3>
       </ng-container>
       <div class="btn-black">
-        <button (click)="iniciarOTerminarDia()">
-          <span *ngIf="!isDiaIniciado">
+        <ng-container *ngIf="!isDiaIniciado">
+          <button (click)="modalIniciarDia()">
+          <span >
             Iniciar día
           </span>
-          <span *ngIf="isDiaIniciado">
+          </button>
+        </ng-container>
+        <ng-container *ngIf="isDiaIniciado">
+          <button (click)="iniciarOTerminarDia()">
+          <span >
             Finalizar día
           </span>
-        </button>
+          </button>
+        </ng-container>
       </div>
     </div>
 
