@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {format} from "date-fns";
+import {format, parse, addHours} from "date-fns";
 
 @Injectable({
   providedIn: 'root'
@@ -51,5 +51,14 @@ export class FechaHoraService {
     else{
       return "xd"
     }
+  }
+  // Convertir formato personalizado a yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+  public convertirLocalFormatAFormatoEstandar(fechaHoraString: string): string {
+    // Parsear la fecha y hora del formato personalizado
+    const fechaHoraParsed = parse(fechaHoraString, 'dd/M/yyyy, h:mm:ss a', new Date());
+
+    // Formatear la fecha y hora al formato deseado
+    const pattern = 'yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX';
+    return format(fechaHoraParsed, pattern);
   }
 }

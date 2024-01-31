@@ -2,12 +2,49 @@
 <mat-dialog-content>
   <form [formGroup]="form">
     <!-- Campo de ingresar base del dia cuando se inicia el día -->
-    <ng-container>
-      <mat-form-field *ngIf="isIniciarDia">
+    <ng-container *ngIf="isIniciarDia">
+      <mat-form-field >
         <mat-label>Base del día</mat-label>
         <input matInput  formControlName="saldoInicioCajaMenor">
         <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('required')">La base del día es obligatoria.</mat-error>
         <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('pattern')">Cantidad ingresada no es válida.</mat-error>
+      </mat-form-field>
+    </ng-container>
+    <!-- Campos para finalizar el dia -->
+    <ng-container *ngIf="!isIniciarDia">
+      <mat-form-field>
+        <mat-label>Total calculado</mat-label>
+        <input matInput  formControlName="totalCalculado">
+      </mat-form-field>
+
+      <mat-form-field >
+        <mat-label>Total reportado</mat-label>
+        <input matInput  formControlName="totalReportado">
+        <mat-error *ngIf="form.get('totalReportado')?.hasError('required')">Debes reportar el resultado de cuadre de caja.</mat-error>
+        <mat-error *ngIf="form.get('totalReportado')?.hasError('pattern')">Cantidad ingresada no es válida.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field >
+        <mat-label>Base del día</mat-label>
+        <input matInput  formControlName="saldoInicioCajaMenor">
+        <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('required')">La base del día es obligatoria.</mat-error>
+        <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('pattern')">Cantidad ingresada no es válida.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Observaciones</mat-label>
+        <textarea matInput formControlName="observaciones"></textarea>
+        <mat-error *ngIf="form.get('observaciones')?.hasError('required')">Ingresa las observaciones pertinentes.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field >
+        <mat-label>Fecha y hora de apertura</mat-label>
+        <input matInput  formControlName="inicio">
+      </mat-form-field>
+
+      <mat-form-field >
+        <mat-label>Fecha y hora de cierre</mat-label>
+        <input matInput  formControlName="cierre">
       </mat-form-field>
     </ng-container>
   </form>

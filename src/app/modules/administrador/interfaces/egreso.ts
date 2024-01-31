@@ -4,4 +4,5 @@ export interface Egreso {
   descripcion: string;
   total:       number;
   categoria:   string;
+  deduccionDesde : string;
 }

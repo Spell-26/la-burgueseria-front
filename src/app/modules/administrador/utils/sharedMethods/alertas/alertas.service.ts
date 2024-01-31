@@ -162,6 +162,36 @@ export class AlertasService {
       // Lógica adicional después de cerrar la alerta
     });
   }
+
+  //confirmar cierre del dia
+  public alertaConfirmarCierreDia(){
+    let timerInterval: any;
+    // @ts-ignore
+    Swal.fire({
+      title: "¡El cierre de caja ha sido exitoso!",
+      icon: 'success',
+      timer: 2000,
+      timerProgressBar: true,
+      position: 'center', // Esquina inferior derecha
+      showConfirmButton: false, // Ocultar el botón de confirmación
+      background: '#1e1e1e', // Fondo oscuro
+      didOpen: () => {
+        Swal.showLoading();
+        // @ts-ignore
+        const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+        timerInterval = setInterval(() => {
+          // @ts-ignore
+          const remainingSeconds = Swal.getTimerLeft() / 1000;
+
+        }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      }
+    }).then((result) => {
+      // Lógica adicional después de cerrar la alerta
+    });
+  }
   public alertaDiaIniciadoCorrectamente(){
     let timerInterval: any;
     // @ts-ignore
@@ -209,6 +239,22 @@ export class AlertasService {
     })
   }
 
+  //Alerta de confirmación con mensaje custom
+  public alertaPedirConfirmacionMensajeCustom(titulo : string, subTitulo : string, colorTexto : string) : Promise<SweetAlertResult>{
+    return Swal.fire({
+      title : `${titulo}`,
+      icon: "question",
+      html: `<p>${subTitulo}</p>`,
+      color: `${colorTexto}`,
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Aceptar.",
+      cancelButtonText:"Cancelar.",
+      reverseButtons: true,
+      background: '#1e1e1e', // Fondo oscuro
+    })
+  }
   //alerta temporal confirmar eliminacion
   public alertaEliminadoCorrectamente(){
     let timerInterval: any;

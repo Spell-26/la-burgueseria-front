@@ -43,4 +43,18 @@ export class GestionCajaService {
 
     return this.http.get(`${this.apiUrl}/fechas`, {headers});
   }
+
+  //Actualizar gestion caja
+  actualizarGestionCaja(gestionCaja : GestionCaja) : Observable<any>{
+    const id : number = gestionCaja.id;
+
+    return this.http.put(`${this.apiUrl}/${id}`, gestionCaja)
+      .pipe(
+        tap(
+          () => {
+            this._refreshNeeded.next();
+          }
+        )
+      );
+  }
 }

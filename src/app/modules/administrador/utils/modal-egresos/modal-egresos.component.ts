@@ -12,6 +12,7 @@ export class ModalEgresosComponent {
 
   form : FormGroup;
   tiposEstados  = ["Compra de insumos", "Pago de nómina", "Gastos operativos", "Mantenimiento y reparación", "Impuestos", "Otros"];
+  origenDeduccion = ["Caja menor", "Caja mayor"];
   deshabilitarBotones = false;
   constructor(
     public dialogRef : MatDialogRef<ModalEgresosComponent>,
@@ -24,7 +25,8 @@ export class ModalEgresosComponent {
         tipoEgreso : [null, Validators.required],
         egreso: [null, [Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
         descripcion: [null, Validators.required],
-        fecha: [null]
+        fecha: [null],
+        deduccionDesde : [null, Validators.required],
       }
     );
 
@@ -32,6 +34,7 @@ export class ModalEgresosComponent {
     if(data){
 
       this.form.get('tipoEgreso')?.setValue(data.tipoEgreso);
+      this.form.get('deduccionDesde')?.setValue(data.deduccionDesde);
       this.form.get('egreso')?.setValue(data.egreso);
       this.form.get('descripcion')?.setValue(data.descripcion);
       this.form.get('fecha')?.setValue(data.fecha)
@@ -40,6 +43,7 @@ export class ModalEgresosComponent {
       this.form.get('egreso')?.disable();
       this.form.get('descripcion')?.disable();
       this.form.get('fecha')?.disable();
+      this.form.get('deduccionDesde')?.disable();
 
       this.deshabilitarBotones = true;
     }

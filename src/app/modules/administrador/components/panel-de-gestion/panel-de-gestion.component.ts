@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {interval, Subscription} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
@@ -6,6 +6,8 @@ import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service"
 import {ModalDashboardComponent} from "../../utils/modal-dashboard/modal-dashboard.component";
 import {GestionCajaService} from "../../services/gestion-caja.service";
 import {GestionCaja} from "../../interfaces/gestionCaja";
+import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
+import {format} from "date-fns";
 
 @Component({
   selector: 'app-panel-de-gestion',
@@ -30,6 +32,9 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
     public fechaService : FechaHoraService,
     private alertaService : AlertasService,
     private gestionCajaService : GestionCajaService,
+    private localStore : LocalService,
+    private ngZone: NgZone,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
   }
 
@@ -90,26 +95,32 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
     return valor < 10 ? `0${valor}` : `${valor}`;
   }
 
-  public iniciarOTerminarDia(){
+  private iniciarOTerminarDia(valor: boolean) {
+    this.ngZone.run(() => {
+      this.isDiaIniciado = valor;
+      this.changeDetectorRef.detectChanges(); // Forzar la actualización de la interfaz de usuario
+    });
+  }
 
-    //debe lanzar alerta de confirmación para iniciar el dia
-    //en caso de inicar el día debe mostrar un modal para asignar el valor de inicio en la caja menor
-    //el valor de la caja menor se guarda en local storage junto con el estado de la variable isDiaIniciado
-    //cuando se cierra y el dia debe pedir confirmacion
-    //si es acertiva se abre modal para que se ingrese el total recaudado y se guarda en la base de datos
-    //EN CASO DE QUE SE VAYA A TERMINAR EL DIA SE GIGUE ESTA LOGICA
 
-      //modificar esta logica luego
-      this.isDiaIniciado = !this.isDiaIniciado;
-
+  public finalizarDia(){
+    //pedir confirmacion para finalizar el dia
+    const titulo : string = "¿Desea finalizar el día?"
+    const subTitulo : string = "Esta acción es irreversible."
+    const colorTexto = "#d33"
+    this.alertaService.alertaPedirConfirmacionMensajeCustom(titulo, subTitulo, colorTexto)
+      .then(
+        (result) => {
+          if(result.isConfirmed){
+            this.modalFinalizarDia()
+          }
+        }
+      );
   }
 
   //PETICIONES HTTP
   //iniciarDIa
-  private iniciarDia(gestionCaja : GestionCaja){
-    this.gestionCajaService.crearGestionCaja(gestionCaja)
-      .subscribe()
-  }
+
   //obtener la reportes de cja por fecha
   private getGestionCajaByFechas(fechaInicio : string , fechaFin : string | null){
     this.gestionCajaService.getGestionCajaByFecha(fechaInicio, fechaFin)
@@ -118,7 +129,13 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
           if(data){
             this.gestionCaja = data.object;
             if(data.object.length > 0){
-              this.isDiaIniciado = true;
+              if(data.object.estadoCaja == true){
+                this.iniciarOTerminarDia(true);
+                this.localStore.saveData('estadoDia', true.toString());
+              }
+            }else{
+              this.iniciarOTerminarDia(false);
+              this.localStore.saveData('estadoDia', false.toString());
             }
           }
         }
@@ -127,6 +144,7 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
 
   // MODALES
 
+  //Modal iniciar dia
   public modalIniciarDia(){
     const dialogRef = this.dialog.open(ModalDashboardComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
@@ -138,8 +156,6 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
       result => {
         if(result){
           let fecha: Date = new Date(this.fechaHoraInicioUTC);
-          // Convertir la fecha a formato UTC
-          let fechaUTC: Date = new Date(fecha.getUTCFullYear(), fecha.getUTCMonth(), fecha.getUTCDate(), fecha.getUTCHours(), fecha.getUTCMinutes(), fecha.getUTCSeconds());
 
           const caja : GestionCaja = {
             id : 0,
@@ -156,9 +172,17 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
             .subscribe(
               result=>{
                 this.alertaService.alertaDiaIniciadoCorrectamente();
-                this.iniciarOTerminarDia();
+                this.iniciarOTerminarDia(true);
+                //guardar el estado de la caja y la fecha en local storage
+                this.localStore.saveData('fecha', fecha.toISOString());
+                this.localStore.saveData('estadoDia', caja.estadoCaja.toString());
               }, error => {
-                console.log(error);
+                //en caso de que la base de datos devuelva un status CONFLICT
+                //aparecera una alerta indicando que el dia laboral ya fue finalizado
+                if(error.status === 409){
+                  const mensaje : string = "La caja del día de hoy ya ha sido cerrada, por favor espera al día siguiente para iniciarla nuevamente.";
+                  this.alertaService.alertaErrorMensajeCustom(mensaje);
+                }
               }
             )
 
@@ -166,5 +190,55 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
         }
       }
     )
+  }
+
+  //Modal finalizar dia
+  private modalFinalizarDia(){
+    const dialogRef = this.dialog.open(ModalDashboardComponent, {
+      width: '400px', // Ajusta el ancho según tus necesidades
+      position: { right: '0' }, // Posiciona el modal a la derecha
+      height: '600px',
+      data : {
+        id : this.gestionCaja[0].id,
+        totalCalculado: this.gestionCaja[0].totalCalculado,
+        totalReportado : this.gestionCaja[0].totalReportado,
+        saldoInicioCajaMenor : this.gestionCaja[0].saldoInicioCajaMenor,
+        observaciones : this.gestionCaja[0].observaciones,
+        fechaHoraInicio: this.gestionCaja[0].fechaHorainicio,
+        fechaHoraCierre : this.gestionCaja[0].fechaHoraCierre,
+        estadoCaja : this.gestionCaja[0].estadoCaja,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(
+      result => {
+
+        //crear instancia de gestion caja
+        const gestionCaja : GestionCaja = {
+          id : result.id,
+          totalCalculado : result.totalCalculado,
+          totalReportado : result.totalReportado,
+          saldoInicioCajaMenor : result.saldoInicioCajaMenor,
+          observaciones : result.observaciones,
+          fechaHorainicio : result.fechaHoraInicio,
+          fechaHoraCierre : result.fechaHoraCierre,
+          estadoCaja : result.estadoCaja
+        };
+
+        //actualizar el registro en la base de datos
+        this.gestionCajaService.actualizarGestionCaja(gestionCaja)
+          .subscribe(
+            result =>{
+              this.alertaService.alertaConfirmarCierreDia();
+              //cambiar el estado del dia
+              this.iniciarOTerminarDia(false);
+              //cambiar el estado en local storage a false
+              this.localStore.saveData('estadoDia', gestionCaja.estadoCaja.toString());
+            }, error => {
+              console.log(error);
+            }
+          );
+      }
+    );
   }
 }

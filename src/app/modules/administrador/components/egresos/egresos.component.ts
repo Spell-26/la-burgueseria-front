@@ -138,7 +138,8 @@ export class EgresosComponent implements OnInit{
             fecha : null,
             descripcion : result.descripcion,
             total : result.egreso,
-            categoria : result.tipoEgreso
+            categoria : result.tipoEgreso,
+            deduccionDesde : result.deduccionDesde
           }
 
           //llamar al servicio de egreso y crear el egreso
@@ -166,7 +167,8 @@ export class EgresosComponent implements OnInit{
         tipoEgreso : egreso.categoria,
         egreso : egreso.total.toLocaleString(),
         descripcion : egreso.descripcion,
-        fecha : this.fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toLocaleString())
+        fecha : this.fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toLocaleString()),
+        deduccionDesde : egreso.deduccionDesde
       }
     });
 

@@ -19,6 +19,7 @@
           <th class="row-header-element">FECHA DEL EGRESO</th>
           <th class="row-header-element">TOTAL DEL EGRESO</th>
           <th class="row-header-element">CATEGORÍA</th>
+          <th class="row-header-element">ORIGEN</th>
           <th class="row-header-element">ACCIONES</th>
         </tr>
       </thead>
@@ -28,10 +29,13 @@
           {{fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toLocaleString())}}
         </td>
         <td class="row-contenido-element">
-          {{egreso.total.toLocaleString()}}
+          ${{egreso.total.toLocaleString()}}
         </td>
         <td class="row-contenido-element">
           {{egreso.categoria}}
+        </td>
+        <td class="row-contenido-element">
+          {{egreso.deduccionDesde}}
         </td>
         <td class="row-contenido-element">
           <button class="ver-cuenta" (click)="verEgreso(egreso)">

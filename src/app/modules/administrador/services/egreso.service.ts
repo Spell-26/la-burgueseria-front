@@ -64,4 +64,15 @@ export class EgresoService {
   }
 
 
+  //obtener lista de egresos entre dos fechas
+  getListEgresoByFecha(fechaInicio : string, fechaFin : string | null) : Observable<any>{
+    let headers: HttpHeaders = new HttpHeaders()
+      .set('fechaInicio', new Date(fechaInicio).toISOString());
+
+    if (fechaFin != null) {
+      headers = headers.set('fechaFin', new Date(fechaFin).toISOString());
+    }
+
+    return this.http.get(`${this.apiUrl}s/fechas-horario-laboral`, {headers})
+  }
 }

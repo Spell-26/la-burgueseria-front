@@ -20,6 +20,18 @@
     </mat-form-field>
 
     <mat-form-field>
+      <mat-label>
+        Origen del egreso
+      </mat-label>
+      <mat-select formControlName="deduccionDesde">
+        <mat-option *ngFor="let origen of origenDeduccion" [value]="origen">
+          {{origen}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('deduccionDesde')?.hasError('required')">Debes seleccionar el origen del egreso</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
       <mat-label>Descripción del egreso</mat-label>
       <textarea matInput formControlName="descripcion"></textarea>
       <mat-error *ngIf="form.get('descripcion')?.hasError('required')">Ingresa la descripción del egreso</mat-error>
