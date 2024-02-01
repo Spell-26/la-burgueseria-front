@@ -35,12 +35,26 @@
       <h2>Así va mi negocio.</h2>
 
     </div>
+    <ng-container *ngIf="resumenEgreso.length > 0 || resumenCaja.length > 0; else cargando">
     <ng-container *ngIf="resumenEgreso.length > 0">
+      <h3>Egresos</h3>
       <app-zoomeable-chart [seriesName] = "'Egresos'" [resumenData] = "resumenEgreso"></app-zoomeable-chart>
     </ng-container>
     <ng-container *ngIf="resumenCaja.length > 0">
+      <h3>Cuadres de caja</h3>
       <app-contrast-chart [resumenCaja] = "resumenCaja"></app-contrast-chart>
     </ng-container>
+    </ng-container>
+
+
 
   </section>
 </div>
+
+
+<ng-template #cargando>
+  <div class="cargando">
+    <h2>Aún no hay datos suficientes para que puedas ver tus resumenes diarios.</h2>
+    <img src="assets/img/yellow-cat.png" alt="">
+  </div>
+</ng-template>

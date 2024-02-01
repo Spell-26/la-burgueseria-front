@@ -84,8 +84,6 @@ export class ZoomeableChartComponent {
       size: 0
     };
     this.title = {
-      text: this.seriesName,
-      align: "left"
     };
     this.fill = {
       type: "gradient",
