@@ -75,4 +75,9 @@ export class EgresoService {
 
     return this.http.get(`${this.apiUrl}s/fechas-horario-laboral`, {headers})
   }
+
+  //obtener resumen de egresos
+  getResumen() : Observable<any>{
+    return this.http.get(`${this.apiUrl}s/resumen`)
+  }
 }

@@ -33,6 +33,9 @@ import { EgresosComponent } from './components/egresos/egresos.component';
 import { ModalEgresosComponent } from './utils/modal-egresos/modal-egresos.component';
 import { PanelDeGestionComponent } from './components/panel-de-gestion/panel-de-gestion.component';
 import { ModalDashboardComponent } from './utils/modal-dashboard/modal-dashboard.component';
+import { ZoomeableChartComponent } from './utils/graficos/zoomeable-chart/zoomeable-chart.component';
+import {NgApexchartsModule} from "ng-apexcharts";
+import { ContrastChartComponent } from './utils/graficos/contrast-chart/contrast-chart.component';
 
 
 @NgModule({
@@ -58,6 +61,8 @@ import { ModalDashboardComponent } from './utils/modal-dashboard/modal-dashboard
     ModalEgresosComponent,
     PanelDeGestionComponent,
     ModalDashboardComponent,
+    ZoomeableChartComponent,
+    ContrastChartComponent,
 
   ],
     imports: [
@@ -74,7 +79,8 @@ import { ModalDashboardComponent } from './utils/modal-dashboard/modal-dashboard
         MatSelectModule,
         MatCheckboxModule,
         BootstrapRangeCalendarComponent,
-        MenuResponsiveComponent
+        MenuResponsiveComponent,
+        NgApexchartsModule
     ]
 })
 export class AdministradorModule { }

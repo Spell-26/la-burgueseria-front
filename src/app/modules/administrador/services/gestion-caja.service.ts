@@ -57,4 +57,8 @@ export class GestionCajaService {
         )
       );
   }
+  //obtener el resumen
+  getResumen() : Observable<any>{
+    return this.http.get(`${this.apiUrl}/resumen`);
+  }
 }

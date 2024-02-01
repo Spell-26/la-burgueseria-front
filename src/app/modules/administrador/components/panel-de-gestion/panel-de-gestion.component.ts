@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
-import {interval, Subscription} from "rxjs";
+import {forkJoin, interval, Subscription} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
@@ -8,6 +8,7 @@ import {GestionCajaService} from "../../services/gestion-caja.service";
 import {GestionCaja} from "../../interfaces/gestionCaja";
 import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 import {format} from "date-fns";
+import {EgresoService} from "../../services/egreso.service";
 
 @Component({
   selector: 'app-panel-de-gestion',
@@ -25,7 +26,9 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   fechaHoraFinUTC : string | null = null;
   //gestionCaja
   public gestionCaja : GestionCaja[] = [];
-
+  //variables para los reportes de cierre de caja y de egresos
+  resumenCaja : any [] = [];
+  resumenEgreso : any[] = [];
 
   constructor(
     public dialog : MatDialog,
@@ -35,6 +38,7 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
     private localStore : LocalService,
     private ngZone: NgZone,
     private changeDetectorRef: ChangeDetectorRef,
+    private egresoService : EgresoService
   ) {
   }
 
@@ -61,6 +65,9 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
 
     //al iniciar el compoente buscar si hay ahy una caja abierda ese mismo dia
     this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+    //obtener resumen
+    this.getResumen();
+
   }
 
   //FUNCIONES
@@ -140,6 +147,25 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
           }
         }
       )
+  }
+  private getResumen(){
+    //consultar los resumen de cajas cerradas y de egresos
+    forkJoin([
+      this.gestionCajaService.getResumen(),
+      this.egresoService.getResumen()
+    ]).subscribe(
+      ([cajaResult, egresoResult]) => {
+        if(cajaResult.object.length > 0){
+          this.resumenCaja = cajaResult.object
+        }
+
+        if(egresoResult.object.length > 0){
+          this.resumenEgreso = egresoResult.object
+        }
+      }, error => {
+        console.log(error);
+      }
+    );
   }
 
   // MODALES

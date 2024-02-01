@@ -48,3 +48,14 @@
 .btn-black{
   width: 20% !important;
 }
+
+#titulo-seccion{
+  margin-top: .5em;
+  padding-left: .2em;
+  width: 100%;
+}
+
+#titulo-seccion h2{
+  font-family: WorkSans, serif;
+  font-weight: normal;
+}

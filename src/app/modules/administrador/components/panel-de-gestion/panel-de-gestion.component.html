@@ -1,5 +1,5 @@
 <div class="container-section">
-  <header class="header-module dashboard-header">
+  <header class="header-module dashboard-header actions-container">
     <div class="header-element">
       <h1>Dashboard</h1>
     </div>
@@ -8,7 +8,7 @@
 
       <h2><span>{{tiempoActual}}</span></h2>
     </div>
-    <div class="header-element acciones-header">
+    <div class="header-element acciones-header ">
       <ng-container *ngIf="isDiaIniciado && gestionCaja.length > 0">
         <h3>Saldo base del día de hoy: <span>${{gestionCaja[0].saldoInicioCajaMenor.toLocaleString()}}</span></h3>
       </ng-container>
@@ -29,6 +29,18 @@
         </ng-container>
       </div>
     </div>
-
   </header>
+  <section class="component-main-content">
+    <div id="titulo-seccion">
+      <h2>Así va mi negocio.</h2>
+
+    </div>
+    <ng-container *ngIf="resumenEgreso.length > 0">
+      <app-zoomeable-chart [seriesName] = "'Egresos'" [resumenData] = "resumenEgreso"></app-zoomeable-chart>
+    </ng-container>
+    <ng-container *ngIf="resumenCaja.length > 0">
+      <app-contrast-chart [resumenCaja] = "resumenCaja"></app-contrast-chart>
+    </ng-container>
+
+  </section>
 </div>
