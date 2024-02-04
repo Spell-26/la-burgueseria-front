@@ -20,16 +20,26 @@ export class EgresoService {
   private apiUrl = `${this.env.getUrl()}/egreso`;
 
   //Crear egreso
-  crearEgreso(egreso : Egreso) : Observable<any>{
-    return this.http.post(this.apiUrl, egreso)
+  crearEgreso(egreso: Egreso): Observable<any> {
+    const formData = new FormData();
+
+    formData.append('descripcion', egreso.descripcion);
+    formData.append('fecha', '');
+    formData.append('total', egreso.total.toString());
+    formData.append('categoria', egreso.categoria);
+    formData.append('deduccionDesde', egreso.deduccionDesde);
+    formData.append('soporte', egreso.soporte);
+
+    return this.http.post(this.apiUrl, formData)
       .pipe(
         tap(
           () => {
             this._refreshNeeded.next();
           }
         )
-      )
+      );
   }
+
 
   //obtener egresos paginados filtrados por fecha
   getEgresoPageableByFecha(fechaInicio : string, fechaFin : string | null,

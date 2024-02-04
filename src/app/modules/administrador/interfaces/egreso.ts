@@ -5,4 +5,5 @@ export interface Egreso {
   total:       number;
   categoria:   string;
   deduccionDesde : string;
+  soporte:            any;
 }

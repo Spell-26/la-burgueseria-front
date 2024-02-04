@@ -116,3 +116,49 @@ svg:hover {
   width: 30%;
   margin: 0 auto 1.2em auto;
 }
+
+/*Mensaje del fileError*/
+.error-message{
+  color: red;
+  font-family: WorkSans-Light, serif;
+}
+/*Imagen mostrada*/
+.selected-image{
+  width: 100%;
+  text-align: center;
+  margin-bottom: .6em;
+  cursor: pointer;
+}
+.selected-image img {
+  width: 80%;
+  max-height: 15em;
+  object-fit: fill;
+  border-radius: 1em;
+}
+
+.img-selector{
+  text-align: center;
+  margin-top: 2.3em;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: 0 auto;
+}
+.img-selector input{
+  display: none;
+}
+.img-selector label{
+  width: 100%;
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+  cursor: pointer;
+}
+.img-selector label:hover{
+  border: 1px solid green;
+  color: green;
+  cursor: pointer;
+}

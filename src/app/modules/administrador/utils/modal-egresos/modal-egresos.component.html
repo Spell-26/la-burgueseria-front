@@ -37,6 +37,22 @@
       <mat-error *ngIf="form.get('descripcion')?.hasError('required')">Ingresa la descripción del egreso</mat-error>
     </mat-form-field>
 
+    <div class="img-selector" *ngIf="!data">
+      <label class="file-upload-button" for="file-upload">Soporte del egreso</label>
+      <input type="file" accept="image/*" (change)="onFileChange($event)" id="file-upload">
+      <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
+      <div class="error-message" *ngIf="fileError">{{ fileError }}</div>
+    </div>
+    <div style="width: 100%; text-align: center">
+      <h4>Soporte del egreso</h4>
+    </div>
+
+    <div *ngIf="selectedImage" class="selected-image" data-toggle="tooltip" data-placement="top" title="Ver soporte">
+        <img [src]="selectedImage" alt="Imagen seleccionada" (error)="onImageError()" (click)="descargarImagen()">
+
+
+    </div>
+
     <ng-container *ngIf="data">
       <mat-form-field>
         <mat-label>Fecha</mat-label>
