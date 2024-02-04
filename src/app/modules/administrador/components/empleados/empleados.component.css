@@ -68,3 +68,9 @@
 .editable:hover{
   background-color: rgba(85, 135, 73, 0.42);
 }
+.activo{
+  color: greenyellow;
+}
+.inactivo{
+  color: red;
+}

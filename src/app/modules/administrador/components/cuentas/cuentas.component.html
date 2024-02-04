@@ -21,9 +21,10 @@
         </mat-select>
       </mat-form-field>
 
-      <div class="btn-black">
+      <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nueva cuenta">
         <button (click)="modalCrearCuenta()"> <!-- (click) ="crearMesaModal()" -->
-          Nueva Cuenta
+          <img src="assets/icons/new.svg" alt="">
+          <span>Nueva cuenta</span>
         </button>
       </div>
     </div>
@@ -108,7 +109,7 @@
     </td>
     <td class="row-contenido-element">
       <button class="ver-cuenta" (click)="verCuenta(cuenta)">
-        Ver
+        Gestionar
       </button>
     </td>
   </tr>
@@ -146,7 +147,7 @@
       </td>
       <td class="row-contenido-element">
         <button class="ver-cuenta" (click)="verCuenta(cuenta)">
-          Ver
+          Gestionar
         </button>
       </td>
     </ng-container>

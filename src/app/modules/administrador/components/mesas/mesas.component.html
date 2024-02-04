@@ -6,9 +6,10 @@
     <div class="search-container">
       <input type="number" placeholder="Buscar mesa..." [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarProductos()" -->
     </div>
-    <div class="btn-black">
+    <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nueva mesa">
       <button (click) ="crearMesaModal()"> <!-- (click)="openModal()" -->
-        Nueva mesa
+        <img src="assets/icons/new.svg" alt="">
+        <span>Nueva mesa</span>
       </button>
     </div>
   </div>

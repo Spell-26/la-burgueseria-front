@@ -6,9 +6,10 @@
     <div class="search-container">
       <input type="text" placeholder="Buscar producto..." [(ngModel)]="nombreBusqueda" (keyup)="buscarProductos()"> <!--   -->
     </div>
-    <div class="btn-black">
+    <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nuevo producto">
       <button (click)="modalNuevoProducto()">
-        Nuevo Producto
+        <img src="assets/icons/new.svg" alt="">
+        <span>Nuevo producto</span>
       </button>
     </div>
   </div>

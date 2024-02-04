@@ -40,9 +40,6 @@
   color: red;
   cursor: pointer;
 }
-.btn-black button{
-  padding: .8em .6em !important;
-}
 
 .row-contenido-element span{
   font-family: WorkSans-Light, serif;

@@ -5,9 +5,10 @@
   <div class="actions-container">
     <bootstrap-range-calendar (fechasEnviadas) = "recibirDatosCalendario($event)" ></bootstrap-range-calendar>
     <!-- FALTA EL BOTÓN PARA CREAR UN NUEVO EGRESO -->
-    <div class="btn-black responsive">
+    <div class="btn-black responsive" data-toggle="tooltip" data-placement="top" title="Nuevo egreso">
       <button (click)="nuevoEgreso()"> <!-- (click) ="crearMesaModal()" -->
-        Nuevo Egreso
+        <img src="assets/icons/new.svg" alt="">
+        <span>Nuevo egreso</span>
       </button>
     </div>
   </div>

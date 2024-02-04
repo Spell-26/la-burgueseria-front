@@ -27,6 +27,7 @@ export class InsumosComponent implements OnInit{
   modoEdicion :boolean = false;
   cantidadEditada : number = 0;
   insumoEditandoIndex : number | null = null;
+  nombreEditado : string = '';
 
   constructor(private insumosService : InsumosService,
               public dialog : MatDialog
@@ -57,7 +58,7 @@ export class InsumosComponent implements OnInit{
     const dialogRef = this.dialog.open(ModalInsumosComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '600px'
+      height: '450px'
     });
     //cerrar modal y realizar una acción, en este caso crear un insumo
     dialogRef.afterClosed().subscribe(result => {
@@ -79,11 +80,6 @@ export class InsumosComponent implements OnInit{
   public setIsNombreBusqueda(valor : boolean) :void{
     this.isNombreBusqueda = valor;
   }
-  public limpiarBusqueda(){
-    this.isNombreBusqueda = false;
-    this.getAllInsumos();
-    this.nombreBusqueda ="";
-  }
   public  nextPage(){
     this.pagina+=1;
     this.getAllInsumos();
@@ -97,10 +93,12 @@ export class InsumosComponent implements OnInit{
     this.modoEdicion = true;
     this.insumoEditandoIndex = index;
     this.cantidadEditada = this.insumos[index].cantidad;
+    this.nombreEditado = this.insumos[index].nombre;
   }
   public guardarEdicion(index : number){
     let dato : insumo = this.insumos[index];
     dato.cantidad = this.cantidadEditada;
+    dato.nombre = this.nombreEditado;
     this.insumosService.actualizarInsumos(dato)
       .subscribe();
     this.cancelarEdicion();
@@ -108,6 +106,7 @@ export class InsumosComponent implements OnInit{
   cancelarEdicion(){
     this.modoEdicion = false;
     this.cantidadEditada = 0;
+    this.nombreEditado = '';
     this.insumoEditandoIndex = null;
   }
 

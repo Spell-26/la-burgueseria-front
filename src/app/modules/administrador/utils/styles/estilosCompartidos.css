@@ -31,6 +31,9 @@
 /*    ESTILOS COMPARTIDOS V2 */
 .component-main-component {
   margin-top: 1.5em;
+  max-width: -webkit-fill-available;
+  overflow-x: scroll;
+  padding-bottom: .8em;
 }
 .btn-eliminar-element{
   padding: .8em;
@@ -92,7 +95,11 @@
   border: 0;
 }
 .btn-black{
-  width: 10%;
+  width: 40%
+}
+.btn-black button span{
+  margin-left: .1em;
+  font-size: .8em;
 }
 .btn-black button{
   border: 1px solid #3C3B3B;
@@ -153,7 +160,11 @@
 }
 
 /* ESTILOS TABLA*/
-.tabla-listado, .row-header-element, .row-contenido-element{
+.row-header-element{
+  background-color: rgba(74, 74, 74, 0.27);
+}
+
+.tabla-listado,.row-header-element, .row-contenido-element{
   border: 1px solid #3C3B3B;
   border-collapse: collapse;
   padding: .7em;

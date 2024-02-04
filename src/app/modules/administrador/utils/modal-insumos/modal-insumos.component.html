@@ -8,7 +8,8 @@
     </mat-form-field>
     <mat-form-field>
       <input matInput placeholder="Cantidad" formControlName="cantidad" required>
-      <mat-error *ngIf="form.get('cantidad')?.hasError('pattern')">Solo se permiten números</mat-error>
+      <mat-error *ngIf="form.get('cantidad')?.hasError('required')">La cantidad es obligatoria</mat-error>
+      <mat-error *ngIf="form.get('cantidad')?.hasError('pattern')">Cantidad no válida</mat-error>
     </mat-form-field>
   </form>
 </mat-dialog-content>

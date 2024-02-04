@@ -78,8 +78,9 @@ export class EmpleadosComponent implements OnInit{
       estado: !this.empleados[index].estado
     };
 
-    //alerta confirmar edicion
-    this.alertaService.alertaPedirConfirmacionEditar()
+    const titulo: string = "Deseas cambiar el estado de este empleado?";
+
+    this.alertaService.alertaPedirConfirmacionMensajeCustom(titulo, '', '#fff')
       .then(
         (result) => {
           if(result.isConfirmed){
@@ -91,7 +92,6 @@ export class EmpleadosComponent implements OnInit{
           }
         }
       )
-
 
 
 

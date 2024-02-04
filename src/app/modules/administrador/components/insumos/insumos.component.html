@@ -10,9 +10,10 @@
     <div class="search-container">
       <input type="text" placeholder="Buscar insumo..." [(ngModel)]="nombreBusqueda" (keyup)="buscarInsumos()">
     </div>
-    <div class="btn-black">
+    <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nuevo insumo">
       <button (click)="openDialog()">
-        Nuevo Insumo
+        <img src="assets/icons/new.svg" alt="">
+        <span>Nuevo insumo</span>
       </button>
     </div>
   </div>
@@ -34,7 +35,14 @@
         </thead>
         <tbody class="contenido-tabla">
           <tr class="row-contenido-tabla" *ngFor="let insumo of insumos; let i = index" >
-            <td class="row-contenido-element">{{insumo.nombre}}</td>
+            <td class="row-contenido-element" *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)" (click)="iniciarEdicion(i)">
+              {{insumo.nombre}}
+            </td>
+            <td class="row-contenido-element" *ngIf="modoEdicion && i === insumoEditandoIndex">
+             {{insumo.nombre}}
+              <span><b>-</b> Nuevo nombre</span>
+              <input type="text" [(ngModel)] = "nombreEditado">
+            </td>
             <td class="row-contenido-element, editable" *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)" (click)="iniciarEdicion(i)">
               {{insumo.cantidad}}
             </td>

@@ -15,16 +15,14 @@
       <div class="btn-black">
         <ng-container *ngIf="!isDiaIniciado">
           <button (click)="modalIniciarDia()">
-          <span >
-            Iniciar día
-          </span>
+            <img src="assets/icons/lines.svg" alt="">
+            <span>Iniciar día</span>
           </button>
         </ng-container>
         <ng-container *ngIf="isDiaIniciado">
           <button (click)="finalizarDia()">
-          <span >
-            Finalizar día
-          </span>
+            <img src="assets/icons/bed.svg" alt="">
+            <span>Finalizar día</span>
           </button>
         </ng-container>
       </div>

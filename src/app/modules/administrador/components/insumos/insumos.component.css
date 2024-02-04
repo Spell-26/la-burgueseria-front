@@ -65,6 +65,9 @@
 .btn-actualizar-element:hover{
   border: 1px solid #EBB80D;
 }
+.editable:nth-child(even) {
+  border: 1px solid #3C3B3B;
+}
 .editable:hover{
   background-color: rgba(85, 135, 73, 0.42);
 }

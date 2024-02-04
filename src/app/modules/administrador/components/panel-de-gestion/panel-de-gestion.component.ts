@@ -9,6 +9,8 @@ import {GestionCaja} from "../../interfaces/gestionCaja";
 import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 import {format} from "date-fns";
 import {EgresoService} from "../../services/egreso.service";
+import {CuentasService} from "../../services/cuentas.service";
+import {Cuenta} from "../../interfaces/cuenta";
 
 @Component({
   selector: 'app-panel-de-gestion',
@@ -36,9 +38,8 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
     private alertaService : AlertasService,
     private gestionCajaService : GestionCajaService,
     private localStore : LocalService,
-    private ngZone: NgZone,
-    private changeDetectorRef: ChangeDetectorRef,
-    private egresoService : EgresoService
+    private egresoService : EgresoService,
+    private cuentaService : CuentasService
   ) {
   }
 
@@ -60,6 +61,8 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
         () => {
           //logica cuando se debe refrescar el componente
           this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+          //obtener resumen
+          this.getResumen();
         }
       );
 
@@ -103,26 +106,54 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   }
 
   private iniciarOTerminarDia(valor: boolean) {
-    this.ngZone.run(() => {
       this.isDiaIniciado = valor;
-      this.changeDetectorRef.detectChanges(); // Forzar la actualización de la interfaz de usuario
-    });
   }
 
 
   public finalizarDia(){
     //pedir confirmacion para finalizar el dia
-    const titulo : string = "¿Desea finalizar el día?"
-    const subTitulo : string = "Esta acción es irreversible."
-    const colorTexto = "#d33"
-    this.alertaService.alertaPedirConfirmacionMensajeCustom(titulo, subTitulo, colorTexto)
-      .then(
-        (result) => {
-          if(result.isConfirmed){
-            this.modalFinalizarDia()
+    const titulo : string = "¿Desea finalizar el día?";
+    const subTitulo : string = "Esta acción es irreversible.";
+    const colorTexto = "#d33";
+
+    //Verificar que no hayan cuentas en: pendientes por despachar, en preparacion o despachadas
+    let cuentas : Cuenta[] = [];
+    let isCuentasPendientes = false;
+    //obtener todas las cuentas que hay en el dia labora actual
+    this.cuentaService.cuentasByFecha(this.fechaHoraInicioUTC, null)
+      .subscribe(
+        result => {
+          if(result){
+            //almacenar las cuentas consultadas en la variable cuentas
+            cuentas = result.object;
+            //se recorre el array, en caso de que haya alguna cuenta que cumpla con las condiciones se cambia el estado de la flag
+            for(let cuenta of cuentas){
+              if(cuenta.estadoCuenta.nombre == "Por despachar" || cuenta.estadoCuenta.nombre == "Despachada" || cuenta.estadoCuenta.nombre == "En preparación"){
+                isCuentasPendientes = true;
+              }
+            }
+            //En caso de que en la iteración se haya cambiado el estado de la variable
+            //se lanza el mensaje de alerta pidiendo que se resuelva el estado de las cuentas antes de continuar
+            if(isCuentasPendientes){
+              const mensaje : string = "Al parecer aún hay cuentas pendientes, por favor cobralas antes de continuar con el cierre."
+              this.alertaService.alertaErrorMensajeCustom(mensaje);
+            }
+            //Si no hay ninguna cuenta que cumpla las condiciones, entonces se procede con el cierre de día normalmente
+            else{
+              this.alertaService.alertaPedirConfirmacionMensajeCustom(titulo, subTitulo, colorTexto)
+                .then(
+                  (result) => {
+                    if(result.isConfirmed){
+                      this.modalFinalizarDia()
+                    }
+                  }
+                );
+            }
           }
         }
-      );
+      )
+
+
   }
 
   //PETICIONES HTTP
@@ -134,9 +165,12 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
       .subscribe(
         data => {
           if(data){
+            console.log("fecha inicio?: ", fechaInicio, fechaFin)
+            console.log(data)
             this.gestionCaja = data.object;
-            if(data.object.length > 0){
-              if(data.object.estadoCaja == true){
+            console.log("Obejto? ", this.gestionCaja)
+            if(this.gestionCaja.length > 0){
+              if(this.gestionCaja[0].estadoCaja){
                 this.iniciarOTerminarDia(true);
                 this.localStore.saveData('estadoDia', true.toString());
               }

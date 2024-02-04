@@ -18,6 +18,7 @@ import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service"
 import Swal from "sweetalert2";
 import {format} from "date-fns";
 import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
+import {EMPTY, Observable, switchMap} from "rxjs";
 
 
 
@@ -50,13 +51,13 @@ export class CuentasComponent implements OnInit{
     this.cuentaService.refreshNeeded
       .subscribe(
         () =>{
-          this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
           this.getEmpleadoCuentas();
+          this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
         }
       );
     //obtener las cuentas del dia de hoy.
-    this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
     this.getEmpleadoCuentas();
+    this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
 
   }
 
@@ -216,19 +217,13 @@ export class CuentasComponent implements OnInit{
       )
   }
 
-  //actualizar cuenta
-  private actualizarCuenta(cuenta : Cuenta){
-    this.cuentaService.actualizarCuenta(cuenta)
-      .subscribe();
-  }
-
   //****************************
   //*******MODALES*******
   //****************************
 
   public modalCrearCuenta() : void{
     const dialogRef = this.dialog.open(ModalCuentasComponent,{
-      width: '400px', // Ajusta el ancho según tus necesidades
+      width: '450px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
       height: '600px',
     });
@@ -336,7 +331,7 @@ export class CuentasComponent implements OnInit{
       );
 
     let datos = {}
-    if(cuenta.estadoCuenta.nombre == 'Pagada'){
+    if(cuenta.estadoCuenta.nombre == 'Pagada' || cuenta.estadoCuenta.nombre == "Cancelada"){
       datos = {
         cuenta: cuenta,
         empleado: empleado,
@@ -352,7 +347,7 @@ export class CuentasComponent implements OnInit{
     }
 
     const dialogRef = this.dialog.open(ModalEditarCuentaComponent, {
-      width: '400px', // Ajusta el ancho según tus necesidades
+      width: '450px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
       height: '600px',
       data: datos,
@@ -362,7 +357,6 @@ export class CuentasComponent implements OnInit{
       result => {
 
         if(result){
-          console.log(result)
           //crear instancias
           const cuenta : Cuenta = result.cuenta;
           const productosCuenta : ProductoCuenta[] = [];
@@ -519,17 +513,27 @@ export class CuentasComponent implements OnInit{
             }
             //ABRIR MODAL PARA SABER EL TIPO DE MÉTODO DE PAGO
             // GUARDAR INGRESO
-            this.modalPagar(ingreso)
-            //ACTUALIZAR CUENTA
-            this.cuentaService.actualizarCuenta(cuenta)
-              .subscribe(
-                data => {
-                  this.alertaService.alertaConfirmarCreacion();
-                },
-                error => {
-                  console.log(error)
+            this.modalPagar(ingreso).subscribe(
+              result => {
+                if(result){
+                  //ACTUALIZAR CUENTA
+                  this.cuentaService.actualizarCuenta(cuenta)
+                    .subscribe(
+                      data => {
+                        this.alertaService.alertaConfirmarCreacion();
+                      },
+                      error => {
+                        console.log(error)
+                      }
+                    );
+                }else{
+                  this.alertaService.alertaSinModificaciones();
                 }
-              );
+              },error => {
+                console.log(error)
+              }
+            )
+
           }
           //si no cumple con ninguno de los estados
           else{
@@ -597,27 +601,24 @@ export class CuentasComponent implements OnInit{
     )
   }
   //modal pagar
-  public modalPagar(ingreso : Ingreso){
-
+  public modalPagar(ingreso: Ingreso): Observable<any> {
     const dialogRef = this.dialog.open(ModalIngresosComponent, {
-      width: '400px', // Ajusta el ancho según tus necesidades
-      position: { right: '0' }, // Posiciona el modal a la derecha
+      width: '400px',
+      position: { right: '0' },
       height: '300px',
     });
-    dialogRef.afterClosed().subscribe(
-      result =>{
-        ingreso.metodoPago = result.metodoPago
 
-        this.ingresoService.crearIngreso(ingreso)
-          .subscribe(
-            result => {
-              console.log(result)
-            }, error => {
-              console.log(error)
-            }
-          )
-      }
-    )
+    return dialogRef.afterClosed().pipe(
+      switchMap(result => {
+        if (result === null || result === undefined) {
+          // Manejar el caso en que el resultado sea nulo
+          return EMPTY; // Puedes devolver un observable vacío o manejarlo según tus necesidades
+        } else {
+          ingreso.metodoPago = result.metodoPago;
+          return this.ingresoService.crearIngreso(ingreso);
+        }
+      })
+    );
   }
 
 

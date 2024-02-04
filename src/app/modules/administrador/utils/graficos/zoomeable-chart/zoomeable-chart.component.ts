@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -9,8 +9,7 @@ import {
   ApexYAxis,
   ApexXAxis,
   ApexTooltip
-} from 'ng-apexcharts'
-import {dataSeries} from "./data-series";
+} from 'ng-apexcharts';
 
 @Component({
   selector: 'app-zoomeable-chart',
@@ -31,32 +30,29 @@ export class ZoomeableChartComponent {
   public xaxis!: ApexXAxis;
   public tooltip!: ApexTooltip;
 
+  constructor() {}
 
-  constructor() {
-
-  }
-  //por alguna razon en el constructor no toma los datos
   ngOnChanges(changes: SimpleChanges): void {
     this.initChartData();
   }
-  public initChartData(): void {
-    let ts2 = 1484418600000;
-    let dates = [];
 
+  public initChartData(): void {
     // Obtener los valores mínimos y máximos del eje Y
     let minY = Number.MAX_VALUE;
     let maxY = Number.MIN_VALUE;
 
-    for (let i = 0; i < this.resumenData.length; i++) {
-      ts2 = ts2 + 86400000;
-      const valor = this.resumenData[i].valor;
-      dates.push([ts2, valor]);
+    const dates = this.resumenData
+      .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
+      .map(item => {
+        const timestamp = new Date(item.fecha).getTime();
+        const valor = item.valor;
 
-      // Actualizar los valores mínimos y máximos
-      minY = Math.min(minY, valor);
-      maxY = Math.max(maxY, valor);
-    }
+        // Actualizar los valores mínimos y máximos
+        minY = Math.min(minY, valor);
+        maxY = Math.max(maxY, valor);
 
+        return [timestamp, valor];
+      });
 
     this.series = [
       {
@@ -64,29 +60,33 @@ export class ZoomeableChartComponent {
         data: dates
       }
     ];
+
     this.chart = {
-      type: "area",
+      type: 'area',
       stacked: false,
       height: 350,
       zoom: {
-        type: "x",
+        type: 'x',
         enabled: true,
         autoScaleYaxis: true
       },
       toolbar: {
-        autoSelected: "zoom"
+        autoSelected: 'zoom'
       }
     };
+
     this.dataLabels = {
       enabled: false
     };
+
     this.markers = {
       size: 0
     };
-    this.title = {
-    };
+
+    this.title = {};
+
     this.fill = {
-      type: "gradient",
+      type: 'gradient',
       gradient: {
         shadeIntensity: 1,
         inverseColors: false,
@@ -95,29 +95,31 @@ export class ZoomeableChartComponent {
         stops: [0, 90, 100]
       }
     };
+
     this.yaxis = {
       min: minY,  // Establecer el valor mínimo
       max: maxY,  // Establecer el valor máximo
       labels: {
-        formatter: function(val) {
+        formatter: function (val) {
           return val.toFixed(0);  // Puedes personalizar el formato según tus necesidades
         }
       },
       title: {
-        text: "Precio"
+        text: 'Precio'
       }
     };
+
     this.xaxis = {
-      type: "datetime"
+      type: 'datetime'
     };
+
     this.tooltip = {
       shared: false,
       y: {
-        formatter: function(val) {
+        formatter: function (val) {
           return val.toFixed(0);  // Puedes personalizar el formato según tus necesidades
         }
       }
     };
   }
-
 }

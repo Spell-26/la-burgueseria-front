@@ -6,9 +6,10 @@
     <div class="search-container">
       <input type="text" placeholder="Buscar empleado..." [(ngModel)]="nombreBusqueda" (keyup)="buscarEmpleados()"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
     </div>
-    <div class="btn-black">
+    <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nuevo empleado">
       <button (click)="crearEmpleadoModal()"> <!-- (click) ="crearMesaModal()" -->
-        Nuevo Empleado
+        <img src="assets/icons/new.svg" alt="">
+        <span>Nuevo empleado</span>
       </button>
     </div>
   </div>
@@ -28,6 +29,9 @@
         <th class="row-header-element">
           ESTADO
         </th>
+        <th class="row-header-element">
+          ACCIONES
+        </th>
       </tr>
       </thead>
       <tbody class="contenido-tabla">
@@ -43,10 +47,10 @@
           {{empleado.apellido}}
         </td>
         <td class="row-contenido-element">
-          <span *ngIf="empleado.estado == true">
+          <span *ngIf="empleado.estado == true" class="activo">
             Activo
           </span>
-          <span *ngIf="empleado.estado == false">
+          <span *ngIf="empleado.estado == false" class="inactivo">
             Inactivo
           </span>
         </td>

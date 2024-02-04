@@ -17,7 +17,7 @@ export class ModalInsumosComponent {
   ) {
     this.form = this.fb.group({
       nombre: ['', [Validators.required, Validators.pattern(/^[a-zA-Z ]+$/)]],
-      cantidad: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      cantidad: [null, [Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
     });
     this.form.statusChanges.subscribe(
       (status) =>{
