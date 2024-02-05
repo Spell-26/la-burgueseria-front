@@ -104,5 +104,11 @@
 .estado4{
   color:  #FF3333;
 }
-
+.calendario-container{
+  width: 100% !important;
+}
+.filtroYBoton{
+  width: 100% !important;
+  margin-top: 1em;
+}
 

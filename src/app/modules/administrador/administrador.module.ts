@@ -36,6 +36,8 @@ import { ModalDashboardComponent } from './utils/modal-dashboard/modal-dashboard
 import { ZoomeableChartComponent } from './utils/graficos/zoomeable-chart/zoomeable-chart.component';
 import {NgApexchartsModule} from "ng-apexcharts";
 import { ContrastChartComponent } from './utils/graficos/contrast-chart/contrast-chart.component';
+import {MenuCuentasComponent} from "./utils/menu-cuentas/menu-cuentas.component";
+import {MatTabsModule} from "@angular/material/tabs";
 
 
 @NgModule({
@@ -80,7 +82,9 @@ import { ContrastChartComponent } from './utils/graficos/contrast-chart/contrast
         MatCheckboxModule,
         BootstrapRangeCalendarComponent,
         MenuResponsiveComponent,
-        NgApexchartsModule
+        NgApexchartsModule,
+        MenuCuentasComponent,
+        MatTabsModule
     ]
 })
 export class AdministradorModule { }

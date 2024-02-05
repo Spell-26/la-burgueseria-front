@@ -16,8 +16,12 @@
 main{
   flex-grow: 1;
   display: flex;
+  justify-content: space-between;
 }
-app-menu{
+app-menu, app-menu-cuentas{
   min-width: 18%;
+}
+app-menu-cuentas{
+  max-width: 20%;
 }
 

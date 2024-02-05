@@ -8,45 +8,56 @@
 
       <h2><span>{{tiempoActual}}</span></h2>
     </div>
-    <div class="header-element acciones-header ">
-      <ng-container *ngIf="isDiaIniciado && gestionCaja.length > 0">
-        <h3>Saldo base del día de hoy: <span>${{gestionCaja[0].saldoInicioCajaMenor.toLocaleString()}}</span></h3>
-      </ng-container>
-      <div class="btn-black">
-        <ng-container *ngIf="!isDiaIniciado">
-          <button (click)="modalIniciarDia()">
-            <img src="assets/icons/lines.svg" alt="">
-            <span>Iniciar día</span>
-          </button>
-        </ng-container>
-        <ng-container *ngIf="isDiaIniciado">
-          <button (click)="finalizarDia()">
-            <img src="assets/icons/bed.svg" alt="">
-            <span>Finalizar día</span>
-          </button>
-        </ng-container>
-      </div>
-    </div>
+
+
   </header>
-  <section class="component-main-content">
-    <div id="titulo-seccion">
-      <h2>Así va mi negocio.</h2>
 
-    </div>
-    <ng-container *ngIf="resumenEgreso.length > 0 || resumenCaja.length > 0; else cargando">
-    <ng-container *ngIf="resumenEgreso.length > 0">
-      <h3>Egresos</h3>
-      <app-zoomeable-chart [seriesName] = "'Egresos'" [resumenData] = "resumenEgreso"></app-zoomeable-chart>
-    </ng-container>
-    <ng-container *ngIf="resumenCaja.length > 0">
-      <h3>Cuadres de caja</h3>
-      <app-contrast-chart [resumenCaja] = "resumenCaja"></app-contrast-chart>
-    </ng-container>
-    </ng-container>
+  <mat-tab-group>
+    <mat-tab label="Día a día">
+      <div class="tab-content">
+        <div class="header-element acciones-header ">
+          <ng-container *ngIf="isDiaIniciado && gestionCaja.length > 0">
+            <h3>Saldo base del día de hoy: <span>${{gestionCaja[0].saldoInicioCajaMenor.toLocaleString()}}</span></h3>
+          </ng-container>
+          <div class="btn-black">
+            <ng-container *ngIf="!isDiaIniciado">
+              <button (click)="modalIniciarDia()">
+                <img src="assets/icons/lines.svg" alt="">
+                <span>Iniciar día</span>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="isDiaIniciado">
+              <button (click)="finalizarDia()">
+                <img src="assets/icons/bed.svg" alt="">
+                <span>Finalizar día</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+        <section class="component-main-content">
+          <div id="titulo-seccion">
+            <h2>Así va mi negocio.</h2>
+
+          </div>
+          <ng-container *ngIf="resumenEgreso.length > 0 || resumenCaja.length > 0; else cargando">
+            <ng-container *ngIf="resumenEgreso.length > 0">
+              <h3>Egresos</h3>
+              <app-zoomeable-chart [seriesName] = "'Egresos'" [resumenData] = "resumenEgreso"></app-zoomeable-chart>
+            </ng-container>
+            <ng-container *ngIf="resumenCaja.length > 0">
+              <h3>Cuadres de caja</h3>
+              <app-contrast-chart [resumenCaja] = "resumenCaja"></app-contrast-chart>
+            </ng-container>
+          </ng-container>
+        </section>
+      </div>
+    </mat-tab>
+    <mat-tab label="Históricos de caja">
+      aca irá el listado de caja
+    </mat-tab>
+  </mat-tab-group>
 
 
-
-  </section>
 </div>
 
 

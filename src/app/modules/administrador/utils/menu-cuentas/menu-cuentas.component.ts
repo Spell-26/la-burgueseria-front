@@ -1,97 +1,108 @@
-import {Component, OnInit} from '@angular/core';
-import {MatDialog} from "@angular/material/dialog";
-import {ModalCuentasComponent} from "../../utils/modal-cuentas/modal-cuentas.component";
-import {Cuenta, EstadoCuenta} from "../../interfaces/cuenta";
-import {EmpleadoCuenta} from "../../interfaces/empleadoCuenta";
-import {ProductoCuenta} from "../../interfaces/productosCuenta";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {MatTabsModule} from "@angular/material/tabs";
+import {MatIconModule, MatIconRegistry} from "@angular/material/icon";
+
+import {DomSanitizer} from "@angular/platform-browser";
+import {IconsService} from "./icons/icons.service";
 import {CuentasService} from "../../services/cuentas.service";
+import {Cuenta} from "../../interfaces/cuenta";
+import {EmpleadoCuenta} from "../../interfaces/empleadoCuenta";
+import {FechaHoraService} from "../sharedMethods/fechasYHora/fecha-hora.service";
+import {ProductoCuenta} from "../../interfaces/productosCuenta";
+import {InsumoProducto} from "../../interfaces";
 import {ProductosCuentaService} from "../../services/productos-cuenta.service";
 import {EmpleadoCuentaService} from "../../services/empleado-cuenta.service";
-import {ModalEditarCuentaComponent} from "../../utils/modal-editar-cuenta/modal-editar-cuenta.component";
-import {insumo, InsumoProducto, Producto} from "../../interfaces";
 import {InsumosPorProductoService} from "../../services/insumos-por-producto.service";
 import {InsumosService} from "../../services/insumos.service";
-import {ModalIngresosComponent} from "../../utils/modal-ingresos/modal-ingresos.component";
-import {Ingreso} from "../../interfaces/ingreso";
 import {IngresoService} from "../../services/ingreso.service";
-import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
+import {AlertasService} from "../sharedMethods/alertas/alertas.service";
+import {ModalEditarCuentaComponent} from "../modal-editar-cuenta/modal-editar-cuenta.component";
 import Swal from "sweetalert2";
-import {format} from "date-fns";
-import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
-import {EMPTY, Observable, switchMap} from "rxjs";
-
-
-
+import {Ingreso} from "../../interfaces/ingreso";
+import {EMPTY, forkJoin, interval, Observable, Subject, switchMap, takeUntil} from "rxjs";
+import {ModalIngresosComponent} from "../modal-ingresos/modal-ingresos.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
-  selector: 'app-cuentas',
-  templateUrl: './cuentas.component.html',
-  styleUrls: ['./cuentas.component.css', '../../utils/styles/estilosCompartidos.css']
+  selector: 'app-menu-cuentas',
+  standalone: true,
+  imports: [CommonModule, MatTabsModule, MatIconModule],
+  templateUrl: './menu-cuentas.component.html',
+  styleUrls: ['./menu-cuentas.component.css']
 })
-export class CuentasComponent implements OnInit{
+export class MenuCuentasComponent implements OnInit, OnDestroy{
   //cuentas filtradas por fecha
   cuentasFecha : Cuenta[] = [];
+  cuentasPorDespachar : Cuenta[] = [];
+  cuentasEnPreparacion : Cuenta[] = [];
+  cuentasDespachadas : Cuenta[] = [];
+  cuentasCanceladas : Cuenta[] = [];
+  cuentasPagadas : Cuenta[] = [];
 
   empleadoCuentas : EmpleadoCuenta[] = [];
   //metodo de pago
   //por defecto efectivo
   metodoDePagoSeleccionado = "Efectivo";
+  //variables de fecha
+  horaActual = this.fechaService.obtenerFechaHoraLocalActual();
+  fechaHoraInicioUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.horaActual);
+  fechaHoraFinUTC : string | null = null;
 
-  //DATOS RECIBIDOS DEL COMPONENTE DE CALENDARIO
-    datosRecibidos! : { fromDate: Date | null, toDate : Date | null }
+  // Utilizaremos un Subject para destruir la suscripción cuando el componente se destruya
+  private destroy$: Subject<void> = new Subject<void>();
 
-    //variables de fecha
-    horaActual = this.fechaService.obtenerFechaHoraLocalActual();
-    fechaHoraInicioUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.horaActual);
-    fechaHoraFinUTC : string | null = null;
-  // Variable para el filtro de estados de cuenta
-  filtrarEstado : string = '';
+  constructor(
+    private iconRegistry : MatIconRegistry,
+    private sanitizer : DomSanitizer,
+    private icons : IconsService,
+    private cuentaService :CuentasService,
+    private productosCuentaService : ProductosCuentaService,
+    private empleadoCuentaService : EmpleadoCuentaService,
+    private insumosPorProductoService : InsumosPorProductoService,
+    private insumoService : InsumosService,
+    private ingresoService : IngresoService,
+    private alertaService : AlertasService,
+    public fechaService : FechaHoraService,
+    public dialog : MatDialog,
+  ) {
+
+
+  }
 
   ngOnInit(): void {
-    this.cuentaService.refreshNeeded
-      .subscribe(
-        () =>{
-          this.getEmpleadoCuentas();
-          this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
-        }
-      );
-    //obtener las cuentas del dia de hoy.
-    this.getEmpleadoCuentas();
+    //icono por despachar
+    this.iconRegistry.addSvgIconLiteral('por-despachar', this.sanitizer.bypassSecurityTrustHtml(this.icons.porDespachar));
+    this.iconRegistry.addSvgIconLiteral('en-preparacion', this.sanitizer.bypassSecurityTrustHtml(this.icons.enPreparacion));
+    this.iconRegistry.addSvgIconLiteral('despachada', this.sanitizer.bypassSecurityTrustHtml(this.icons.despachada));
+    this.iconRegistry.addSvgIconLiteral('pagada', this.sanitizer.bypassSecurityTrustHtml(this.icons.pagada));
+    this.iconRegistry.addSvgIconLiteral('cancelada', this.sanitizer.bypassSecurityTrustHtml(this.icons.cancelada));
+
+
+    // Llamamos a las funciones cada 2 minutos
+    interval(0.5 * 60 * 1000) // intervalo en milisegundos (30 segundos)
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(() => forkJoin({
+          cuentas: this.cuentaService.cuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC),
+          empleados: this.empleadoCuentaService.getEmpleadoCuenta()
+        }))
+      )
+      .subscribe(data => {
+        this.cuentasFecha = data.cuentas.object;
+        this.empleadoCuentas = data.empleados.object;
+        this.separateCuentasByEstado(this.cuentasFecha);
+      });
+
+    // Obtener las cuentas y empleados al inicio
     this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+    this.getEmpleadoCuentas();
 
   }
-
-  //recibir datos del componente calendario
-    //si la la variable FROMDate es valida, se realizar una conversion de hora local a UTC
-    // y se realiza la consulta a la base de datos
-  recibirDatosCalendario(datos : {fromDate: Date | null, toDate : Date | null }){
-      this.datosRecibidos = datos;
-      const pattern = 'yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX';
-
-      if(this.datosRecibidos.fromDate != null){
-          this.fechaHoraInicioUTC = format(this.datosRecibidos.fromDate, pattern);
-          //converir a UTC
-          this.fechaHoraInicioUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.fechaHoraInicioUTC);
-          if(this.datosRecibidos.toDate != null){
-              this.fechaHoraFinUTC = format(this.datosRecibidos.toDate, pattern);
-              //convertir a UTC
-              this.fechaHoraFinUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.fechaHoraFinUTC);
-          }else{
-            this.fechaHoraFinUTC = null;
-          }
-          this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
-      }
-  }
-
-  constructor(public dialog : MatDialog,
-              private cuentaService :CuentasService,
-              private productosCuentaService : ProductosCuentaService,
-              private empleadoCuentaService : EmpleadoCuentaService,
-              private insumosPorProductoService : InsumosPorProductoService,
-              private insumoService : InsumosService,
-              private ingresoService : IngresoService,
-              private alertaService : AlertasService,
-              public fechaService : FechaHoraService) {
+  ngOnDestroy(): void {
+    // Destruimos el Subject al destruir el componente
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 
@@ -99,9 +110,10 @@ export class CuentasComponent implements OnInit{
   //*******MÉTODOS*******
   //****************************
 
+
   //obtener el nombre y apellido del empleado vinculado a una cita dada por el ID
   public getNombreApellidoEmpleado(idCita : number) : string {
-    const empleado =  this.empleadoCuentas.find(e => e.cuenta.id === idCita);
+    const empleado = this.empleadoCuentas.find(e => e.cuenta.id === idCita);
     return empleado ? `${empleado.empleado.nombre} ${empleado.empleado.apellido}` : 'NaN'
   }
 
@@ -190,6 +202,31 @@ export class CuentasComponent implements OnInit{
     return response;
   }
 
+  private separateCuentasByEstado(cuentas : Cuenta[]) {
+    //limpiar mlos arrays de datos antiguos
+    this.cuentasPorDespachar  = [];
+    this.cuentasEnPreparacion = [];
+    this.cuentasDespachadas  = [];
+    this.cuentasCanceladas = [];
+    this.cuentasPagadas = [];
+
+    // Separar las cuentas por estado
+    cuentas.forEach(cuenta => {
+      if (cuenta.estadoCuenta.nombre === 'Por despachar') {
+        this.cuentasPorDespachar.push(cuenta);
+      } else if (cuenta.estadoCuenta.nombre === 'En preparación') {
+        this.cuentasEnPreparacion.push(cuenta);
+      } else if (cuenta.estadoCuenta.nombre === 'Despachada') {
+        this.cuentasDespachadas.push(cuenta);
+      } else if (cuenta.estadoCuenta.nombre === 'Pagada') {
+        this.cuentasPagadas.push(cuenta);
+      } else if (cuenta.estadoCuenta.nombre === 'Cancelada') {
+        this.cuentasCanceladas.push(cuenta);
+      }
+    });
+  }
+
+
   //****************************
   //*******PETICIONES HTTP*******
   //****************************
@@ -199,7 +236,12 @@ export class CuentasComponent implements OnInit{
     this.cuentaService.cuentasByFecha(fechaInicio, fechaFin)
       .subscribe(
         data => {
-          this.cuentasFecha = data.object
+          if(data){
+            this.cuentasFecha = data.object
+
+            this.separateCuentasByEstado(this.cuentasFecha);
+          }
+
         }, error => {
           console.log(error)
         }
@@ -220,103 +262,6 @@ export class CuentasComponent implements OnInit{
   //****************************
   //*******MODALES*******
   //****************************
-
-  public modalCrearCuenta() : void{
-    const dialogRef = this.dialog.open(ModalCuentasComponent,{
-      width: '450px', // Ajusta el ancho según tus necesidades
-      position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '600px',
-    });
-
-    dialogRef.afterClosed().subscribe(
-      result =>{
-        if(result){
-          // crear instancias
-          //estado de la cuenta
-          //todas las cuentas se crean con estado ::por despachar::
-          const estadoCuenta : EstadoCuenta = {
-            id: 1,
-            nombre: "Por despachar"
-          }
-          //cuenta
-          const cuenta : Cuenta = {
-            id: 0,
-            mesa: result.mesa,
-            estadoCuenta: estadoCuenta,
-            fecha: null,
-            total: result.total,
-            abono: 0
-          }
-          //Estancia de empleado por cuenta
-          const empleadoCuenta : EmpleadoCuenta = {
-            id : 0,
-            cuenta: cuenta,
-            empleado: result.empleado
-          }
-          //creando las instancias de productos por cuenta
-          //estos se guardan un array para poder ser guardados secuancialmente
-          const productosCuenta : ProductoCuenta [] = [];
-          //recorrer el result y asignarlo al array de productoCuenta
-          for (let producto of result.productos){
-            //crear instancia de producto por cuenta
-            const productoXCuenta : ProductoCuenta = {
-              id: 0,
-              cuenta: cuenta,
-              producto: producto.obj,
-              cantidad: producto.cantidad,
-              estado: "Por despachar"
-            };
-            //una vez creado la instancia se añade al arreglo donde se contendrán
-            productosCuenta.push(productoXCuenta);
-          }
-
-          //ORDEN PARA LA CREACION DE UNA CUENTA
-          //1 crear cuenta
-          // 2 crear productos por cuenta
-          // 3 crear empleado cuenta
-
-          //CREAR CUENTA
-          this.cuentaService.crearCuenta(cuenta)
-            .subscribe(
-              data=> {
-                //asignarle a la cuenta el id de la cuenta que ha sido recien creada
-                cuenta.id = data.object.id;
-                //CREAR PRODUCTOS POR CUENTA
-                for (let pc of productosCuenta){
-                  this.productosCuentaService.crearProductoCuenta(pc)
-                    .subscribe(
-                      data=> {
-
-                      },
-                      error => {
-                        console.log(error)
-                      }
-                    );
-                };
-                //CREAR EMPLEADO X CUENTA
-                this.empleadoCuentaService.crearEmpleadoCuenta(empleadoCuenta)
-                  .subscribe(
-                    data=> {
-
-                    },
-                    error => {
-                      console.log(error)
-                    }
-                  );
-              },
-              error => {
-                console.log(error)
-              }
-            );
-
-          //alerta confirmación creación exitosa
-          this.alertaService.alertaConfirmarCreacion();
-        }
-
-      }
-    )
-  }
-  //MODAL VER CUENTA Y/O EDITAR
   public verCuenta(cuenta : Cuenta) {
     const empleado = this.empleadoCuentas.find(e => e.cuenta.id === cuenta.id);
     let productosCuenta : ProductoCuenta [] = [];
@@ -623,5 +568,3 @@ export class CuentasComponent implements OnInit{
 
 
 }
-
-

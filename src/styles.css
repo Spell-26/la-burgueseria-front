@@ -78,11 +78,27 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas{
-  width:80%;
+  width:60%;
+  padding-right: 3em;
+  max-height: 90vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
-app-empleados, app-cuentas, app-ingresos, app-egresos, app-panel-de-gestion{
-  width: 80%;
+app-empleados, app-cuentas, app-ingresos, app-egresos{
+  width: 60%;
+  padding-right: 3em;
+  max-height: 90vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
+app-panel-de-gestion{
+  width: 60%;
+  padding-right: 3em;
+  max-height: 90vh;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
 
 
 @media screen and (max-width: 959px){

@@ -39,7 +39,7 @@
   width: 100%;
 }
 .acciones-header{
-  width: 60%;
+  width: 70%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -47,6 +47,7 @@
 }
 .btn-black{
   width: 20% !important;
+  margin-top: 1em !important;
 }
 
 #titulo-seccion{
@@ -58,4 +59,8 @@
 #titulo-seccion h2{
   font-family: WorkSans, serif;
   font-weight: normal;
+}
+.tab-content{
+  max-height: 65vh;
+  overflow-x: hidden;
 }

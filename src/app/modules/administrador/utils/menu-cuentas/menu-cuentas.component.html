@@ -1,0 +1,175 @@
+<aside id="menu">
+  <header>
+    <div id="contenedor-imagen">
+      <img src="assets/logoburgueseria.png" alt="Logo" id="imagen-menu">
+    </div>
+    <div id="texto-encabezado">
+      <div id="container-textos">
+        <span id="titulo">Dany flow</span>
+        <span id="subtitulo">Administrador</span>
+      </div>
+    </div>
+  </header>
+  <div id="opciones-menu">
+    <mat-tab-group class="container-tabs">
+
+      <mat-tab>
+        <ng-template mat-tab-label >
+          <mat-icon svgIcon="por-despachar" aria-hidden="false" aria-label="Example thumbs up SVG icon" data-toggle="tooltip" data-placement="top" title="Cuentas por despachar"></mat-icon>
+        </ng-template>
+
+        <!-- CONTENIDO DE LA TAB -->
+        <header class="header-tab">
+          <h4>Cuentas pendientes</h4>
+        </header>
+        <div class="container-cuentas">
+        <ng-container *ngIf="cuentasPorDespachar.length > 0; else sinContenido">
+          <div class="cuenta" *ngFor="let cuenta of cuentasPorDespachar; let i = index">
+            <div class="cuenta-info">
+              <span>
+                <img src="assets/icons/table-svgrepo-com.svg" alt="">
+                Mesa #{{cuenta.mesa.numeroMesa}}
+              </span>
+              <span>
+                <img src="assets/icons/despachada.svg" alt="">
+                Mesero: {{getNombreApellidoEmpleado(cuenta.id)}}
+              </span>
+            </div>
+            <div class="cuenta-actions" data-toggle="tooltip" data-placement="left" title="Gestionar cuenta" (click)="verCuenta(cuenta)">
+              <img src="assets/icons/manage2.svg" alt="">
+            </div>
+          </div>
+        </ng-container>
+        </div>
+
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon svgIcon="en-preparacion" data-toggle="tooltip" data-placement="top" title="Cuentas en preparación"></mat-icon>
+        </ng-template>
+        <!-- CONTENIDO DE LA TAB -->
+        <header class="header-tab">
+          <h4>Cuentas en preparación</h4>
+        </header>
+        <div class="container-cuentas">
+          <ng-container *ngIf="cuentasEnPreparacion.length > 0; else sinContenido">
+            <div class="cuenta" *ngFor="let cuenta of cuentasEnPreparacion; let i = index">
+              <div class="cuenta-info">
+              <span>
+                <img src="assets/icons/table-svgrepo-com.svg" alt="">
+                Mesa #{{cuenta.mesa.numeroMesa}}
+              </span>
+                <span>
+                <img src="assets/icons/despachada.svg" alt="">
+                Mesero: {{getNombreApellidoEmpleado(cuenta.id)}}
+              </span>
+              </div>
+              <div class="cuenta-actions" data-toggle="tooltip" data-placement="left" title="Gestionar cuenta" (click)="verCuenta(cuenta)">
+                <img src="assets/icons/manage2.svg" alt="">
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </mat-tab>
+
+
+      <mat-tab>
+        <ng-template  mat-tab-label>
+          <mat-icon svgIcon="despachada" data-toggle="tooltip" data-placement="top" title="Cuentas despachadas"></mat-icon>
+        </ng-template>
+        <!-- CONTENIDO DE LA TAB -->
+        <header class="header-tab">
+          <h4>Cuentas despachadas</h4>
+        </header>
+        <div class="container-cuentas">
+          <ng-container *ngIf="cuentasDespachadas.length > 0; else sinContenido">
+            <div class="cuenta" *ngFor="let cuenta of cuentasDespachadas; let i = index">
+              <div class="cuenta-info">
+              <span>
+                <img src="assets/icons/table-svgrepo-com.svg" alt="">
+                Mesa #{{cuenta.mesa.numeroMesa}}
+              </span>
+                <span>
+                <img src="assets/icons/despachada.svg" alt="">
+                Mesero: {{getNombreApellidoEmpleado(cuenta.id)}}
+              </span>
+              </div>
+              <div class="cuenta-actions" data-toggle="tooltip" data-placement="left" title="Gestionar cuenta" (click)="verCuenta(cuenta)">
+                <img src="assets/icons/manage2.svg" alt="">
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon svgIcon="pagada" data-toggle="tooltip" data-placement="top" title="Cuentas pagadas"></mat-icon>
+        </ng-template>
+        <!-- CONTENIDO DE LA TAB -->
+        <header class="header-tab">
+          <h4>Cuentas pagadas</h4>
+        </header>
+        <div class="container-cuentas">
+          <ng-container *ngIf="cuentasPagadas.length > 0; else sinContenido">
+            <div class="cuenta" *ngFor="let cuenta of cuentasPagadas; let i = index">
+              <div class="cuenta-info">
+              <span>
+                <img src="assets/icons/table-svgrepo-com.svg" alt="">
+                Mesa #{{cuenta.mesa.numeroMesa}}
+              </span>
+                <span>
+                <img src="assets/icons/despachada.svg" alt="">
+                Mesero: {{getNombreApellidoEmpleado(cuenta.id)}}
+              </span>
+              </div>
+              <div class="cuenta-actions" data-toggle="tooltip" data-placement="left" title="Gestionar cuenta" (click)="verCuenta(cuenta)">
+                <img src="assets/icons/manage2.svg" alt="">
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon svgIcon="cancelada"data-toggle="tooltip" data-placement="top" title="Cuentas canceladas"></mat-icon>
+        </ng-template>
+        <!-- CONTENIDO DE LA TAB -->
+        <header class="header-tab">
+          <h4>Cuentas canceladas</h4>
+        </header>
+        <div class="container-cuentas">
+          <ng-container *ngIf="cuentasCanceladas.length > 0; else sinContenido">
+            <div class="cuenta" *ngFor="let cuenta of cuentasCanceladas; let i = index">
+              <div class="cuenta-info">
+              <span>
+                <img src="assets/icons/table-svgrepo-com.svg" alt="">
+                Mesa #{{cuenta.mesa.numeroMesa}}
+              </span>
+                <span>
+                <img src="assets/icons/despachada.svg" alt="">
+                Mesero: {{getNombreApellidoEmpleado(cuenta.id)}}
+              </span>
+              </div>
+              <div class="cuenta-actions" data-toggle="tooltip" data-placement="left" title="Gestionar cuenta" (click)="verCuenta(cuenta)">
+                <img src="assets/icons/manage2.svg" alt="">
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+    <footer><h3>Cerrar sesión</h3></footer>
+  </div>
+</aside>
+
+<ng-template #sinContenido>
+  <div class="cargando">
+    <h2>¡Sin moros en la costa!</h2>
+    <h4>¡Esta área de trabajo está limpia!</h4>
+    <img src="assets/img/yellow-cat.png" alt="">
+  </div>
+</ng-template>

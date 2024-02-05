@@ -77,3 +77,6 @@
 .ver-cuenta:hover{
   border: 1px solid green;
 }
+.btn-black{
+  margin-top: 1em !important;
+}

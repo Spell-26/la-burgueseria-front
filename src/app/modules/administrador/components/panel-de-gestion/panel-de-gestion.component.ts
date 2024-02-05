@@ -165,10 +165,7 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
       .subscribe(
         data => {
           if(data){
-            console.log("fecha inicio?: ", fechaInicio, fechaFin)
-            console.log(data)
             this.gestionCaja = data.object;
-            console.log("Obejto? ", this.gestionCaja)
             if(this.gestionCaja.length > 0){
               if(this.gestionCaja[0].estadoCaja){
                 this.iniciarOTerminarDia(true);

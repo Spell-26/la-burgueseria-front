@@ -1,0 +1,128 @@
+
+#menu{
+  background-color: #191919;
+  border: 2px solid #3C3B3B;
+  min-width: 100%;
+
+}
+#menu header{
+  width: 100%;
+  display: flex;
+  border-bottom: 1px solid #494949;
+}
+#imagen-menu{
+  width: 85px;
+}
+#contenedor-imagen{
+  width: 40%;
+}
+#texto-encabezado{
+  width: 60%;
+  display: flex;
+  align-items: center;
+  padding: 0 .1em;
+}
+#container-textos{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#titulo{
+  font-family: WorkSans-Bold, serif;
+  color: #fff;
+  font-size: 1.2em;
+  width: 100%;
+}
+#subtitulo{
+  width: 100%;
+  font-family: WorkSans, serif;
+  color: #fff;
+  font-size: 0.7em;
+}
+
+#opciones-menu{
+  margin: 1em;
+  color: white;
+  font-family: WorkSans-Medium, serif;
+  overflow-y: hidden;
+  min-height: 60vh;
+  max-height: 60vh;
+}
+.container-tabs{
+  min-height: 53vh;
+  overflow-y: scroll;
+}
+footer{
+  width: 100%;
+  text-align: center;
+  margin-top: 1em;
+}
+.header-tab{
+  margin-top: .5em;
+  text-align: center;
+}
+.header-tab h4{
+  margin: 0 auto;
+  cursor: default;
+}
+.container-cuentas {
+  width: 100%;
+  margin-top: 1em;
+  min-height: 40vh;
+  max-height: 40vh;
+  overflow-y: scroll;
+}
+.cuenta{
+  border: 1px solid #3C3B3B;
+  background-color: #0c0c0c;
+  width: 100%;
+  min-height: 10vh;
+  max-height: 10vh;
+  margin-bottom: .2em;
+  display: flex;
+  flex-direction: row;
+}
+.cuenta:hover{
+  background-color: #1a1a1a;
+}
+.cuenta-info{
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  padding: .3em;
+  overflow: hidden;
+}
+.cuenta-info span{
+  width: 100%;
+  cursor: default;
+  font-size: .9em;
+}
+.cuenta-actions{
+  width: 25%;
+  border-left: 1px solid #3C3B3B;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.cargando{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.cargando img{
+  width: 60%;
+  margin: 0 auto;
+}
+.cargando h2{
+  color: #fff;
+  font-family: WorkSans, serif;
+  width: 100%;
+  text-align: center;
+  font-size: 1.2em;
+}
+.cargando h4{
+  font-size: 1em;
+  text-align: center;
+}
