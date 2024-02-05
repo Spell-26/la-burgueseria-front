@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "dist/la-burgueseria",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
