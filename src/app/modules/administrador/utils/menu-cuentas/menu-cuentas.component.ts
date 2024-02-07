@@ -79,20 +79,22 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
     this.iconRegistry.addSvgIconLiteral('cancelada', this.sanitizer.bypassSecurityTrustHtml(this.icons.cancelada));
 
 
-    // Llamamos a las funciones cada 2 minutos
-    interval(0.5 * 60 * 1000) // intervalo en milisegundos (30 segundos)
-      .pipe(
-        takeUntil(this.destroy$),
-        switchMap(() => forkJoin({
-          cuentas: this.cuentaService.cuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC),
-          empleados: this.empleadoCuentaService.getEmpleadoCuenta()
-        }))
-      )
-      .subscribe(data => {
-        this.cuentasFecha = data.cuentas.object;
-        this.empleadoCuentas = data.empleados.object;
-        this.separateCuentasByEstado(this.cuentasFecha);
-      });
+    //subscribir a las actualizaciones de cuentas
+    this.cuentaService.refreshNeeded
+      .subscribe(
+        () => {
+          forkJoin({
+            cuentas: this.cuentaService.cuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC),
+            empleados: this.empleadoCuentaService.getEmpleadoCuenta()
+          }).subscribe(
+            data => {
+              this.cuentasFecha = data.cuentas.object;
+              this.empleadoCuentas = data.empleados.object;
+              this.separateCuentasByEstado(this.cuentasFecha);
+            }
+          )
+        }
+      );
 
     // Obtener las cuentas y empleados al inicio
     this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);

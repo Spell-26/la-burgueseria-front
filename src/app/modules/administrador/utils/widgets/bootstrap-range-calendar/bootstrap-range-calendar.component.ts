@@ -8,7 +8,7 @@ import {JsonPipe} from "@angular/common";
   standalone: true,
   imports: [NgbDatepickerModule, FormsModule, JsonPipe],
   templateUrl: './bootstrap-range-calendar.component.html',
-  styleUrls: ['./bootstrap-range-calendar.component.css'],
+  styleUrls: ['./bootstrap-range-calendar.component.css', '../../styles/estilosCompartidos.css'],
 
 })
 export class BootstrapRangeCalendarComponent implements OnInit{

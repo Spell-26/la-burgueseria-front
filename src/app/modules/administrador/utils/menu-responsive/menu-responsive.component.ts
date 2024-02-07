@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle} from "@ng-bootstrap/ng-bootstrap";
 import {RouterLink} from "@angular/router";
+import {MatIconRegistry} from "@angular/material/icon";
+import {DomSanitizer} from "@angular/platform-browser";
+import {IconsService} from "../menu-cuentas/icons/icons.service";
 
 @Component({
   selector: 'app-menu-responsive',
@@ -14,4 +17,11 @@ export class MenuResponsiveComponent {
   leftCollapsed = true;
   rightCollapsed = true;
   collapsed = true;
+
+  constructor(
+    private iconRegistry : MatIconRegistry,
+    private sanitizer : DomSanitizer,
+    private icons : IconsService,
+  ) {
+  }
 }
