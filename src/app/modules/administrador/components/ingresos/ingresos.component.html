@@ -35,7 +35,7 @@
           <!-- Validar que efectivamente si tenga una cita asignada -->
           <ng-container *ngIf="ingreso.cuenta != null">
           <td class="row-contenido-element">
-            {{fechaService.convertirUTCAFechaHoraLocal(ingreso.fecha?.toLocaleString())}}
+            {{fechaService.convertirUTCAFechaHoraLocal(ingreso.fecha?.toString())}}
           </td>
           <td class="row-contenido-element">
             {{ingreso.metodoPago}}

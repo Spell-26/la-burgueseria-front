@@ -105,7 +105,7 @@
     </td>
     <td class="row-contenido-element">
       <!-- Convierte la hora UTC a hora local -->
-      {{ fechaService.convertirUTCAFechaHoraLocal(cuenta.fecha?.toLocaleString()) }}
+      {{ cuenta.fecha?.toLocaleString() }}
     </td>
     <td class="row-contenido-element">
       <button class="ver-cuenta" (click)="verCuenta(cuenta)">
@@ -142,8 +142,8 @@
         {{cuenta.estadoCuenta.nombre}}
       </td>
       <td class="row-contenido-element">
-        <!-- Convierte la hora UTC a hora local -->
-        {{ fechaService.convertirUTCAFechaHoraLocal(cuenta.fecha?.toLocaleString()) }}
+
+        {{ cuenta.fecha.toLocaleString()}}
       </td>
       <td class="row-contenido-element">
         <button class="ver-cuenta" (click)="verCuenta(cuenta)">

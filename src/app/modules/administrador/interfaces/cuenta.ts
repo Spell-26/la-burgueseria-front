@@ -4,7 +4,7 @@ export interface Cuenta {
   id:           number;
   mesa:         Mesa;
   estadoCuenta: EstadoCuenta;
-  fecha:        Date | null;
+  fecha:        Date | null | any;
   total:        number;
   abono:        number;
 }

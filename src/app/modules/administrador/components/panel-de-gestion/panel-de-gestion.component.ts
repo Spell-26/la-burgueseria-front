@@ -398,10 +398,16 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   }
 
   //Modal finalizar dia
-  protected modalFinalizarDia(caja ? : GestionCaja | null){
+  protected modalFinalizarDia(cajaDTO ? : GestionCaja | null){
     let dialogRef : MatDialogRef<ModalDashboardComponent>;
     //en caso de que se envie algo por el campo de caja
-    if(caja != null){
+    if(cajaDTO != null){
+      let caja : GestionCaja = { ... cajaDTO};
+      //restar 5 horas
+      let fecha = new Date(caja.fechaHorainicio);
+      fecha.setHours(fecha.getHours() - 5);
+      caja.fechaHorainicio = fecha.toISOString();
+
       dialogRef = this.dialog.open(ModalDashboardComponent, {
         width: '400px', // Ajusta el ancho según tus necesidades
         position: { right: '0' }, // Posiciona el modal a la derecha

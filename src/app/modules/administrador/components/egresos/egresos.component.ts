@@ -61,6 +61,19 @@ export class EgresosComponent implements OnInit{
           this.egresos = data.object.content;
           this.isFirst = data.object.first;
           this.isLast = data.object.last;
+          for(let egreso of this.egresos){
+            const fechaArray : number[]= egreso.fecha;
+            let fecha : Date = new Date(
+              fechaArray[0],
+              fechaArray[1] - 1, // Restar 1 al mes
+              fechaArray[2],
+              fechaArray[3],
+              fechaArray[4],
+              fechaArray[5],
+              fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+            );
+            egreso.fecha = fecha;
+          }
         }, error => {
           console.log(error)
         }

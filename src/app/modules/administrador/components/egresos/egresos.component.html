@@ -27,7 +27,7 @@
       <tbody class="contenido-tabla">
       <tr class="row-contenido-tabla" *ngFor="let egreso of egresos; let i = index">
         <td class="row-contenido-element">
-          {{fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toLocaleString())}}
+          {{fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toString())}}
         </td>
         <td class="row-contenido-element">
           ${{egreso.total.toLocaleString()}}

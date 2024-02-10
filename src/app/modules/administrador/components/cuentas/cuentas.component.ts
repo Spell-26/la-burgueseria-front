@@ -200,6 +200,23 @@ export class CuentasComponent implements OnInit{
       .subscribe(
         data => {
           this.cuentasFecha = data.object
+          //formatear la fecha y hora de cada cuenta
+          for(let cuenta of this.cuentasFecha){
+            const fechaArray : number[] = cuenta.fecha;
+
+            let fecha : Date = new Date(
+              fechaArray[0],
+              fechaArray[1] - 1, // Restar 1 al mes
+              fechaArray[2],
+              fechaArray[3],
+              fechaArray[4],
+              fechaArray[5],
+              fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+            );
+
+            cuenta.fecha = fecha;
+
+          }
         }, error => {
           console.log(error)
         }
@@ -317,7 +334,11 @@ export class CuentasComponent implements OnInit{
     )
   }
   //MODAL VER CUENTA Y/O EDITAR
-  public verCuenta(cuenta : Cuenta) {
+  public verCuenta(cuentaDTO : Cuenta) {
+    let cuenta : Cuenta = { ...cuentaDTO};
+
+    cuenta  = this.fechaService.restar5Horas(cuenta);
+
     const empleado = this.empleadoCuentas.find(e => e.cuenta.id === cuenta.id);
     let productosCuenta : ProductoCuenta [] = [];
 

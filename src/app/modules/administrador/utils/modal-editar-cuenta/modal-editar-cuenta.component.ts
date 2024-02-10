@@ -146,7 +146,6 @@ export class ModalEditarCuentaComponent implements OnInit{
       }
     }
 
-
     const datosAEnviar = {
       productos : this.cuentaProductosAgg,
       cuenta : cuenta

@@ -45,11 +45,12 @@ export class IngresosComponent implements OnInit{
     this.ingresoService.refreshNeeded
       .subscribe(
         () => {
+          this.getEmpleadoCuentas();
           this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
         }
       );
-    this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
     this.getEmpleadoCuentas();
+    this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
   }
 
   constructor(public dialog : MatDialog,
@@ -71,6 +72,19 @@ export class IngresosComponent implements OnInit{
           this.ingresos = data.object.content;
           this.isFirst = data.object.first;
           this.isLast = data.object.last;
+          for (let ingreso of this.ingresos){
+            const fechaArray : number[] = ingreso.fecha;
+            let fecha : Date = new Date(
+              fechaArray[0],
+              fechaArray[1] - 1, // Restar 1 al mes
+              fechaArray[2],
+              fechaArray[3],
+              fechaArray[4],
+              fechaArray[5],
+              fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+            );
+            ingreso.fecha = fecha;
+          }
         }, error => {
           console.log(error);
         }

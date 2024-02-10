@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {format, parse, addHours} from "date-fns";
+import {Cuenta} from "../../../interfaces/cuenta";
 
 @Injectable({
   providedIn: 'root'
@@ -49,5 +50,18 @@ export class FechaHoraService {
     // Formatear la fecha y hora al formato deseado
     const pattern = 'yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX';
     return format(fechaHoraParsed, pattern);
+  }
+  //restar 5 horas a la hora que se envia en la cuenta
+  public restar5Horas(cuenta : Cuenta): Cuenta {
+    // Obtener la fecha actual de la cuenta
+    let fecha = new Date(cuenta.fecha);
+
+    // Restar 5 horas
+    fecha.setHours(fecha.getHours() - 5);
+
+    // Actualizar la fecha en la cuenta
+    cuenta.fecha = fecha.toISOString();
+
+    return cuenta;
   }
 }
