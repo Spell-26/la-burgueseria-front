@@ -95,7 +95,7 @@
   border: 0;
 }
 .btn-black{
-  width: 40%
+  width: 40% !important;
 }
 .btn-black button span{
   margin-left: .1em;
@@ -197,6 +197,32 @@
     width: 100%;
     margin-top: 1.5em;
   }
+  main{
+    justify-content: normal;
+  }
+  .filtroYBoton{
+    flex-direction: column;
+  }
+  .filtroYBoton .btn-black{
+    margin-left: 0;
+    width: 50%;
+  }
+  .calendar{
+    margin-bottom: 1em !important;
+  }
+  .search-container{
+    width: 60%;
+  }
+  .actions-container{
+    flex-direction: column;
+    align-content: flex-start;
+  }
+  .btn-black button{
+    margin: 1em 0 0 0;
+  }
+  .informacion-producto{
+    overflow-y: scroll;
+  }
 }
 
 /*
@@ -217,11 +243,14 @@ pantallas superiores a 960px
   app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas {
     width: 100% !important;
   }
+  .informacion-producto{
+    width: 50%;
+  }
   .imagen-producto{
     width: 50%;
   }
   .search-container{
-    width: 40%;
+    width: 60%;
   }
   .categoria-container{
     width: 80%;
@@ -236,6 +265,9 @@ pantallas superiores a 960px
   .ver-cuenta{
     margin-bottom: .5em;
   }
+  .btn-black{
+    width: 50% !important;
+  }
 }
 
 @media screen and (max-width: 650px) {
@@ -244,7 +276,7 @@ pantallas superiores a 960px
   }
   .responsive{
     margin-top: .5em;
-    width: 30%;
+    width: 50%;
   }
   .responsive button {
     padding: .7em;

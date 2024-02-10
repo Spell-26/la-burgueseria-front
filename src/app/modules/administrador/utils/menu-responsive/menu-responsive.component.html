@@ -10,7 +10,7 @@
       aria-label="Toggle navigation"
       (click)="leftCollapsed = !leftCollapsed"
     >
-      <span class="navbar-toggler-icon"></span>
+      <span ><img src="assets/icons/menu.svg" alt=""></span>
     </button>
 
     <!-- Contenido en el centro (puedes reemplazar el texto con una imagen) -->
@@ -28,7 +28,7 @@
       aria-label="Toggle navigation"
       (click)="rightCollapsed = !rightCollapsed"
     >
-      <span class="navbar-toggler-icon"></span>
+      <span > <img src="assets/icons/menu.svg" alt=""></span>
     </button>
 
 
@@ -39,7 +39,7 @@
         <div class="row">
           <div class="col-4">
             <li class="nav-item">
-              <a class="nav-link" routerLink="/" style="color: white;">Inicio</a>
+              <a class="nav-link" [routerLink]="['dashboard']" style="color: white;">Dashboard</a>
             </li>
           </div>
           <div class="col-4">
