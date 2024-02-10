@@ -9,7 +9,7 @@ export interface GestionCaja {
   totalReportado:       number;
   saldoInicioCajaMenor: number;
   observaciones:        string;
-  fechaHorainicio:      Date | null;
+  fechaHorainicio:      Date | null | any;
   fechaHoraCierre:      Date | null;
   estadoCaja:           boolean;
 }

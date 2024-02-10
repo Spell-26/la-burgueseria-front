@@ -17,7 +17,7 @@
       <div class="tab-content">
         <div class="header-element acciones-header ">
           <ng-container *ngIf="isDiaIniciado && gestionCaja.length > 0">
-            <h3>Saldo base del día de hoy: <span>${{gestionCaja[0].saldoInicioCajaMenor.toLocaleString()}}</span></h3>
+            <h3 class="texto">Saldo base del día de hoy: <span>${{gestionCaja[0].saldoInicioCajaMenor.toLocaleString()}}</span></h3>
           </ng-container>
           <div class="btn-black">
             <ng-container *ngIf="!isDiaIniciado">
@@ -36,16 +36,15 @@
         </div>
         <section class="component-main-content">
           <div id="titulo-seccion">
-            <h2>Así va mi negocio.</h2>
-
+            <h2>Así va mi negocio:</h2>
           </div>
           <ng-container *ngIf="resumenEgreso.length > 0 || resumenCaja.length > 0; else cargando">
             <ng-container *ngIf="resumenEgreso.length > 0">
-              <h3>Egresos</h3>
+              <h3 class="texto">Egresos</h3>
               <app-zoomeable-chart [seriesName] = "'Egresos'" [resumenData] = "resumenEgreso"></app-zoomeable-chart>
             </ng-container>
             <ng-container *ngIf="resumenCaja.length > 0">
-              <h3>Cuadres de caja</h3>
+              <h3 class="texto">Cuadres de caja</h3>
               <app-contrast-chart [resumenCaja] = "resumenCaja"></app-contrast-chart>
             </ng-container>
           </ng-container>
@@ -53,7 +52,43 @@
       </div>
     </mat-tab>
     <mat-tab label="Históricos de caja">
-      aca irá el listado de caja
+      <section class="component-main-content">
+      <table class="tabla-listado" *ngIf="allGestionCaja.length > 0 ; else buscando">
+        <thead class="cabecera-tabla">
+        <tr class="row-header">
+          <th class="row-header-element">FECHA</th>
+          <th class="row-header-element">BASE DÍA</th>
+          <th class="row-header-element">CIERRE REPORTADO</th>
+          <th class="row-header-element">CIERRE CALCULADO</th>
+          <th class="row-header-element">ESTADO</th>
+          <th class="row-header-element">ACCIONES</th>
+
+        </tr>
+        </thead>
+        <tbody class="contenido-tabla">
+        <tr class="row-contenido-tabla" *ngFor="let caja of allGestionCaja">
+          <td class="row-contenido-element">{{caja.fechaHorainicio.toLocaleString()}}</td>
+          <td class="row-contenido-element">{{ caja.saldoInicioCajaMenor ? caja.saldoInicioCajaMenor.toLocaleString() : '0' }}</td>
+          <td class="row-contenido-element">{{ caja.totalReportado ? caja.totalReportado.toLocaleString() : '0' }}</td>
+          <td class="row-contenido-element">{{ caja.totalCalculado ? caja.totalCalculado.toLocaleString() : '0' }}</td>
+          <td class="row-contenido-element" [ngClass]="{'estado-abierta': caja.estadoCaja, 'estado-cerrada': !caja.estadoCaja}">{{caja.estadoCaja ? 'Abierta' : 'Cerrada'}}</td>
+          <td class="row-contenido-element">
+            <!-- en caso de que el estado de la cuenta ya este cerrado simplemente debe mostrar el modal -->
+            <ng-container *ngIf="caja.estadoCaja">
+              <button class="btn-eliminar-element" (click)="finalizarDia(caja.fechaHorainicio.toISOString(), caja)">
+                Gestionar
+              </button>
+            </ng-container>
+            <ng-container *ngIf="!caja.estadoCaja">
+              <button class="btn-eliminar-element" (click)="modalFinalizarDia(caja)">
+                Gestionar
+              </button>
+            </ng-container>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+        </section>
     </mat-tab>
   </mat-tab-group>
 
@@ -65,5 +100,13 @@
   <div class="cargando">
     <h2>Aún no hay datos suficientes para que puedas ver tus resumenes diarios.</h2>
     <img src="assets/img/yellow-cat.png" alt="">
+  </div>
+</ng-template>
+
+<ng-template #buscando >
+  <div class="cargando">
+    <h2>No se han encontrado elementos para mesas.</h2>
+    <img src="assets/img/running-cat.gif" alt="">
+
   </div>
 </ng-template>

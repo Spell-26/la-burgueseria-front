@@ -52,9 +52,9 @@ export class ModalDashboardComponent implements OnInit {
       this.form = this.fb.group({
         id: [data.id],
         totalCalculado : [this.totalCalculado, [Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
-        totalReportado : [null, [Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
+        totalReportado : [data.totalReportado, [Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
         saldoInicioCajaMenor : [data.saldoInicioCajaMenor, [Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
-        observaciones : [null, Validators.required],
+        observaciones : [data.observaciones, Validators.required],
         fechaHoraInicio : [data.fechaHoraInicio],
         fechaHoraCierre : [horaCierreUTC],
         estadoCaja: [data.estadoCaja],
@@ -91,7 +91,7 @@ export class ModalDashboardComponent implements OnInit {
             id: data.id,
             totalCalculado: this.totalCalculado,
             saldoInicioCajaMenor: data.saldoInicioCajaMenor,
-            observaciones: null, // Asegúrate de proporcionar un valor adecuado aquí
+            observaciones: data.observaciones, // Asegúrate de proporcionar un valor adecuado aquí
             fechaHoraInicio: data.fechaHoraInicio,
             fechaHoraCierre: horaCierreUTC,
             estadoCaja: false

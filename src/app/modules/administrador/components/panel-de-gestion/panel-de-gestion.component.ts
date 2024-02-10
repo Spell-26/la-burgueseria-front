@@ -1,13 +1,13 @@
 import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {forkJoin, interval, Subscription} from "rxjs";
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 import {ModalDashboardComponent} from "../../utils/modal-dashboard/modal-dashboard.component";
 import {GestionCajaService} from "../../services/gestion-caja.service";
 import {GestionCaja} from "../../interfaces/gestionCaja";
 import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
-import {format} from "date-fns";
+import {addDays, format} from "date-fns";
 import {EgresoService} from "../../services/egreso.service";
 import {CuentasService} from "../../services/cuentas.service";
 import {Cuenta} from "../../interfaces/cuenta";
@@ -31,6 +31,11 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   //variables para los reportes de cierre de caja y de egresos
   resumenCaja : any [] = [];
   resumenEgreso : any[] = [];
+  //cajas pendientes
+  cajasPendientes : GestionCaja[] = [];
+  public allGestionCaja : GestionCaja[] = [];
+  caja : GestionCaja | null = null;
+
 
   constructor(
     public dialog : MatDialog,
@@ -63,6 +68,8 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
           this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
           //obtener resumen
           this.getResumen();
+          this.validateCajas();
+          this.getAllGestionCaja();
         }
       );
 
@@ -70,6 +77,8 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
     this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
     //obtener resumen
     this.getResumen();
+    this.getAllGestionCaja();
+    this.validateCajas();
 
   }
 
@@ -110,51 +119,150 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   }
 
 
-  public finalizarDia(){
-    //pedir confirmacion para finalizar el dia
-    const titulo : string = "¿Desea finalizar el día?";
-    const subTitulo : string = "Esta acción es irreversible.";
+  public finalizarDia(fechaOpcional?: string, caja?: GestionCaja) {
+    // pedir confirmacion para finalizar el dia
+    const titulo: string = "¿Desea finalizar el día?";
+    const subTitulo: string = "Esta acción es irreversible.";
     const colorTexto = "#d33";
 
-    //Verificar que no hayan cuentas en: pendientes por despachar, en preparacion o despachadas
-    let cuentas : Cuenta[] = [];
+    // Verificar que no hayan cuentas en: pendientes por despachar, en preparacion o despachadas
+    let cuentas: Cuenta[] = [];
     let isCuentasPendientes = false;
-    //obtener todas las cuentas que hay en el dia labora actual
-    this.cuentaService.cuentasByFecha(this.fechaHoraInicioUTC, null)
+
+    // en caso de que se envie una caja
+    //se almacena, sino sigue siendo null
+    this.caja = caja ? caja : null;
+
+    // Si se proporciona una fecha opcional, usarla en lugar de this.fechaHoraInicioUTC
+    const fechaConsulta = fechaOpcional ? fechaOpcional : this.fechaHoraInicioUTC;
+
+    // obtener todas las cuentas que hay en el día laboral actual o en la fecha opcional
+    this.cuentaService.cuentasByFecha(fechaConsulta, null)
       .subscribe(
         result => {
-          if(result){
-            //almacenar las cuentas consultadas en la variable cuentas
+          if (result) {
+            // almacenar las cuentas consultadas en la variable cuentas
             cuentas = result.object;
-            //se recorre el array, en caso de que haya alguna cuenta que cumpla con las condiciones se cambia el estado de la flag
-            for(let cuenta of cuentas){
-              if(cuenta.estadoCuenta.nombre == "Por despachar" || cuenta.estadoCuenta.nombre == "Despachada" || cuenta.estadoCuenta.nombre == "En preparación"){
+            // se recorre el array, en caso de que haya alguna cuenta que cumpla con las condiciones se cambia el estado de la flag
+            for (let cuenta of cuentas) {
+              if (cuenta.estadoCuenta.nombre == "Por despachar" || cuenta.estadoCuenta.nombre == "Despachada" || cuenta.estadoCuenta.nombre == "En preparación") {
                 isCuentasPendientes = true;
               }
             }
-            //En caso de que en la iteración se haya cambiado el estado de la variable
-            //se lanza el mensaje de alerta pidiendo que se resuelva el estado de las cuentas antes de continuar
-            if(isCuentasPendientes){
-              const mensaje : string = "Al parecer aún hay cuentas pendientes, por favor cobralas antes de continuar con el cierre."
+            // En caso de que en la iteración se haya cambiado el estado de la variable
+            // se lanza el mensaje de alerta pidiendo que se resuelva el estado de las cuentas antes de continuar
+            if (isCuentasPendientes) {
+              const mensaje: string = "Al parecer aún hay cuentas pendientes, por favor cobralas antes de continuar con el cierre."
               this.alertaService.alertaErrorMensajeCustom(mensaje);
             }
-            //Si no hay ninguna cuenta que cumpla las condiciones, entonces se procede con el cierre de día normalmente
-            else{
+            // Si no hay ninguna cuenta que cumpla las condiciones, entonces se procede con el cierre de día normalmente
+            else {
               this.alertaService.alertaPedirConfirmacionMensajeCustom(titulo, subTitulo, colorTexto)
                 .then(
                   (result) => {
-                    if(result.isConfirmed){
-                      this.modalFinalizarDia()
+                    if (result.isConfirmed) {
+                      this.modalFinalizarDia(this.caja);
                     }
                   }
                 );
             }
           }
         }
-      )
-
-
+      );
   }
+
+  //validar que no hayan cajas pendientes de cierre
+  private validateCajas(){
+    this.gestionCajaService.listAll()
+      .subscribe(
+        data => {
+          if(data.object.length > 0){
+            //limpiar el array de cajas pendientes
+            this.cajasPendientes = []
+            //recorrer la response
+            for(let caja of data.object){
+              //en caso de que alguna caja aún este abierta
+              if(caja.estadoCaja){
+                //validar que no se trate de la cuenta del dia actual
+                //no se tomarán en cuenta las cajas del dia de la caja actual ni del día siguiente
+                if(this.gestionCaja.length > 0 && this.gestionCaja[0].fechaHorainicio != null){
+                  const fechaArray: number[] = caja.fechaHorainicio;
+                  const fecha: Date = new Date(
+                    fechaArray[0],
+                    fechaArray[1] - 1, // Restar 1 al mes
+                    fechaArray[2],
+                    fechaArray[3],
+                    fechaArray[4],
+                    fechaArray[5],
+                    fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+                  );
+
+                  let fechaString = fecha.toISOString();
+
+                  //convertir this.gestionCaja[0].fechaHorainicio a string y almacenarlo
+                  let fechaInicioString = this.gestionCaja[0].fechaHorainicio.toString()
+                  const fechaInicio = format(fechaInicioString, "dd/MM/yyyy")
+                  const fechaFin = addDays(fechaInicio, 1).toString();
+
+                  //ahora convertir la fechaHoraInicio de cada caja al formato y comparar para ver
+                  //si es elegible para añadir al array
+                  const fechaCajaFormat = format(fechaString, "dd/MM/yyyy")
+
+                  if(fechaCajaFormat != fechaInicio && fechaCajaFormat != fechaFin){
+                    this.cajasPendientes.push(caja);
+                  }
+                }else{
+                  this.cajasPendientes.push(caja);
+                }
+              }
+            }
+            //En caso de que si hayan cajas pendientes de cierre
+            if(this.cajasPendientes.length > 0){
+
+              for(let caja of this.cajasPendientes){
+                if(caja.fechaHorainicio !== null){
+
+                  //obtener fecha de la caja
+                  const fechaArray: number[] = caja.fechaHorainicio;
+                  const fechaInicio: Date = new Date(
+                    fechaArray[0],
+                    fechaArray[1] - 1, // Restar 1 al mes
+                    fechaArray[2],
+                    fechaArray[3],
+                    fechaArray[4],
+                    fechaArray[5],
+                    fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+                  );
+
+                  let fechaString = fechaInicio.toISOString();
+
+                  const fecha = format(fechaString, "dd/MM/yyyy")
+
+                  //mensaje para avisar que hay una caja sin cierre
+                  const mensaje : string = `Al parecer tienes una caja a la espera de cierre
+                  del día ${fecha}, por favor gestiona el cierre respectivo en la pestaña: "Históricos de caja".`
+                  const title : string = "¡Tienes cajas pendientes!";
+                  const color  = "#FF0000";
+                  const btnText1 : string = "Cerrar";
+
+                  //lanzar alerta con los datos
+                  this.alertaService.alertaErrorBuilderCustom(mensaje, title, btnText1, color)
+                    .then(
+                      (result) => {
+                        if(result.isConfirmed){
+                        }
+                      }
+                    )
+                }
+              }
+            }
+          }
+        }
+      )
+  }
+
+
+
 
   //PETICIONES HTTP
   //iniciarDIa
@@ -168,6 +276,17 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
             this.gestionCaja = data.object;
             if(this.gestionCaja.length > 0){
               if(this.gestionCaja[0].estadoCaja){
+                const fechaArray: number[] = this.gestionCaja[0].fechaHorainicio;
+                const fechaInicio: Date = new Date(
+                  fechaArray[0],
+                  fechaArray[1] - 1, // Restar 1 al mes
+                  fechaArray[2],
+                  fechaArray[3],
+                  fechaArray[4],
+                  fechaArray[5],
+                  fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+                );
+                this.gestionCaja[0].fechaHorainicio = fechaInicio.toISOString();
                 this.iniciarOTerminarDia(true);
                 this.localStore.saveData('estadoDia', true.toString());
               }
@@ -179,6 +298,35 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
         }
       )
   }
+
+
+  private getAllGestionCaja(){
+    this.gestionCajaService.listAll()
+      .subscribe(
+        data => {
+          if(data){
+            this.allGestionCaja = data.object
+
+            for(let caja of this.allGestionCaja){
+              const fechaArray: number[] = caja.fechaHorainicio;
+              const fechaInicio: Date = new Date(
+                fechaArray[0],
+                fechaArray[1] - 1, // Restar 1 al mes
+                fechaArray[2],
+                fechaArray[3],
+                fechaArray[4],
+                fechaArray[5],
+                fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+              );
+
+              caja.fechaHorainicio = fechaInicio
+            }
+          }
+        }
+      )
+  }
+
+
   private getResumen(){
     //consultar los resumen de cajas cerradas y de egresos
     forkJoin([
@@ -250,51 +398,73 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   }
 
   //Modal finalizar dia
-  private modalFinalizarDia(){
-    const dialogRef = this.dialog.open(ModalDashboardComponent, {
-      width: '400px', // Ajusta el ancho según tus necesidades
-      position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '600px',
-      data : {
-        id : this.gestionCaja[0].id,
-        totalCalculado: this.gestionCaja[0].totalCalculado,
-        totalReportado : this.gestionCaja[0].totalReportado,
-        saldoInicioCajaMenor : this.gestionCaja[0].saldoInicioCajaMenor,
-        observaciones : this.gestionCaja[0].observaciones,
-        fechaHoraInicio: this.gestionCaja[0].fechaHorainicio,
-        fechaHoraCierre : this.gestionCaja[0].fechaHoraCierre,
-        estadoCaja : this.gestionCaja[0].estadoCaja,
-      },
-    });
+  protected modalFinalizarDia(caja ? : GestionCaja | null){
+    let dialogRef : MatDialogRef<ModalDashboardComponent>;
+    //en caso de que se envie algo por el campo de caja
+    if(caja != null){
+      dialogRef = this.dialog.open(ModalDashboardComponent, {
+        width: '400px', // Ajusta el ancho según tus necesidades
+        position: { right: '0' }, // Posiciona el modal a la derecha
+        height: '600px',
+        data : {
+          id : caja.id,
+          totalCalculado: caja.totalCalculado,
+          totalReportado : caja.totalReportado,
+          saldoInicioCajaMenor : caja.saldoInicioCajaMenor,
+          observaciones : caja.observaciones,
+          fechaHoraInicio: caja.fechaHorainicio,
+          fechaHoraCierre : caja.fechaHoraCierre,
+          estadoCaja : caja.estadoCaja,
+        },
+      });
+    }//si no se envia nada
+    else{
+      dialogRef = this.dialog.open(ModalDashboardComponent, {
+        width: '400px', // Ajusta el ancho según tus necesidades
+        position: { right: '0' }, // Posiciona el modal a la derecha
+        height: '600px',
+        data : {
+          id : this.gestionCaja[0].id,
+          totalCalculado: this.gestionCaja[0].totalCalculado,
+          totalReportado : this.gestionCaja[0].totalReportado,
+          saldoInicioCajaMenor : this.gestionCaja[0].saldoInicioCajaMenor,
+          observaciones : this.gestionCaja[0].observaciones,
+          fechaHoraInicio: this.gestionCaja[0].fechaHorainicio,
+          fechaHoraCierre : this.gestionCaja[0].fechaHoraCierre,
+          estadoCaja : this.gestionCaja[0].estadoCaja,
+        },
+      });
+    }
 
     dialogRef.afterClosed().subscribe(
       result => {
+        if(result){
+          //crear instancia de gestion caja
+          const gestionCaja : GestionCaja = {
+            id : result.id,
+            totalCalculado : result.totalCalculado,
+            totalReportado : result.totalReportado,
+            saldoInicioCajaMenor : result.saldoInicioCajaMenor,
+            observaciones : result.observaciones,
+            fechaHorainicio : result.fechaHoraInicio,
+            fechaHoraCierre : result.fechaHoraCierre,
+            estadoCaja : result.estadoCaja
+          };
 
-        //crear instancia de gestion caja
-        const gestionCaja : GestionCaja = {
-          id : result.id,
-          totalCalculado : result.totalCalculado,
-          totalReportado : result.totalReportado,
-          saldoInicioCajaMenor : result.saldoInicioCajaMenor,
-          observaciones : result.observaciones,
-          fechaHorainicio : result.fechaHoraInicio,
-          fechaHoraCierre : result.fechaHoraCierre,
-          estadoCaja : result.estadoCaja
-        };
-
-        //actualizar el registro en la base de datos
-        this.gestionCajaService.actualizarGestionCaja(gestionCaja)
-          .subscribe(
-            result =>{
-              this.alertaService.alertaConfirmarCierreDia();
-              //cambiar el estado del dia
-              this.iniciarOTerminarDia(false);
-              //cambiar el estado en local storage a false
-              this.localStore.saveData('estadoDia', gestionCaja.estadoCaja.toString());
-            }, error => {
-              console.log(error);
-            }
-          );
+          //actualizar el registro en la base de datos
+          this.gestionCajaService.actualizarGestionCaja(gestionCaja)
+            .subscribe(
+              result =>{
+                this.alertaService.alertaConfirmarCierreDia();
+                //cambiar el estado del dia
+                this.iniciarOTerminarDia(false);
+                //cambiar el estado en local storage a false
+                this.localStore.saveData('estadoDia', gestionCaja.estadoCaja.toString());
+              }, error => {
+                console.log(error);
+              }
+            );
+        }
       }
     );
   }

@@ -312,6 +312,19 @@ export class AlertasService {
       }
     });
   }
+  //alerta con builder customs para errores
+  public alertaErrorBuilderCustom(mensaje : string, titulo : string, btn1 : string, color :string){
+    return Swal.fire({
+      title : `${titulo}`,
+      icon: "warning",
+      html: `<p>${mensaje}</p>`,
+      color: `${color}`,
+      showCancelButton: false,
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: `${btn1}`,
+      background: '#1e1e1e', // Fondo oscuro
+    })
+  }
 
   //alerta cuando no se realizó ninguna modificacion en el elemento
   public alertaSinModificaciones(){

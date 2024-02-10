@@ -57,6 +57,10 @@ export class GestionCajaService {
         )
       );
   }
+  //Obtener todos los gestion caja existentes
+  listAll() : Observable<any>{
+    return this.http.get(this.apiUrl);
+  }
   //obtener el resumen
   getResumen() : Observable<any>{
     return this.http.get(`${this.apiUrl}/resumen`);
