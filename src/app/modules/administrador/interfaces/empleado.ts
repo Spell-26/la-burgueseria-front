@@ -5,7 +5,7 @@ export interface EmpleadoResponse {
 
 export interface Empleado {
   id:        number;
-  documento: number;
+  documento: string;
   nombre:    string;
   apellido:  string;
   estado:    boolean | null;

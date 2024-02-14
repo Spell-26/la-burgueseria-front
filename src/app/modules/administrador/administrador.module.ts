@@ -38,6 +38,10 @@ import {NgApexchartsModule} from "ng-apexcharts";
 import { ContrastChartComponent } from './utils/graficos/contrast-chart/contrast-chart.component';
 import {MenuCuentasComponent} from "./utils/menu-cuentas/menu-cuentas.component";
 import {MatTabsModule} from "@angular/material/tabs";
+import { ModalEmpleadoComponent } from './utils/modal-empleado/modal-empleado.component';
+import {MatButtonModule} from "@angular/material/button";
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 
 @NgModule({
@@ -65,6 +69,7 @@ import {MatTabsModule} from "@angular/material/tabs";
     ModalDashboardComponent,
     ZoomeableChartComponent,
     ContrastChartComponent,
+    ModalEmpleadoComponent,
 
   ],
     imports: [
@@ -84,7 +89,10 @@ import {MatTabsModule} from "@angular/material/tabs";
         MenuResponsiveComponent,
         NgApexchartsModule,
         MenuCuentasComponent,
-        MatTabsModule
+        MatTabsModule,
+        MatButtonModule,
+        MatSlideToggleModule,
+        MatTooltipModule
     ]
 })
 export class AdministradorModule { }

@@ -11,6 +11,8 @@ import {addDays, format} from "date-fns";
 import {EgresoService} from "../../services/egreso.service";
 import {CuentasService} from "../../services/cuentas.service";
 import {Cuenta} from "../../interfaces/cuenta";
+import {LoginService} from "../../../home/services/auth/login.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-panel-de-gestion',
@@ -35,7 +37,8 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   cajasPendientes : GestionCaja[] = [];
   public allGestionCaja : GestionCaja[] = [];
   caja : GestionCaja | null = null;
-
+  //validacion se sesion
+  userLoginOn = false;
 
   constructor(
     public dialog : MatDialog,
@@ -44,7 +47,9 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
     private gestionCajaService : GestionCajaService,
     private localStore : LocalService,
     private egresoService : EgresoService,
-    private cuentaService : CuentasService
+    private cuentaService : CuentasService,
+    protected loginService : LoginService,
+    private router : Router
   ) {
   }
 
@@ -56,29 +61,42 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
-    // Iniciar la suscripción al observable que emite cada segundo
-    this.tiempoSubscription = interval(1000).subscribe(() => {
-      this.actualizarTiempo();
+    this.loginService.userLoginOn.subscribe({
+      next: (userLoginOn) => {
+        this.userLoginOn = userLoginOn;
+      }
     });
+    //si no tiene sesion
+    if(!this.userLoginOn){
+      this.router.navigateByUrl('home/login')
+    }
+    else{
+      // Iniciar la suscripción al observable que emite cada segundo
+      this.tiempoSubscription = interval(1000).subscribe(() => {
+        this.actualizarTiempo();
+      });
 
-    this.gestionCajaService.refreshNeeded
-      .subscribe(
-        () => {
-          //logica cuando se debe refrescar el componente
-          this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
-          //obtener resumen
-          this.getResumen();
-          this.validateCajas();
-          this.getAllGestionCaja();
-        }
-      );
+      this.gestionCajaService.refreshNeeded
+        .subscribe(
+          () => {
+            //logica cuando se debe refrescar el componente
+            this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+            //obtener resumen
+            this.getResumen();
+            this.validateCajas();
+            this.getAllGestionCaja();
+          }
+        );
 
-    //al iniciar el compoente buscar si hay ahy una caja abierda ese mismo dia
-    this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
-    //obtener resumen
-    this.getResumen();
-    this.getAllGestionCaja();
-    this.validateCajas();
+      //al iniciar el compoente buscar si hay ahy una caja abierda ese mismo dia
+      this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+      //obtener resumen
+      this.getResumen();
+      this.getAllGestionCaja();
+      this.validateCajas();
+
+    }
+
 
   }
 
@@ -294,6 +312,16 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
               this.iniciarOTerminarDia(false);
               this.localStore.saveData('estadoDia', false.toString());
             }
+          }
+        }, error => {
+          if(error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")){
+            this.loginService.logout(); //quitar todas las credenciales de sesion
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          }else{
+            console.log(error)
           }
         }
       )

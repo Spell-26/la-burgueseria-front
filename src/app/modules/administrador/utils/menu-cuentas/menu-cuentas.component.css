@@ -57,6 +57,10 @@ footer{
   text-align: center;
   margin-top: 1em;
 }
+footer h3:hover{
+  color: greenyellow;
+  cursor: pointer;
+}
 .header-tab{
   margin-top: .5em;
   text-align: center;

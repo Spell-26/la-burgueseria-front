@@ -19,6 +19,8 @@ import Swal from "sweetalert2";
 import {format} from "date-fns";
 import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
 import {EMPTY, Observable, switchMap} from "rxjs";
+import {LoginService} from "../../../home/services/auth/login.service";
+import {Router} from "@angular/router";
 
 
 
@@ -46,18 +48,29 @@ export class CuentasComponent implements OnInit{
     fechaHoraFinUTC : string | null = null;
   // Variable para el filtro de estados de cuenta
   filtrarEstado : string = '';
-
+  //verificacion de sesion
+  userLoginOn : boolean = false;
   ngOnInit(): void {
-    this.cuentaService.refreshNeeded
-      .subscribe(
-        () =>{
-          this.getEmpleadoCuentas();
-          this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
-        }
-      );
-    //obtener las cuentas del dia de hoy.
-    this.getEmpleadoCuentas();
-    this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+    this.loginService.userLoginOn.subscribe({
+      next: (userLoginOn) => {
+        this.userLoginOn = userLoginOn;
+      }
+    });
+    if(!this.userLoginOn){
+      this.router.navigateByUrl('home/login')
+    }else{
+      this.cuentaService.refreshNeeded
+        .subscribe(
+          () =>{
+            this.getEmpleadoCuentas();
+            this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+          }
+        );
+      //obtener las cuentas del dia de hoy.
+      this.getEmpleadoCuentas();
+      this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+
+    }
 
   }
 
@@ -91,7 +104,9 @@ export class CuentasComponent implements OnInit{
               private insumoService : InsumosService,
               private ingresoService : IngresoService,
               private alertaService : AlertasService,
-              public fechaService : FechaHoraService) {
+              public fechaService : FechaHoraService,
+              private loginService : LoginService,
+              private router : Router) {
   }
 
 
@@ -218,7 +233,16 @@ export class CuentasComponent implements OnInit{
 
           }
         }, error => {
-          console.log(error)
+          //cuando el token expira, se redirige a la pagina de login
+          if(error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")){
+            this.loginService.logout(); //quitar todas las credenciales de sesion
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          }else{
+            console.log(error)
+          }
         }
       )
   }
@@ -229,7 +253,7 @@ export class CuentasComponent implements OnInit{
         data =>{
           this.empleadoCuentas = data.object
         },error => {
-          console.log(error)
+
         }
       )
   }

@@ -5,6 +5,9 @@ import {insumo} from "../../interfaces";
 import {MatDialog} from "@angular/material/dialog";
 import {ModalInsumosComponent} from "../../utils/modal-insumos/modal-insumos.component";
 import Swal from "sweetalert2";
+import {LoginService} from "../../../home/services/auth/login.service";
+import {Router} from "@angular/router";
+import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 
 
 @Component({
@@ -28,21 +31,35 @@ export class InsumosComponent implements OnInit{
   cantidadEditada : number = 0;
   insumoEditandoIndex : number | null = null;
   nombreEditado : string = '';
+  //verificacion de sesion
+  userLoginOn : boolean = false;
 
   constructor(private insumosService : InsumosService,
-              public dialog : MatDialog
+              public dialog : MatDialog,
+              private loginService : LoginService,
+              private router : Router,
+              private alertaService : AlertasService
   ) {
 
   }
   ngOnInit(): void{
+    this.loginService.userLoginOn.subscribe({
+      next: (userLoginOn) => {
+        this.userLoginOn = userLoginOn;
+      }
+    });
+    if(!this.userLoginOn){
+      this.router.navigateByUrl('home/login')
+    }else{
+      this.insumosService.refreshNeeded
+        .subscribe(
+          () =>{
+            this.getAllInsumos();
+          }
+        );
+      this.getAllInsumos();
+    }
 
-    this.insumosService.refreshNeeded
-      .subscribe(
-        () =>{
-          this.getAllInsumos();
-        }
-      );
-    this.getAllInsumos();
   }
 
   //****************************
@@ -140,7 +157,15 @@ export class InsumosComponent implements OnInit{
           this.isLast = data.last;
         },
         error => {
-          console.log(error.error())
+          if(error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")){
+            this.loginService.logout(); //quitar todas las credenciales de sesion
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          }else{
+            console.log(error)
+          }
         }
       );
 

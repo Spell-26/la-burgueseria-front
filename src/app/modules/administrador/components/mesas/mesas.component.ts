@@ -6,6 +6,8 @@ import {Validators} from "@angular/forms";
 import {ModalLateralComponent} from "../../utils/modal-lateral/modal-lateral.component";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 import Swal from "sweetalert2";
+import {LoginService} from "../../../home/services/auth/login.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-mesas',
@@ -29,19 +31,33 @@ export class MesasComponent implements OnInit{
   estadosMesa = ['Disponible', 'Deshabilitada'] //'Ocupada' se hace automaticamente cuando se asigna una cuenta
   nuevoEstadoMesa : string = "";
   nuevoNumeroMesa : number = 0;
+  //verificacion de sesion
+  userLoginOn : boolean = false;
 
   constructor(private mesaService : MesasService, public dialog : MatDialog,
-              private alertaService : AlertasService
+              private alertaService : AlertasService,
+              private loginService : LoginService,
+              private router : Router
   ) {
   }
   ngOnInit(): void {
-    this.mesaService.refreshNeeded
-      .subscribe(
-        () =>{
-          this.getAllMesas();
-        }
-      );
-    this.getAllMesas();
+    this.loginService.userLoginOn.subscribe({
+      next: (userLoginOn) => {
+        this.userLoginOn = userLoginOn;
+      }
+    });
+    if(!this.userLoginOn){
+      this.router.navigateByUrl('home/login')
+    }else{
+      this.mesaService.refreshNeeded
+        .subscribe(
+          () =>{
+            this.getAllMesas();
+          }
+        );
+      this.getAllMesas();
+    }
+
   }
 
 
@@ -132,7 +148,15 @@ export class MesasComponent implements OnInit{
           this.isLast = data.last;
         },
         error => {
-          console.log(error.error())
+          if(error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")){
+            this.loginService.logout(); //quitar todas las credenciales de sesion
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          }else{
+            console.log(error)
+          }
         }
       )
   }

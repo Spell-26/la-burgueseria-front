@@ -9,7 +9,7 @@ import {EnvService} from "../utils/sharedMethods/env/env.service";
 })
 export class EmpleadosService {
 
-  private _refreshNeeded = new Subject<void>();
+  public _refreshNeeded = new Subject<void>();
 
   get refreshNeeded(){
     return this._refreshNeeded

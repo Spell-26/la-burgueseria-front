@@ -15,6 +15,9 @@ import {CuentasService} from "../../services/cuentas.service";
 import {ModalIngresosComponent} from "../../utils/modal-ingresos/modal-ingresos.component";
 import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
 import {format} from "date-fns";
+import {LoginService} from "../../../home/services/auth/login.service";
+import {Router} from "@angular/router";
+import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 
 @Component({
   selector: 'app-ingresos',
@@ -40,17 +43,29 @@ export class IngresosComponent implements OnInit{
   fechaHoraFinUTC : string | null = null;
   //DATOS RECIBIDOS DEL COMPONENTE DE CALENDARIO
   datosRecibidos! : { fromDate: Date | null, toDate : Date | null }
+  //verificacion de sesion
+  userLoginOn : boolean = false;
 
   ngOnInit(): void {
-    this.ingresoService.refreshNeeded
-      .subscribe(
-        () => {
-          this.getEmpleadoCuentas();
-          this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
-        }
-      );
-    this.getEmpleadoCuentas();
-    this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+
+    this.loginService.userLoginOn.subscribe({
+      next: (userLoginOn) => {
+        this.userLoginOn = userLoginOn;
+      }
+    });
+    if(!this.userLoginOn){
+      this.router.navigateByUrl('home/login')
+    }else{
+      this.ingresoService.refreshNeeded
+        .subscribe(
+          () => {
+            this.getEmpleadoCuentas();
+            this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+          }
+        );
+      this.getEmpleadoCuentas();
+      this.getIngresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+    }
   }
 
   constructor(public dialog : MatDialog,
@@ -60,7 +75,10 @@ export class IngresosComponent implements OnInit{
               private insumosPorProductoService : InsumosPorProductoService,
               private insumoService : InsumosService,
               private cuentaService : CuentasService,
-              public fechaService : FechaHoraService) {
+              public fechaService : FechaHoraService,
+              private loginService : LoginService,
+              private router : Router,
+              private alertaService : AlertasService) {
   }
 
 
@@ -86,7 +104,15 @@ export class IngresosComponent implements OnInit{
             ingreso.fecha = fecha;
           }
         }, error => {
-          console.log(error);
+          if(error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")){
+            this.loginService.logout(); //quitar todas las credenciales de sesion
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          }else{
+            console.log(error)
+          }
         }
       )
   }

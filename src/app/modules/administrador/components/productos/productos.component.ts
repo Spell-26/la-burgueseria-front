@@ -13,6 +13,8 @@ import {ModalEditarProductoComponent} from "../../utils/modal-editar-producto/mo
 import {ModalNuevoProductoComponent} from "../../utils/modal-nuevo-producto/modal-nuevo-producto.component";
 import {InsumosPorProductoService} from "../../services/insumos-por-producto.service";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
+import {LoginService} from "../../../home/services/auth/login.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-productos',
@@ -30,6 +32,8 @@ export class ProductosComponent  implements OnInit {
   public mostrarBotones : boolean = false;
   //flag para el popo over de la descripcion
   mostrarTextoCompleto: boolean = false;
+  //verificacion de sesion
+  userLoginOn : boolean = false;
 
 
   // CONSTRUCTOR E INICIALIZADORES
@@ -39,20 +43,33 @@ export class ProductosComponent  implements OnInit {
               private insumoService : InsumosService,
              private ippService : InsumosPorProductoService,
               public dialog : MatDialog,
-              private alertaService : AlertasService) {
+              private alertaService : AlertasService,
+              private loginService : LoginService,
+              private router : Router) {
   }
   ngOnInit(): void {
-    this.productosService.refreshNeeded
-      .subscribe(
-        () =>{
-          this.getProductos()
-          this.getAllCategoriasProductos();
-          this.getAllInsumos();
-        }
-      );
-    this.getProductos()
-    this.getAllCategoriasProductos();
-    this.getAllInsumos();
+
+    this.loginService.userLoginOn.subscribe({
+      next: (userLoginOn) => {
+        this.userLoginOn = userLoginOn;
+      }
+    });
+    if(!this.userLoginOn){
+      this.router.navigateByUrl('home/login')
+    }else{
+      this.productosService.refreshNeeded
+        .subscribe(
+          () =>{
+            this.getProductos()
+            this.getAllCategoriasProductos();
+            this.getAllInsumos();
+          }
+        );
+      this.getProductos()
+      this.getAllCategoriasProductos();
+      this.getAllInsumos();
+    }
+
 
   }
   //****************************
@@ -220,6 +237,16 @@ export class ProductosComponent  implements OnInit {
             this.productosAgrupados = this.agruparProductosPorCategoria(this.productos);
           }
 
+        }, error => {
+          if(error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")){
+            this.loginService.logout(); //quitar todas las credenciales de sesion
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          }else{
+            console.log(error)
+          }
         }
       )
   }

@@ -7,6 +7,8 @@ import {format} from "date-fns";
 import {ModalEgresosComponent} from "../../utils/modal-egresos/modal-egresos.component";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 import Swal from "sweetalert2";
+import {LoginService} from "../../../home/services/auth/login.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-egresos',
@@ -18,7 +20,9 @@ export class EgresosComponent implements OnInit{
     public dialog : MatDialog,
     public fechaService : FechaHoraService,
     private egresoService : EgresoService,
-    private alertaService : AlertasService
+    private alertaService : AlertasService,
+    private loginService : LoginService,
+    private router : Router
   ) {
   }
 
@@ -38,15 +42,26 @@ export class EgresosComponent implements OnInit{
   fechaHoraFinUTC : string | null = null;
   //DATOS RECIBIDOS DEL COMPONENTE DE CALENDARIO
   datosRecibidos! : { fromDate: Date | null, toDate : Date | null }
-
+//verificacion de sesion
+  userLoginOn : boolean = false;
   ngOnInit(): void {
-    this.egresoService.refreshNeeded
-      .subscribe(
-        () => {
-          this.getEgresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
-        }
-      );
-    this.getEgresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+
+    this.loginService.userLoginOn.subscribe({
+      next: (userLoginOn) => {
+        this.userLoginOn = userLoginOn;
+      }
+    });
+    if(!this.userLoginOn){
+      this.router.navigateByUrl('home/login')
+    }else{
+      this.egresoService.refreshNeeded
+        .subscribe(
+          () => {
+            this.getEgresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+          }
+        );
+      this.getEgresoByFechaPage(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+    }
   }
 
 
@@ -75,7 +90,15 @@ export class EgresosComponent implements OnInit{
             egreso.fecha = fecha;
           }
         }, error => {
-          console.log(error)
+          if(error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")){
+            this.loginService.logout(); //quitar todas las credenciales de sesion
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          }else{
+            console.log(error)
+          }
         }
       )
   }

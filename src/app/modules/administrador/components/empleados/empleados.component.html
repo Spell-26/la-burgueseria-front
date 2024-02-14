@@ -1,85 +1,99 @@
 <div class="container-section">
-  <header class="header-module">
-    <h1>Empleados</h1>
-  </header>
-  <div class="actions-container">
-    <div class="search-container">
-      <input type="text" placeholder="Buscar empleado..." [(ngModel)]="nombreBusqueda" (keyup)="buscarEmpleados()"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
+  <ng-container *ngIf="!isSkeletonLoading; else skeletonLoading">
+    <header class="header-module">
+      <h1>Empleados</h1>
+    </header>
+    <div class="actions-container">
+      <div class="search-container">
+        <input type="text" placeholder="Buscar empleado..." [(ngModel)]="nombreBusqueda" (keyup)="buscarEmpleados()"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
+      </div>
+      <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nuevo empleado">
+        <button (click)="modalEmpleado()"> <!-- (click) ="crearMesaModal()" -->
+          <img src="assets/icons/new.svg" alt="">
+          <span>Nuevo empleado</span>
+        </button>
+      </div>
     </div>
-    <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nuevo empleado">
-      <button (click)="crearEmpleadoModal()"> <!-- (click) ="crearMesaModal()" -->
-        <img src="assets/icons/new.svg" alt="">
-        <span>Nuevo empleado</span>
-      </button>
-    </div>
-  </div>
-  <section class="component-main-content">
-    <table class="tabla-listado" *ngIf="empleados.length > 0 ; else buscando">
-      <thead class="cabecera-tabla">
-      <tr class="row-header">
-        <th class="row-header-element">
-          DOCUMENTO
-        </th>
-        <th class="row-header-element">
-          NOMBRE
-        </th>
-        <th class="row-header-element">
-          APELLIDO
-        </th>
-        <th class="row-header-element">
-          ESTADO
-        </th>
-        <th class="row-header-element">
-          ACCIONES
-        </th>
-      </tr>
-      </thead>
-      <tbody class="contenido-tabla">
-      <tr class="row-contenido-tabla" *ngFor="let empleado of empleados; let i = index">
-        <td class="row-contenido-element"> <!--   *ngIf="!modoEdicion || (modoEdicion && i !== mesaEditandoIndex)" (click)="iniciarEdicion(i)" -->
-          {{empleado.documento}}
-        </td>
-        <td class="row-contenido-element" > <!-- *ngIf="!modoEdicion || (modoEdicion && i !== mesaEditandoIndex)" (click)="iniciarEdicion(i)"  -->
-          {{empleado.nombre}}
-        </td>
+    <section class="component-main-content">
+      <table class="tabla-listado" *ngIf="usuariosConEmpleados.length > 0 ; else buscando">
+        <thead class="cabecera-tabla">
+        <tr class="row-header">
+          <th class="row-header-element">
+            DOCUMENTO
+          </th>
+          <th class="row-header-element">
+            NOMBRE
+          </th>
+          <th class="row-header-element">
+            APELLIDO
+          </th>
+          <th class="row-header-element">
+            ESTADO
+          </th>
+          <th class="row-header-element">
+            CARGO
+          </th>
+          <th class="row-header-element">
+            ACCIONES
+          </th>
+        </tr>
+        </thead>
+        <tbody class="contenido-tabla">
+        <tr class="row-contenido-tabla" *ngFor="let usuarioConEmpleado of usuariosConEmpleados;">
+          <td class="row-contenido-element">
+            {{usuarioConEmpleado.empleado.documento}}
+          </td>
+          <td class="row-contenido-element" >
+            {{usuarioConEmpleado.empleado.nombre}}
+          </td>
 
-        <td class="row-contenido-element">
-          {{empleado.apellido}}
-        </td>
-        <td class="row-contenido-element">
-          <span *ngIf="empleado.estado == true" class="activo">
-            Activo
-          </span>
-          <span *ngIf="empleado.estado == false" class="inactivo">
-            Inactivo
-          </span>
-        </td>
-        <td class="row-contenido-element">
-          <button class="btn-eliminar-element" (click)="cambiarEstadoEmpleado(i)"> <!-- (click)="deleteMesa(mesa.id)" *ngIf="!modoEdicion || (modoEdicion && i !== mesaEditandoIndex)" -->
-            <ng-container *ngIf="empleado.estado == true">
-            Inhabilitar
-            </ng-container>
-            <ng-container *ngIf="empleado.estado == false">
-            Activar
-          </ng-container>
-          </button>
-          <!-- <button class="btn-actualizar-element" *ngIf="modoEdicion && i === mesaEditandoIndex" (click)="guardarEdicion(mesa.id)">
-            Guardar
-          </button>
-          <button class="btn-eliminar-element" *ngIf="modoEdicion && i === mesaEditandoIndex" (click)="cancelarEdicion()">
-            Cancelar
-          </button> -->
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <div class="paginacion" *ngIf="empleados.length > 0">
-      <img src="assets/icons/arrow-prev-small-svgrepo-com.svg" alt="anterior" *ngIf="!isFirst" (click)="previousPage()">
-      <h3>Pagina {{pagina+1}}</h3>
-      <img src="assets/icons/arrow-next-small-svgrepo-com.svg" alt="siguiente" *ngIf="!isLast" (click)="nextPage()">
-    </div>
-  </section>
+          <td class="row-contenido-element">
+            {{usuarioConEmpleado.empleado.apellido}}
+          </td>
+          <td class="row-contenido-element">
+
+            <mat-slide-toggle checked="{{usuarioConEmpleado.empleado.estado}}" (change)="toggleEmpleadoEstado(usuarioConEmpleado.empleado)"
+                              matTooltip="Activar o desactivar empleado.">
+              {{ usuarioConEmpleado.empleado.estado ? 'Activo' : 'Inactivo' }}
+            </mat-slide-toggle>
+
+          </td>
+          <td class="row-contenido-element">
+            {{usuarioConEmpleado.usuario.rol}}
+          </td>
+          <td class="row-contenido-element">
+            <button class="btn-eliminar-element"
+            matTooltip="Gestiona los datos de los empleados."
+            (click)="modalGestionarEmpleado(usuarioConEmpleado)">
+              Gestionar
+            </button>
+
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+    </section>
+  </ng-container>
+
 </div>
+
+
+
+<ng-template #skeletonLoading>
+  <div class="header-module-skeleton">
+
+  </div>
+  <div class="actions-container-skeleton">
+
+  </div>
+  <div class="component-main-content-skeleton">
+    <div class="skeleton-content"></div>
+    <div class="skeleton-content"></div>
+  </div>
+</ng-template>
+
+
 
 <ng-template #buscando >
   <div class="cargando">

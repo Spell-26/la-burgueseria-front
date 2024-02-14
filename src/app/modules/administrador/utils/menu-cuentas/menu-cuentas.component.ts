@@ -23,6 +23,8 @@ import {Ingreso} from "../../interfaces/ingreso";
 import {EMPTY, forkJoin, interval, Observable, Subject, switchMap, takeUntil} from "rxjs";
 import {ModalIngresosComponent} from "../modal-ingresos/modal-ingresos.component";
 import {MatDialog} from "@angular/material/dialog";
+import {LoginService} from "../../../home/services/auth/login.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-menu-cuentas',
@@ -51,6 +53,12 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
 
   // Utilizaremos un Subject para destruir la suscripción cuando el componente se destruya
   private destroy$: Subject<void> = new Subject<void>();
+  //status de login
+  userLoginOn = false;
+  //obtener datos del usuario
+  nombreUsuario = '';
+  apellidoUsuario = '';
+  rolUsuario = '';
 
   constructor(
     private iconRegistry : MatIconRegistry,
@@ -65,6 +73,8 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
     private alertaService : AlertasService,
     public fechaService : FechaHoraService,
     public dialog : MatDialog,
+    private loginService : LoginService,
+    private router : Router
   ) {
 
 
@@ -78,6 +88,10 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
     this.iconRegistry.addSvgIconLiteral('pagada', this.sanitizer.bypassSecurityTrustHtml(this.icons.pagada));
     this.iconRegistry.addSvgIconLiteral('cancelada', this.sanitizer.bypassSecurityTrustHtml(this.icons.cancelada));
 
+    //obtener variables de sesion
+    this.nombreUsuario = sessionStorage.getItem("nombre") || "";
+    this.apellidoUsuario = sessionStorage.getItem("apellido") || "";
+    this.rolUsuario = sessionStorage.getItem("rol") || "";
 
     //subscribir a las actualizaciones de cuentas
     this.cuentaService.refreshNeeded
@@ -113,6 +127,20 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
   //****************************
 
 
+  //cerrar sesion
+  public logOut(){
+    const titulo = "¿Estás seguro de cerrar sesión?"
+    this.alertaService.alertaPedirConfirmacionMensajeCustom(titulo, "","#fff")
+      .then(
+        result => {
+          if(result.isConfirmed){
+            this.loginService.logout()
+            this.router.navigateByUrl('home')
+          }
+        }
+      )
+
+  }
   //obtener el nombre y apellido del empleado vinculado a una cita dada por el ID
   public getNombreApellidoEmpleado(idCita : number) : string {
     const empleado = this.empleadoCuentas.find(e => e.cuenta.id === idCita);

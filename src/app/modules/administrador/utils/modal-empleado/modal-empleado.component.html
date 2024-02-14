@@ -1,0 +1,70 @@
+<h2 mat-dialog-title>Gestión de empleados</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field>
+      <mat-label>Documento</mat-label>
+      <input matInput placeholder="Documento" formControlName="documento">
+      <mat-error *ngIf="form.get('documento')?.hasError('required')">El número de documento es obligatorio</mat-error>
+      <mat-error *ngIf="form.get('documento')?.hasError('pattern')">Solo se aceptan números, mínimo 7 caracteres y máximo 11</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Nombre</mat-label>
+      <input matInput placeholder="Nombre" formControlName="nombre">
+      <mat-error *ngIf="form.get('nombre')?.hasError('required')">El nombre del empleado es obligatorio</mat-error>
+      <mat-error *ngIf="form.get('nombre')?.hasError('pattern')">Solo se aceptan letras.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Apellido</mat-label>
+      <input matInput placeholder="Apellido" formControlName="apellido">
+      <mat-error *ngIf="form.get('apellido')?.hasError('required')">El apellido del empleado es obligatorio</mat-error>
+      <mat-error *ngIf="form.get('apellido')?.hasError('pattern')">Solo se aceptan letras.</mat-error>
+    </mat-form-field>
+
+    <mat-slide-toggle (change)="onSlideToggleChange()" *ngIf="data">Cambiar contraseña</mat-slide-toggle>
+
+
+    <ng-container *ngIf="mostrarCamposContrasena">
+      <mat-form-field>
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="hide ? 'password' : 'text'" formControlName="contrasena" (keydown.enter)="$event.preventDefault()">
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide" class="hide">
+          <img *ngIf="hide" src="assets/icons/visibility.svg" alt="">
+          <img *ngIf="!hide" src="assets/icons/not-visibility.svg" alt="">
+        </button>
+        <mat-error *ngIf="form.get('contrasena')?.hasError('required')">Debes ingresar una contraseña válida.</mat-error>
+        <mat-error *ngIf="form.get('contrasena')?.hasError('pattern')">La contraseña debe contener como mínimo: una mayúscula, un número, un carácter especial y una longitud mínima de 8 carácteres.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="hide ? 'password' : 'text'" formControlName="contrasenaVerify" (keydown.enter)="$event.preventDefault()">
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide" class="hide">
+          <img *ngIf="hide" src="assets/icons/visibility.svg" alt="">
+          <img *ngIf="!hide" src="assets/icons/not-visibility.svg" alt="">
+        </button>
+        <mat-error *ngIf="form.get('contrasenaVerify')?.hasError('required')">Debes ingresar una contraseña válida.</mat-error>
+        <mat-error *ngIf="form.get('contrasenaVerify')?.hasError('pattern')">La contraseña debe contener como mínimo: una mayúscula, un número, un carácter especial y una longitud mínima de 8 carácteres.</mat-error>
+        <mat-error *ngIf="form.get('contrasenaVerify')?.value != form.get('contrasena')?.value">Las contraseñas ingresadas no coinciden.</mat-error>
+      </mat-form-field>
+    </ng-container>
+
+
+    <mat-form-field>
+      <mat-label>
+        Cargo
+      </mat-label>
+      <mat-select formControlName="rol">
+        <mat-option *ngFor="let cargo of cargos" [value]="cargo">
+          {{cargo}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('rol')?.hasError('required')">Debes seleccionar el cargo del empleado</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions >
+  <button mat-button (click)="onSubmit()" class="btn-actualizar-element">Crear</button>
+  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+</mat-dialog-actions>

@@ -74,3 +74,48 @@
 .inactivo{
   color: red;
 }
+
+/*ESKELETON LOADING CONTENIDO CENTRAL*/
+.header-module-skeleton {
+  width: 40%;
+  padding: 2em;
+  border-radius: .7em;
+  background: linear-gradient(90deg, #3C3B3B 25%, #484848 50%, #3C3B3B 75%);
+  background-size: 200% 100%;
+  animation: gradientAnimation 1.5s ease infinite;
+}
+
+.actions-container-skeleton {
+  width: 80%;
+  padding: 2em;
+  margin: 1em 0 0 0;
+  border-radius: .7em;
+  background: linear-gradient(90deg, #3C3B3B 25%, #484848 50%, #3C3B3B 75%);
+  background-size: 200% 100%;
+  animation: gradientAnimation 1.5s ease infinite;
+}
+.component-main-content-skeleton{
+  width: 100%;
+  border-top: 1px solid #3C3B3B;
+  margin-top: .5em;
+  display: flex;
+  flex-direction: column;
+}
+.skeleton-content{
+  width: 80%;
+  margin: 1.5em .5em 0 .5em;
+  padding: 4em;
+  border-radius: .7em;
+  background: linear-gradient(90deg, #3C3B3B 25%, #484848 50%, #3C3B3B 75%);
+  background-size: 200% 100%;
+  animation: gradientAnimation 1.5s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

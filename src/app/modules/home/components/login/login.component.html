@@ -1,0 +1,46 @@
+
+<section class="content">
+  <div class="image-container">
+    <img src="assets/img/imagen-login.jpg" alt="">
+  </div>
+  <div class="form-container">
+    <header class="form-header">
+      <div class="go-back">
+        <a routerLink="/home">
+          <img src="assets/icons/close-square-svgrepo-com.svg" alt="">
+        </a>
+      </div>
+      <div class="logo">
+        <img src="assets/logoburgueseria.png" alt="" >
+      </div>
+      <div class="texto">
+        <p>¡Qué bueno verte de nuevo!, por favor inicia sesión con tus credenciales.</p>
+      </div>
+    </header>
+    <div class="formulario">
+      <form [formGroup]="form">
+        <mat-form-field appearance="outline">
+          <mat-label>Ingresa tú usuario</mat-label>
+          <input matInput formControlName="username">
+          <mat-error *ngIf="form.get('username')?.hasError('required')">Debes ingresar el usuario.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Ingresa tú contraseña</mat-label>
+          <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" (keydown.enter)="$event.preventDefault()">
+          <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide" class="hide">
+            <img *ngIf="hide" src="assets/icons/visibility.svg" alt="">
+            <img *ngIf="!hide" src="assets/icons/not-visibility.svg" alt="">
+          </button>
+          <mat-error *ngIf="form.get('password')?.hasError('required')">Debes ingresar una contraseña válida.</mat-error>
+
+        </mat-form-field>
+
+      </form>
+
+      <button mat-raised-button color="primary" (click)="login()" class="btn-login">Iniciar sesión</button>
+
+    </div>
+  </div>
+</section>
+

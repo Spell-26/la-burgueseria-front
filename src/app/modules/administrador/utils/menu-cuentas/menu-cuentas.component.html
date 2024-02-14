@@ -5,8 +5,8 @@
     </div>
     <div id="texto-encabezado">
       <div id="container-textos">
-        <span id="titulo">Dany flow</span>
-        <span id="subtitulo">Administrador</span>
+        <span id="titulo">{{nombreUsuario}} {{apellidoUsuario}}</span>
+        <span id="subtitulo">{{rolUsuario}}</span>
       </div>
     </div>
   </header>
@@ -162,7 +162,7 @@
       </mat-tab>
 
     </mat-tab-group>
-    <footer><h3>Cerrar sesión</h3></footer>
+    <footer><h3 (click)="logOut()">Cerrar sesión</h3></footer>
   </div>
 </aside>
 
