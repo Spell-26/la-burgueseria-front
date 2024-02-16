@@ -61,19 +61,28 @@
           <td class="row-contenido-element">
             {{usuarioConEmpleado.usuario.rol}}
           </td>
+
           <td class="row-contenido-element">
             <button class="btn-eliminar-element"
             matTooltip="Gestiona los datos de los empleados."
             (click)="modalGestionarEmpleado(usuarioConEmpleado)">
               Gestionar
             </button>
-
           </td>
+
         </tr>
         </tbody>
       </table>
 
     </section>
+
+
+
+
+
+
+
+
   </ng-container>
 
 </div>
@@ -81,16 +90,7 @@
 
 
 <ng-template #skeletonLoading>
-  <div class="header-module-skeleton">
-
-  </div>
-  <div class="actions-container-skeleton">
-
-  </div>
-  <div class="component-main-content-skeleton">
-    <div class="skeleton-content"></div>
-    <div class="skeleton-content"></div>
-  </div>
+  <app-skeleton-full></app-skeleton-full>
 </ng-template>
 
 

@@ -14,8 +14,12 @@
 .row-header-element{
   font-size: 1.1em;
   font-family: WorkSans-bold, serif;
-  text-align: left;
+  text-align: center;
   color: #EBB80D;
+}
+.row-header-element {
+  width: calc(100% / 7); /* Ajusta el ancho según el número de columnas */
+  text-align: center; /* Alinea el texto en el centro */
 }
 .row-contenido-tabla{
   text-align: center;

@@ -42,6 +42,12 @@ import { ModalEmpleadoComponent } from './utils/modal-empleado/modal-empleado.co
 import {MatButtonModule} from "@angular/material/button";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MatTooltipModule} from "@angular/material/tooltip";
+import { DraggableCuentaComponent } from './utils/draggable-cuenta/draggable-cuenta.component';
+import { SkeletonFullComponent } from './utils/skeleton-loading/skeleton-full/skeleton-full.component';
+import { SkeletonPartialComponent } from './utils/skeleton-loading/skeleton-partial/skeleton-partial.component';
+import { SkeletonModalComponent } from './utils/skeleton-loading/skeleton-modal/skeleton-modal.component';
+import { SkeletonMenuCuentaComponent } from './utils/skeleton-loading/skeleton-menu-cuenta/skeleton-menu-cuenta.component';
+import { SkeletonMenuCuentaResponsiveComponent } from './utils/skeleton-loading/skeleton-menu-cuenta-responsive/skeleton-menu-cuenta-responsive.component';
 
 
 @NgModule({
@@ -70,6 +76,12 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     ZoomeableChartComponent,
     ContrastChartComponent,
     ModalEmpleadoComponent,
+    DraggableCuentaComponent,
+    SkeletonFullComponent,
+    SkeletonPartialComponent,
+    SkeletonModalComponent,
+    SkeletonMenuCuentaComponent,
+    SkeletonMenuCuentaResponsiveComponent,
 
   ],
     imports: [

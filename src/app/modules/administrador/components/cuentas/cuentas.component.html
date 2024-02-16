@@ -32,6 +32,7 @@
   </div>
 
   <section class="component-main-component">
+    <ng-container *ngIf="!isLoading ; else skeletonLoadingPartial">
     <ng-container *ngIf="cuentasFecha.length > 0; else buscando; let isContenido">
       <table class="tabla-listado" >
         <thead class="cabecera-tabla">
@@ -68,6 +69,7 @@
 
       </table>
     </ng-container>
+    </ng-container>
   </section>
 </div>
 
@@ -78,34 +80,27 @@
 
   </div>
 </ng-template>
+<ng-template #buscandoInTable >
+  <td colspan="8">
+    <div class="cargando">
+      <h2>No se ha encontrado ninguna cuenta bajo la categoría indicada.</h2>
+      <img src="assets/img/running-cat.gif" alt="">
+
+    </div>
+  </td>
+</ng-template>
 
 <!-- Mostrar todas las cuentas nomalmente -->
 <ng-template #cuentasSinFiltro>
-  <tbody class="contenido-tabla">
-  <tr class="row-contenido-tabla" *ngFor="let cuenta of cuentasFecha; let i = index">
+  <tbody>
+  <tr *ngFor="let cuenta of cuentasFecha; let i = index; let last = last">
+    <td colspan="7">
+      <!-- Aquí incluyes el componente draggable dentro de una celda -->
+      <app-draggable-cuenta
+        [cuenta]="cuenta" [nombreEmpleado]="getNombreApellidoEmpleado(cuenta.id)"
+        matTooltip="Desliza para cambiar al estado siguiente.">
 
-    <td class="row-contenido-element">
-      {{cuenta.mesa.numeroMesa}}
-    </td>
-    <td class="row-contenido-element">
-      <!-- AQUI QUIERO QUE SE MUESTRE EL NOMBRE Y APELLIDO DEL EMPLEADO VINCULADO A ESTA CUENTA -->
-      {{getNombreApellidoEmpleado(cuenta.id)}}
-    </td>
-    <td class="row-contenido-element">
-      {{cuenta.total.toLocaleString()}}
-    </td>
-    <td class="row-contenido-element">
-      {{cuenta.abono.toLocaleString()}}
-    </td>
-    <td class="row-contenido-element">
-      {{(cuenta.total - cuenta.abono).toLocaleString()}}
-    </td>
-    <td class="row-contenido-element" ngClass="estado{{cuenta.estadoCuenta.id}}">
-      {{cuenta.estadoCuenta.nombre}}
-    </td>
-    <td class="row-contenido-element">
-      <!-- Convierte la hora UTC a hora local -->
-      {{ cuenta.fecha?.toLocaleString() }}
+      </app-draggable-cuenta>
     </td>
     <td class="row-contenido-element">
       <button class="ver-cuenta" (click)="verCuenta(cuenta)">
@@ -118,40 +113,35 @@
 
 <!-- Mostrar las cuentas filtradas -->
 <ng-template #cuentasConFiltro>
-  <tbody class="contenido-tabla">
-  <tr class="row-contenido-tabla" *ngFor="let cuenta of cuentasFecha; let i = index; let last = last">
-    <!-- Contenedor para mostrar solo las cuentas que cumplen con el criterio -->
-    <ng-container *ngIf="cuenta.estadoCuenta.nombre == filtrarEstado;">
-      <td class="row-contenido-element">
-        {{cuenta.mesa.numeroMesa}}
-      </td>
-      <td class="row-contenido-element">
-        <!-- AQUI QUIERO QUE SE MUESTRE EL NOMBRE Y APELLIDO DEL EMPLEADO VINCULADO A ESTA CUENTA -->
-        {{getNombreApellidoEmpleado(cuenta.id)}}
-      </td>
-      <td class="row-contenido-element">
-        {{cuenta.total.toLocaleString()}}
-      </td>
-      <td class="row-contenido-element">
-        {{cuenta.abono.toLocaleString()}}
-      </td>
-      <td class="row-contenido-element">
-        {{(cuenta.total - cuenta.abono).toLocaleString()}}
-      </td>
-      <td class="row-contenido-element" ngClass="estado{{cuenta.estadoCuenta.id}}">
-        {{cuenta.estadoCuenta.nombre}}
-      </td>
-      <td class="row-contenido-element">
+  <ng-container *ngIf="cuentasPorEstado(cuentasFecha, filtrarEstado) > 0 ; else buscandoInTable">
+    <tbody>
+    <tr *ngFor="let cuenta of cuentasFecha; let i = index; let last = last">
 
-        {{ cuenta.fecha.toLocaleString()}}
-      </td>
-      <td class="row-contenido-element">
-        <button class="ver-cuenta" (click)="verCuenta(cuenta)">
-          Gestionar
-        </button>
-      </td>
-    </ng-container>
-  </tr>
+      <ng-container *ngIf="cuenta.estadoCuenta.nombre == filtrarEstado;">
+        <td colspan="7">
+          <!-- Aquí incluyes el componente draggable dentro de una celda -->
+          <app-draggable-cuenta
+            [cuenta]="cuenta" [nombreEmpleado]="getNombreApellidoEmpleado(cuenta.id)"
+            matTooltip="Desliza para cambiar al estado siguiente.">
 
-  </tbody>
+          </app-draggable-cuenta>
+        </td>
+
+
+        <td class="row-contenido-element">
+          <button class="ver-cuenta" (click)="verCuenta(cuenta)">
+            Gestionar
+          </button>
+        </td>
+      </ng-container>
+    </tr>
+    </tbody>
+  </ng-container>
+
 </ng-template>
+
+
+<ng-template #skeletonLoadingPartial>
+  <app-skeleton-partial></app-skeleton-partial>
+</ng-template>
+

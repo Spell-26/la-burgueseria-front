@@ -18,7 +18,7 @@ import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service"
 import Swal from "sweetalert2";
 import {format} from "date-fns";
 import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora.service";
-import {EMPTY, Observable, switchMap} from "rxjs";
+import {EMPTY, forkJoin, Observable, switchMap, tap} from "rxjs";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
 
@@ -49,7 +49,12 @@ export class CuentasComponent implements OnInit{
   // Variable para el filtro de estados de cuenta
   filtrarEstado : string = '';
   //verificacion de sesion
-  userLoginOn : boolean = false;
+  userLoginOn! : boolean;
+
+  //skeletonLoadingPartial
+  isLoading = true;
+
+
   ngOnInit(): void {
     this.loginService.userLoginOn.subscribe({
       next: (userLoginOn) => {
@@ -62,14 +67,11 @@ export class CuentasComponent implements OnInit{
       this.cuentaService.refreshNeeded
         .subscribe(
           () =>{
-            this.getEmpleadoCuentas();
-            this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+            this.obtenerDatos()
           }
         );
       //obtener las cuentas del dia de hoy.
-      this.getEmpleadoCuentas();
-      this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
-
+      this.obtenerDatos();
     }
 
   }
@@ -82,6 +84,7 @@ export class CuentasComponent implements OnInit{
       const pattern = 'yyyy-MM-dd\'T\'HH:mm:ss.SSSXXX';
 
       if(this.datosRecibidos.fromDate != null){
+
           this.fechaHoraInicioUTC = format(this.datosRecibidos.fromDate, pattern);
           //converir a UTC
           this.fechaHoraInicioUTC = this.fechaService.convertirFechaHoraLocalAUTC(this.fechaHoraInicioUTC);
@@ -92,7 +95,8 @@ export class CuentasComponent implements OnInit{
           }else{
             this.fechaHoraFinUTC = null;
           }
-          this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+          this.isLoading = true;
+          this.obtenerDatos();
       }
   }
 
@@ -205,57 +209,67 @@ export class CuentasComponent implements OnInit{
     return response;
   }
 
+  public cuentasPorEstado(cuentasFecha : Cuenta[], estado : string): number {
+    const objetosFiltrados = cuentasFecha.filter(cuenta => cuenta.estadoCuenta.nombre === estado);
+
+    return objetosFiltrados.length;
+  }
   //****************************
   //*******PETICIONES HTTP*******
   //****************************
 
-  private getCuentasByFecha(fechaInicio : string, fechaFin :string | null){
 
-    this.cuentaService.cuentasByFecha(fechaInicio, fechaFin)
-      .subscribe(
-        data => {
-          this.cuentasFecha = data.object
-          //formatear la fecha y hora de cada cuenta
-          for(let cuenta of this.cuentasFecha){
-            const fechaArray : number[] = cuenta.fecha;
-
-            let fecha : Date = new Date(
+  private obtenerDatos() {
+    // Llamada a la API para obtener las cuentas por fecha
+    const cuentasPorFecha$ = this.cuentaService.cuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+      .pipe(
+        tap(data => {
+          // Formatear la fecha y hora de cada cuenta
+          data.object.forEach((cuenta: Cuenta)  => {
+            const fechaArray: number[] = cuenta.fecha;
+            const fecha: Date = new Date(
               fechaArray[0],
-              fechaArray[1] - 1, // Restar 1 al mes
+              fechaArray[1] - 1,
               fechaArray[2],
               fechaArray[3],
               fechaArray[4],
               fechaArray[5],
-              fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+              fechaArray[6] / 1000000
             );
-
             cuenta.fecha = fecha;
+          });
+        })
+      );
 
-          }
-        }, error => {
-          //cuando el token expira, se redirige a la pagina de login
-          if(error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")){
-            this.loginService.logout(); //quitar todas las credenciales de sesion
-            this.router.navigateByUrl("home/login");
-            location.reload();
-            const mensaje = "La sesión ha caducado."
-            this.alertaService.alertaErrorMensajeCustom(mensaje);
-          }else{
-            console.log(error)
-          }
+    // Llamada a la API para obtener los empleados de las cuentas
+    const empleadosCuentas$ = this.empleadoCuentaService.getEmpleadoCuenta();
+    this.isLoading = true;
+    // Combinar ambas llamadas usando forkJoin
+    forkJoin({
+      cuentasPorFecha: cuentasPorFecha$,
+      empleadosCuentas: empleadosCuentas$
+    }).subscribe(
+      ({ cuentasPorFecha, empleadosCuentas }) => {
+
+        this.cuentasFecha = cuentasPorFecha.object;
+        this.empleadoCuentas = empleadosCuentas.object;
+
+      },
+      error => {
+        if (error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")) {
+          this.loginService.logout();
+          this.router.navigateByUrl("home/login");
+          location.reload();
+          const mensaje = "La sesión ha caducado.";
+          this.alertaService.alertaErrorMensajeCustom(mensaje);
+        } else {
+          console.log(error);
         }
-      )
-  }
-
-  private getEmpleadoCuentas(){
-    this.empleadoCuentaService.getEmpleadoCuenta()
-      .subscribe(
-        data =>{
-          this.empleadoCuentas = data.object
-        },error => {
-
-        }
-      )
+      },
+      () => {
+        this.isLoading = false;
+      }
+    );
   }
 
   //****************************
