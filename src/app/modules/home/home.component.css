@@ -1,0 +1,53 @@
+.content{
+  width: 100%;
+}
+
+.landing-header {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between; /* Ajusta el espacio entre los elementos */
+  align-items: center; /* Centra verticalmente los elementos */
+  padding-bottom: 1.5em;
+}
+
+.landing-header::after {
+  content: "";
+  width: 100%;
+  height: 2px; /* Grosor del borde */
+  background-color: green; /* Color del borde */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: rotate(-2deg); /* Rotación para crear puntas recortadas */
+  transform-origin: center bottom; /* Cambia el origen de la rotación al centro inferior */
+}
+
+.contenido-header {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+
+.logo{
+  width: 60%;
+  margin: 0 auto;
+  text-align: center;
+}
+.logo img{
+  width: 20%;
+  margin: 0 auto;
+}
+.acciones{
+  margin: 0 auto;
+}
+.acciones ul li{
+  display: inline-block;
+  color: white;
+  font-size: 1.2em;
+  margin: 0 1.5em;
+}
