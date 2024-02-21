@@ -6,8 +6,9 @@ import {Cuenta} from "../../interfaces/cuenta";
 import {EmpleadoCuenta} from "../../interfaces/empleadoCuenta";
 import {ProductosCuentaService} from "../../services/productos-cuenta.service";
 import {ModalAddProductoComponent} from "../modal-add-producto/modal-add-producto.component";
-import {EstadoCuentaService} from "../../services/estado-cuenta.service";
-import {EstadoCuenta} from "../../interfaces/estadoCuenta";
+import {AlertasService} from "../sharedMethods/alertas/alertas.service";
+import {CuentasService} from "../../services/cuentas.service";
+
 
 interface ProductoDeCuenta {
   cantidad: number;
@@ -43,26 +44,19 @@ export class ModalEditarCuentaComponent implements OnInit{
   abonoData : number = 0;
   //TOTAL
   totalCuenta : number = 0;
-  //estados cuenta
-  estadosCuenta : EstadoCuenta[] = [];
+
   //tests
   // Debes inicializarla con el id del estado actual o null
   estadoSeleccionado: number | undefined ;
   //saber cuando el modal es solo lectura
   isReadOnly : boolean = false;
+  //variable del timer de cancelar cuenta
+  private pressTimer: any;
+  public isPressed: boolean = false;
+  //variable para verificar carga de datos
+  isLoading : boolean = true;
   ngOnInit(): void {
-    this.productoCuentaService.getProductoCuentaByCuentaId(this.data.cuenta.id)
-      .subscribe(
-        result => {
-          this.cuentaProductosData = result.object;
-          this.cdr.detectChanges(); // Forzar la detección de cambios
-          this.calcularTotal();
-        },
-        error => {
-          console.log(error);
-        }
-      );
-    this.getEstadosCuenta();
+    this.obtenerProductos();
     //asignar el valor del id del estado
     this.estadoSeleccionado = this.cuentaData?.estadoCuenta?.id;
   }
@@ -71,10 +65,11 @@ export class ModalEditarCuentaComponent implements OnInit{
     public dialogRef: MatDialogRef<ModalEditarCuentaComponent>,
     @Inject(MAT_DIALOG_DATA) public data : any,
     private fb : FormBuilder,
-    private estadoCuentaService : EstadoCuentaService,
     private productoCuentaService : ProductosCuentaService,
     public dialog : MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private alertaService : AlertasService,
+    private cuentaService : CuentasService
   ) {
 
     if(data){
@@ -131,6 +126,84 @@ export class ModalEditarCuentaComponent implements OnInit{
     this.totalCuenta = total;
   }
 
+  // Método para manejar el inicio del temporizador
+  onButtonPress(timeOut : number, action : string) {
+    this.isPressed = true;
+    this.pressTimer = setTimeout(() => {
+      this.startAction(action);
+    }, timeOut);
+  }
+  // Método para manejar el fin del temporizador si el botón es liberado antes de los 3 segundos
+  onButtonRelease() {
+    clearTimeout(this.pressTimer);
+    this.isPressed = false;
+  }
+
+  // Método para iniciar la acción después de los 3 segundos
+  private startAction(action : string) {
+    if(action === "Cancelar"){
+      this.estadoSeleccionado = 4; // id del estado cancelado
+      this.onSubmit();
+    }
+    else if( action === "Cambiar estado"){
+      switch (this.cuentaData?.estadoCuenta?.id){
+        case 1: //cuando esta en estado Por despachar
+          this.estadoSeleccionado = 5; //se cambia a En preparacion
+          this.onSubmit();
+          break;
+        case 5: //cuando esta en preparación
+          this.estadoSeleccionado = 3; //Se cambia a Despachada
+          this.onSubmit();
+          break;
+        case 3: //Cuando esta despachada
+          this.estadoSeleccionado = 2; // Se cambia a pagada
+          this.onSubmit();
+          break;
+      }
+    }
+    this.isPressed = false;
+  }
+  private obtenerProductos(){
+    this.isLoading = true;
+    this.productoCuentaService.getProductoCuentaByCuentaId(this.data.cuenta.id)
+      .subscribe(
+        result => {
+          this.cuentaProductosData = result.object;
+          this.cdr.detectChanges(); // Forzar la detección de cambios
+          this.calcularTotal();
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.isLoading = false;
+        }
+      );
+  }
+
+  eliminarProductoCuenta(id : number){
+
+    this.alertaService.alertaConfirmarEliminar()
+      .then(
+        result => {
+          if(result.isConfirmed){
+            this.productoCuentaService.eliminarProductoCuenta(id).subscribe(
+              async () => {
+                this.calcularTotal();
+                this.obtenerProductos();
+              },
+              error => {
+                console.log(error)
+              },
+              () => {
+
+              }
+            );
+          }
+        }
+      )
+  }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
@@ -179,21 +252,6 @@ export class ModalEditarCuentaComponent implements OnInit{
       }
     )
   }
-
-  //PETICIONES HTTP
-  private getEstadosCuenta(){
-    this.estadoCuentaService.getEstadoCuenta()
-      .subscribe(
-        data => {
-          this.estadosCuenta = data.object;
-        },
-        error => {
-          console.log(error)
-        }
-      )
-  }
-
-
 
 
 }

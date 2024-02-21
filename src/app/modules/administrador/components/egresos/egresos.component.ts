@@ -44,6 +44,8 @@ export class EgresosComponent implements OnInit{
   datosRecibidos! : { fromDate: Date | null, toDate : Date | null }
 //verificacion de sesion
   userLoginOn : boolean = false;
+  //verificacion de carga de datos
+  isLoading = false;
   ngOnInit(): void {
 
     this.loginService.userLoginOn.subscribe({
@@ -70,6 +72,7 @@ export class EgresosComponent implements OnInit{
   //Obtener todos los egresos de forma paginada y en un rango de fechas
   //por defecto siempre se muestra de fecha del dia actual
   private getEgresoByFechaPage(fechaInicio : string, fechaFin :string | null){
+    this.isLoading = true;
     this.egresoService.getEgresoPageableByFecha(fechaInicio, fechaFin, this.pagina, this.tamano, this.order, this.asc)
       .subscribe(
         data => {
@@ -99,6 +102,9 @@ export class EgresosComponent implements OnInit{
           }else{
             console.log(error)
           }
+        },
+        () => {
+          this.isLoading = false;
         }
       )
   }

@@ -17,7 +17,7 @@
   pointer-events: none; /* Para que el texto de fondo no afecte la interacción con el componente */
   z-index: 0; /* Fondo */
   color: white; /* Color del texto de fondo */
-  font-size: 16px; /* Tamaño de fuente del texto de fondo */
+
 }
 
 .inner-container {
@@ -38,4 +38,9 @@
   border: 1px solid #3C3B3B;
   border-collapse: collapse;
   text-align: center;
+}
+.texto-background{
+  margin-left: .5em;
+  font-size: 1em;
+  font-weight: bold;
 }

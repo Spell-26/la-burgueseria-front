@@ -5,7 +5,7 @@
     </header>
     <div class="actions-container">
       <div class="search-container">
-        <input type="text" placeholder="Buscar empleado..." [(ngModel)]="nombreBusqueda" (keyup)="buscarEmpleados()"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
+        <input type="text" placeholder="Buscar empleado..." [(ngModel)]="nombreBusqueda" (keyup)="getEmpleadosUsuarios(nombreBusqueda)"> <!--  [(ngModel)]="nombreBusqueda" (keyup)="buscarMesas()"-->
       </div>
       <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nuevo empleado">
         <button (click)="modalEmpleado()"> <!-- (click) ="crearMesaModal()" -->
@@ -15,72 +15,69 @@
       </div>
     </div>
     <section class="component-main-content">
-      <table class="tabla-listado" *ngIf="usuariosConEmpleados.length > 0 ; else buscando">
-        <thead class="cabecera-tabla">
-        <tr class="row-header">
-          <th class="row-header-element">
-            DOCUMENTO
-          </th>
-          <th class="row-header-element">
-            NOMBRE
-          </th>
-          <th class="row-header-element">
-            APELLIDO
-          </th>
-          <th class="row-header-element">
-            ESTADO
-          </th>
-          <th class="row-header-element">
-            CARGO
-          </th>
-          <th class="row-header-element">
-            ACCIONES
-          </th>
-        </tr>
-        </thead>
-        <tbody class="contenido-tabla">
-        <tr class="row-contenido-tabla" *ngFor="let usuarioConEmpleado of usuariosConEmpleados;">
-          <td class="row-contenido-element">
-            {{usuarioConEmpleado.empleado.documento}}
-          </td>
-          <td class="row-contenido-element" >
-            {{usuarioConEmpleado.empleado.nombre}}
-          </td>
+      <ng-container *ngIf="!isPartialLoading; else partialSkeletonLoading">
+        <table class="tabla-listado" *ngIf="usuariosConEmpleados.length > 0 ; else buscando">
+          <thead class="cabecera-tabla">
+          <tr class="row-header">
+            <th class="row-header-element">
+              DOCUMENTO
+            </th>
+            <th class="row-header-element">
+              NOMBRE
+            </th>
+            <th class="row-header-element">
+              APELLIDO
+            </th>
+            <th class="row-header-element">
+              ESTADO
+            </th>
+            <th class="row-header-element">
+              CARGO
+            </th>
+            <th class="row-header-element">
+              ACCIONES
+            </th>
+          </tr>
+          </thead>
+          <tbody class="contenido-tabla">
+          <tr class="row-contenido-tabla" *ngFor="let usuarioConEmpleado of usuariosConEmpleados;">
+            <td class="row-contenido-element">
+              {{usuarioConEmpleado.empleado.documento}}
+            </td>
+            <td class="row-contenido-element" >
+              {{usuarioConEmpleado.empleado.nombre}}
+            </td>
 
-          <td class="row-contenido-element">
-            {{usuarioConEmpleado.empleado.apellido}}
-          </td>
-          <td class="row-contenido-element">
+            <td class="row-contenido-element">
+              {{usuarioConEmpleado.empleado.apellido}}
+            </td>
+            <td class="row-contenido-element">
 
-            <mat-slide-toggle checked="{{usuarioConEmpleado.empleado.estado}}" (change)="toggleEmpleadoEstado(usuarioConEmpleado.empleado)"
-                              matTooltip="Activar o desactivar empleado.">
-              {{ usuarioConEmpleado.empleado.estado ? 'Activo' : 'Inactivo' }}
-            </mat-slide-toggle>
+              <mat-slide-toggle checked="{{usuarioConEmpleado.empleado.estado}}" (change)="toggleEmpleadoEstado(usuarioConEmpleado.empleado)"
+                                matTooltip="Activar o desactivar empleado.">
+                {{ usuarioConEmpleado.empleado.estado ? 'Activo' : 'Inactivo' }}
+              </mat-slide-toggle>
 
-          </td>
-          <td class="row-contenido-element">
-            {{usuarioConEmpleado.usuario.rol}}
-          </td>
+            </td>
+            <td class="row-contenido-element">
+              {{usuarioConEmpleado.usuario.rol}}
+            </td>
 
-          <td class="row-contenido-element">
-            <button class="btn-eliminar-element"
-            matTooltip="Gestiona los datos de los empleados."
-            (click)="modalGestionarEmpleado(usuarioConEmpleado)">
-              Gestionar
-            </button>
-          </td>
+            <td class="row-contenido-element">
+              <button class="btn-eliminar-element"
+                      matTooltip="Gestiona los datos de los empleados."
+                      (click)="modalGestionarEmpleado(usuarioConEmpleado)">
+                Gestionar
+              </button>
+            </td>
 
-        </tr>
-        </tbody>
-      </table>
+          </tr>
+          </tbody>
+        </table>
+      </ng-container>
+
 
     </section>
-
-
-
-
-
-
 
 
   </ng-container>
@@ -93,6 +90,9 @@
   <app-skeleton-full></app-skeleton-full>
 </ng-template>
 
+<ng-template #partialSkeletonLoading>
+  <app-skeleton-partial></app-skeleton-partial>
+</ng-template>
 
 
 <ng-template #buscando >

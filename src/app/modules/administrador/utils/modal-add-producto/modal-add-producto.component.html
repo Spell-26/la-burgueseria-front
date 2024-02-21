@@ -11,7 +11,9 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Cantidad</mat-label>
-      <input matInput type="number" formControlName="cantidad" placeholder="Cantidad">
+      <input matInput  formControlName="cantidad" placeholder="Cantidad">
+      <mat-error *ngIf="form.get('cantidad')?.hasError('required')">Ingresa cuantos productos se van a añadir.</mat-error>
+      <mat-error *ngIf="form.get('cantidad')?.hasError('pattern')">Cantidad del producto no válida.</mat-error>
     </mat-form-field>
     <!-- Puedes agregar otros elementos del formulario aquí -->
   </form>

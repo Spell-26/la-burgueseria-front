@@ -26,7 +26,7 @@ export class ModalAddProductoComponent implements OnInit{
     this.form = this.fb.group(
       {
         producto : [null, Validators.required],
-        cantidad: [0, [Validators.required, Validators.min(1)]],
+        cantidad: [0, [Validators.required, Validators.min(1), Validators.pattern(/^[1-9]\d*$/)]],
       }
     )
   }

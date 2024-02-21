@@ -1,4 +1,5 @@
 <div class="container-section">
+  <ng-container *ngIf="!isLoading; else cargando">
   <header class="header-module">
     <h1>Productos</h1>
   </header>
@@ -15,16 +16,24 @@
   </div>
   <!-- Sección tabla de contenido -->
   <section class="component-main-content">
+    <ng-container *ngIf="!isLoadingPartial; else cargandoPartial">
+
     <div class="cargando" *ngIf="productos.length == 0; else listaProductos ">
       <h2>No se han encontrado elementos para productos.</h2>
       <img src="assets/img/running-cat.gif" alt="">
-
     </div>
+    </ng-container>
   </section>
+  </ng-container>
 </div>
 
+<ng-template #cargando>
+  <app-skeleton-full></app-skeleton-full>
+</ng-template>
 
-
+<ng-template #cargandoPartial>
+  <app-skeleton-partial></app-skeleton-partial>
+</ng-template>
 
 <ng-template #listaProductos>
 
@@ -64,6 +73,7 @@
         </div>
       </div>
     </div>
+
   </div>
 
 </ng-template>

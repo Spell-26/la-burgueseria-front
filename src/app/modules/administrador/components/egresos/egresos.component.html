@@ -14,8 +14,9 @@
   </div>
 
   <section class="component-main-component">
-    <table class="tabla-listado" *ngIf="egresos.length > 0 ; else buscando">
-      <thead class="cabecera-tabla">
+    <ng-container *ngIf="!isLoading; else cargando">
+      <table class="tabla-listado" *ngIf="egresos.length > 0 ; else buscando">
+        <thead class="cabecera-tabla">
         <tr class="row-header">
           <th class="row-header-element">FECHA DEL EGRESO</th>
           <th class="row-header-element">TOTAL DEL EGRESO</th>
@@ -23,36 +24,40 @@
           <th class="row-header-element">ORIGEN</th>
           <th class="row-header-element">ACCIONES</th>
         </tr>
-      </thead>
-      <tbody class="contenido-tabla">
-      <tr class="row-contenido-tabla" *ngFor="let egreso of egresos; let i = index">
-        <td class="row-contenido-element">
-          {{fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toString())}}
-        </td>
-        <td class="row-contenido-element">
-          ${{egreso.total.toLocaleString()}}
-        </td>
-        <td class="row-contenido-element">
-          {{egreso.categoria}}
-        </td>
-        <td class="row-contenido-element">
-          {{egreso.deduccionDesde}}
-        </td>
-        <td class="row-contenido-element">
-          <button class="ver-cuenta" (click)="verEgreso(egreso)">
-            Ver detalles
-          </button>
-          <button class="btn-eliminar-element" (click)="deleteEgreso(egreso.id)">
-            Borrar
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+        </thead>
+        <tbody class="contenido-tabla">
+        <tr class="row-contenido-tabla" *ngFor="let egreso of egresos; let i = index">
+          <td class="row-contenido-element">
+            {{fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toString())}}
+          </td>
+          <td class="row-contenido-element">
+            ${{egreso.total.toLocaleString()}}
+          </td>
+          <td class="row-contenido-element">
+            {{egreso.categoria}}
+          </td>
+          <td class="row-contenido-element">
+            {{egreso.deduccionDesde}}
+          </td>
+          <td class="row-contenido-element">
+            <button class="ver-cuenta" (click)="verEgreso(egreso)">
+              Ver detalles
+            </button>
+            <button class="btn-eliminar-element" (click)="deleteEgreso(egreso.id)">
+              Borrar
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
   </section>
 
 </div>
-
+<ng-template #cargando>
+  <app-skeleton-partial></app-skeleton-partial>
+</ng-template>
 
 <ng-template #buscando >
   <div class="cargando">

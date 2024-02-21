@@ -20,7 +20,7 @@ import {UsuarioService} from "../../../home/services/usuario/usuario.service";
 })
 export class EmpleadosComponent implements OnInit{
   public empleados : Empleado[] = [];
-  public nombreBusqueda : string | null = null;
+  public nombreBusqueda?: string ;
   public isNombreBusqueda : boolean = false;
 
   //parametros paginacion
@@ -39,6 +39,7 @@ export class EmpleadosComponent implements OnInit{
   userLoginOn : boolean = false;
   //mostrar skeleton loading
   isSkeletonLoading : boolean = true;
+  isPartialLoading : boolean = false;
   //usuario y empleado
   usuariosConEmpleados : any[] = [];
 
@@ -95,17 +96,6 @@ export class EmpleadosComponent implements OnInit{
   //*******MÉTODOS*******
   //****************************
 
-  //proxima pagina
-  public  nextPage(){
-    this.pagina+=1;
-    this.getAllEmpleados();
-  }
-
-  //pagina anterior
-  public  previousPage(){
-    this.pagina-=1;
-    this.getAllEmpleados();
-  }
 
 
   //buscar empleados por nombre
@@ -164,39 +154,76 @@ export class EmpleadosComponent implements OnInit{
       )
   }
 
-  private getEmpleadosUsuarios(): void {
-    forkJoin([
-      this.usuarioService.getAllUsers(),
-      this.empleadoService.getEmpleados()
-    ]).subscribe({
-      next: ([usuarios, empleados]) => {
-        // @ts-ignore
-        const usuariosConEmpleados = usuarios.object.map((usuario: { username: string; }) => {
-          const empleadoCorrespondiente = empleados.object.find((empleado: { documento: string; }) => empleado.documento === usuario.username);
-          // Solo incluir si se encontró una contraparte de empleado
-          if (empleadoCorrespondiente) {
-            return { usuario, empleado: empleadoCorrespondiente };
+  public getEmpleadosUsuarios(nombre?: string): void {
+    if(nombre){
+      this.isPartialLoading = true;
+      forkJoin([
+        this.usuarioService.getAllUsers(),
+        this.empleadoService.buscarPorNombre(nombre)
+      ]).subscribe({
+        next: ([usuarios, empleados]) => {
+          // @ts-ignore
+          const usuariosConEmpleados = usuarios.object.map((usuario: { username: string; }) => {
+            const empleadoCorrespondiente = empleados.object.find((empleado: { documento: string; }) => empleado.documento === usuario.username);
+            // Solo incluir si se encontró una contraparte de empleado
+            if (empleadoCorrespondiente) {
+              return { usuario, empleado: empleadoCorrespondiente };
+            }
+          }).filter((usuarioConEmpleado: any) => usuarioConEmpleado); // Filtrar los valores undefined
+
+          this.usuariosConEmpleados = usuariosConEmpleados;
+
+        },
+        error: (error) => {
+          if (error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")) {
+            this.loginService.logout();
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          } else {
+            console.log(error)
           }
-        }).filter((usuarioConEmpleado: any) => usuarioConEmpleado); // Filtrar los valores undefined
-
-        this.usuariosConEmpleados = usuariosConEmpleados;
-
-      },
-      error: (error) => {
-        if (error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")) {
-          this.loginService.logout();
-          this.router.navigateByUrl("home/login");
-          location.reload();
-          const mensaje = "La sesión ha caducado."
-          this.alertaService.alertaErrorMensajeCustom(mensaje);
-        } else {
-          console.log(error)
+        },
+        complete: () => {
+          this.isPartialLoading = false;
         }
-      },
-      complete: () => {
-        this.isSkeletonLoading = false;
-      }
-    });
+      });
+    }else{
+      forkJoin([
+        this.usuarioService.getAllUsers(),
+        this.empleadoService.getEmpleados()
+      ]).subscribe({
+        next: ([usuarios, empleados]) => {
+          // @ts-ignore
+          const usuariosConEmpleados = usuarios.object.map((usuario: { username: string; }) => {
+            const empleadoCorrespondiente = empleados.object.find((empleado: { documento: string; }) => empleado.documento === usuario.username);
+            // Solo incluir si se encontró una contraparte de empleado
+            if (empleadoCorrespondiente) {
+              return { usuario, empleado: empleadoCorrespondiente };
+            }
+          }).filter((usuarioConEmpleado: any) => usuarioConEmpleado); // Filtrar los valores undefined
+
+          this.usuariosConEmpleados = usuariosConEmpleados;
+
+        },
+        error: (error) => {
+          if (error.error.trace.startsWith("io.jsonwebtoken.ExpiredJwtException")) {
+            this.loginService.logout();
+            this.router.navigateByUrl("home/login");
+            location.reload();
+            const mensaje = "La sesión ha caducado."
+            this.alertaService.alertaErrorMensajeCustom(mensaje);
+          } else {
+            console.log(error)
+          }
+        },
+        complete: () => {
+          this.isSkeletonLoading = false;
+        }
+      });
+    }
+
   }
 
 
@@ -206,9 +233,11 @@ export class EmpleadosComponent implements OnInit{
   }
 
   private buscarEmpleadoPorNombre(nombre : string){
+
     this.empleadoService.buscarPorNombre(nombre)
       .subscribe(
         empleado =>{
+          console.log(empleado)
           this.empleados = empleado.object
         }
       );

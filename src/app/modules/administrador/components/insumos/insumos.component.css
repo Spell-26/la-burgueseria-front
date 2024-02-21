@@ -47,8 +47,10 @@
   font-size: 1em;
   margin: 0 .5em;
 }
+mat-form-field{
+  margin-top: .5em;
+}
 .row-contenido-element input{
-  width: 5em;
   padding: .8em;
   border: 0;
 }

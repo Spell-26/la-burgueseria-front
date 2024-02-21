@@ -34,6 +34,9 @@ export class ProductosComponent  implements OnInit {
   mostrarTextoCompleto: boolean = false;
   //verificacion de sesion
   userLoginOn : boolean = false;
+  //verificar carga de datos
+  isLoading = true;
+  isLoadingPartial = false;
 
 
   // CONSTRUCTOR E INICIALIZADORES
@@ -226,6 +229,7 @@ export class ProductosComponent  implements OnInit {
 
   //obtener todos los productos
   public getProductos(){
+    this.isLoading = true
     this.productosService.getProductos()
       .subscribe(
         data => {
@@ -247,6 +251,9 @@ export class ProductosComponent  implements OnInit {
           }else{
             console.log(error)
           }
+        },
+        () => {
+          this.isLoading = false;
         }
       )
   }
@@ -266,16 +273,24 @@ export class ProductosComponent  implements OnInit {
   }
   //BUSCAR POR NOMBRE
   public buscarProductos(){
+    this.isLoadingPartial = true;
     if(this.nombreBusqueda.length == 0){
       this.setIsNombreBusqueda(false);
       this.getProductos()
+      this.isLoadingPartial = false;
     }else{
       this.productosService.buscarPorNombre(this.nombreBusqueda)
         .subscribe(producto =>{
           this.productos = producto.object;
           this.formatearImagen(this.productos);
           this.productosAgrupados = this.agruparProductosPorCategoria(this.productos);
-        });
+        },error => {
+            console.log(error)
+          },
+          () => {
+          this.isLoadingPartial = false;
+          }
+          );
       this.setIsNombreBusqueda(true);
     }
   }

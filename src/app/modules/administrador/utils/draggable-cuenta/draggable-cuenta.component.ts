@@ -1,5 +1,18 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Cuenta } from "../../interfaces/cuenta";
+import {ProductosCuentaService} from "../../services/productos-cuenta.service";
+import {ProductoCuenta} from "../../interfaces/productosCuenta";
+import {ValidarExistenciasService} from "../../components/cuentas/validar-existencias.service";
+import {AlertasService} from "../sharedMethods/alertas/alertas.service";
+import {InsumosService} from "../../services/insumos.service";
+import {CuentasService} from "../../services/cuentas.service";
+import Swal from "sweetalert2";
+import {async, EMPTY, Observable, switchMap} from "rxjs";
+import {FechaHoraService} from "../sharedMethods/fechasYHora/fecha-hora.service";
+import {Ingreso} from "../../interfaces/ingreso";
+import {ModalIngresosComponent} from "../modal-ingresos/modal-ingresos.component";
+import {MatDialog} from "@angular/material/dialog";
+import {IngresoService} from "../../services/ingreso.service";
 
 @Component({
   selector: 'app-draggable-cuenta',
@@ -20,7 +33,14 @@ export class DraggableCuentaComponent implements OnInit {
   colorFondo: string = 'black';
 
 
-  constructor() { }
+  constructor(private productosCuentaService : ProductosCuentaService,
+              private validarExistencias : ValidarExistenciasService,
+              private alertaService : AlertasService,
+              private insumoService : InsumosService,
+              private cuentaService : CuentasService,
+              private fechaService : FechaHoraService,
+              public dialog : MatDialog,
+              private ingresoService: IngresoService) { }
 
   ngOnInit() {
     this.containerWidth = this.innerContainerRef.nativeElement.getBoundingClientRect().width;
@@ -80,7 +100,7 @@ export class DraggableCuentaComponent implements OnInit {
     this.innerContainerRef.nativeElement.style.transform = `translateX(${offsetX}px)`;
   }
 
-  endDrag = () => {
+  endDrag = async () => {
     if (!this.isDragging) return;
     this.isDragging = false;
 
@@ -98,9 +118,171 @@ export class DraggableCuentaComponent implements OnInit {
     const maxOffsetX = this.containerWidth * this.thresholdPercentage / 100;
 
     if (offsetX >= maxOffsetX) {
-      console.log("Se alcanzó el 70% del contenedor.");
+      switch (this.cuenta.estadoCuenta.nombre) {
+        case ("Por despachar"):
+          try {
+            this.cuenta.estadoCuenta.id = 5; // id de estado En preparación
+            const productosCuenta = await this.productosCuentaService.getProductoCuentaByCuentaId(this.cuenta.id).toPromise();
+            this.cuenta  = this.fechaService.restar5Horas(this.cuenta);
+            if (productosCuenta.object.length > 0) {
+              // Validar existencias de los productos
+              const validarInsumos = await this.validarExistencias.validarExistenciasDeProductos(productosCuenta.object);
+
+              if (validarInsumos.insuficientes.length > 0) {
+                //mostrar alerta insumos insuficientes
+                const result = await this.alertaService.alertaInsumosNegativos(validarInsumos.insuficientes);
+
+                if (result.isConfirmed) {
+                  //actualizar el estado de cada producto vinculado a la cuenta
+                  await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
+                    producto.estado = "En preparación";
+                    await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
+                  }));
+
+                  // Actualizar los insumos a deducir
+                  await Promise.all(validarInsumos.aDeducir.map(async (insumo) => {
+                    await this.insumoService.actualizarInsumos(insumo.insumo).toPromise();
+                  }));
+
+                  // Actualizar la cuenta
+                  await this.cuentaService.actualizarCuenta(this.cuenta).toPromise();
+
+                  //mostrar alerta actualizacion exitosa
+                  this.alertaService.alertaConfirmarCreacion();
+                } else if (result.isDismissed) {
+                  this.alertaService.alertaSinModificaciones();
+                }
+              }
+              else {
+                // Mostrar alerta de confirmación para editar
+                const result = await this.alertaService.alertaPedirConfirmacionEditar();
+
+                if (result.isConfirmed) {
+                  // Actualizar el estado de cada producto a "En preparación"
+                  await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
+                    producto.estado = "En preparación";
+                    await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
+                  }));
+
+                  // Actualizar los insumos procesados
+                  await Promise.all(validarInsumos.aDeducir.map(async (insumo) => {
+                    await this.insumoService.actualizarInsumos(insumo.insumo).toPromise();
+                  }));
+
+                  // Actualizar la cuenta
+                  await this.cuentaService.actualizarCuenta(this.cuenta).toPromise();
+
+                  // Mostrar alerta de actualización exitosa
+                  this.alertaService.alertaConfirmarCreacion();
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                  this.alertaService.alertaSinModificaciones();
+                }
+
+              }
+            }
+          } catch (error) {
+            console.error("Error al procesar la cuenta:", error);
+          }
+
+          break;
+
+        case("En preparación"):
+          try {
+            this.cuenta.estadoCuenta.id = 3; //id de estado Despachada
+            const productosCuenta = await this.productosCuentaService.getProductoCuentaByCuentaId(this.cuenta.id).toPromise();
+            this.cuenta  = this.fechaService.restar5Horas(this.cuenta);
+            if (productosCuenta.object.length > 0){
+              // Mostrar alerta de confirmación para editar
+              const result = await this.alertaService.alertaPedirConfirmacionEditar();
+
+              if (result.isConfirmed) {
+                // Actualizar el estado de cada producto a "En preparación"
+                await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
+                  producto.estado = "Despachado";
+                  await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
+                }));
+
+                // Actualizar la cuenta
+                await this.cuentaService.actualizarCuenta(this.cuenta).toPromise();
+
+                // Mostrar alerta de actualización exitosa
+                this.alertaService.alertaConfirmarCreacion();
+              }else if (result.dismiss === Swal.DismissReason.cancel) {
+                this.alertaService.alertaSinModificaciones();
+              }
+            }
+          }catch (error) {
+            console.error("Error al procesar la cuenta:", error);
+          }
+
+          break;
+        case("Despachada"):
+
+          try{
+            this.cuenta.estadoCuenta.id = 2; //id de estado pagada
+            //crear instancia de ingreso
+            const ingreso : Ingreso = {
+              id : 0,
+              fecha : null,
+              metodoPago : "Efectivo",
+              total: this.cuenta.total,
+              cuenta: this.cuenta
+            }
+            //ABRIR MODAL PARA SABER EL TIPO DE MÉTODO DE PAGO
+            // GUARDAR INGRESO
+            this.modalPagar(ingreso).subscribe(
+              result => {
+                if(result){
+                  //ACTUALIZAR CUENTA
+                  this.cuentaService.actualizarCuenta(this.cuenta)
+                    .subscribe(
+                      data => {
+                        this.alertaService.alertaConfirmarCreacion();
+                      },
+                      error => {
+                        console.log(error)
+                      }
+                    );
+                }else{
+                  this.alertaService.alertaSinModificaciones();
+                }
+          },error => {
+                console.log(error)
+              });
+          }
+          catch (error) {
+            console.error("Error al procesar la cuenta:", error);
+          }
+
+
+          break;
+      }
+
     }
 
     this.addEventListeners()
+  }
+
+
+  //modal pagar
+  //modal pagar
+  public modalPagar(ingreso: Ingreso): Observable<any> {
+    const dialogRef = this.dialog.open(ModalIngresosComponent, {
+      width: '400px',
+      position: { right: '0' },
+      height: '300px',
+    });
+
+    return dialogRef.afterClosed().pipe(
+      switchMap(result => {
+        if (result === null || result === undefined) {
+          // Manejar el caso en que el resultado sea nulo
+          return EMPTY; // Puedes devolver un observable vacío o manejarlo según tus necesidades
+        } else {
+          ingreso.metodoPago = result.metodoPago;
+          return this.ingresoService.crearIngreso(ingreso);
+        }
+      })
+    );
   }
 }

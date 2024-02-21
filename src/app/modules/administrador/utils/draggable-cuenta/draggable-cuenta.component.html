@@ -6,8 +6,26 @@
     <span class="row-contenido-element">{{cuenta.total.toLocaleString()}}</span>
     <span class="row-contenido-element">{{cuenta.abono.toLocaleString()}}</span>
     <span class="row-contenido-element">{{(cuenta.total - cuenta.abono).toLocaleString()}}</span>
-    <span class="row-contenido-element" ngClass="estado{{cuenta.estadoCuenta.id}}">{{cuenta.estadoCuenta.nombre}}</span>
+    <span class="row-contenido-element" ngClass="estado{{cuenta.estadoCuenta.id}}">{{cuenta.estadoCuenta.nombre === "Por despachar" ? "En espera" : cuenta.estadoCuenta.nombre}}</span>
     <span class="row-contenido-element">{{ cuenta.fecha.toLocaleString()}}</span>
   </div>
-  <div class="background-text">TEXTO DE FONDO AQUI</div>
+  <div class="background-text">
+    <ng-container ngSwitch="{{cuenta.estadoCuenta.nombre}}">
+      <ng-container *ngSwitchCase="'Por despachar'">
+        <span class="texto-background">
+          Enviar a preparar
+        </span>
+      </ng-container>
+      <ng-container *ngSwitchCase="'En preparación'">
+        <span class="texto-background">
+          Despachar cuenta
+        </span>
+      </ng-container>
+      <ng-container *ngSwitchCase="'Despachada'">
+        <span class="texto-background">
+          Cobrar cuenta
+        </span>
+      </ng-container>
+    </ng-container>
+  </div>
 </div>

@@ -127,3 +127,74 @@ svg:hover {
     overflow-x: scroll ;
   }
 }
+
+/* Estados de la cuenta */
+.estados {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 1em 0;
+}
+.estado-actual, .acciones-estados{
+  width: 100%;
+}
+.estado-actual span {
+  color: cornflowerblue;
+  font-weight: bold;
+}
+.acciones-estados{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: .5em;
+  justify-content: space-evenly;
+}
+.cambiar-estado{
+  width: 52%;
+  padding: 1em;
+  border: 1px solid #3C3B3B;
+  font-size: .7em;
+  cursor: pointer;
+}
+.cambiar-estado:hover{
+  border: 1px solid cornflowerblue;
+}
+.cambiar-estado:active{
+  background-image: linear-gradient(to right, cornflowerblue 0%, cornflowerblue 50%, rgb(12, 12, 12) 50%, rgb(12, 12, 12) 100%);
+  background-size: 200% 100%;
+  background-position: 100%;
+  animation: progress 1s ease-out forwards;
+}
+
+.cancelar-cuenta {
+  width: 35%;
+  padding: 1em;
+  border: 1px solid #3C3B3B;
+  font-size: .7em;
+  cursor: pointer;
+  background-color: rgba(12, 12, 12, 0);
+  color: rgb(255 255 255 / 64%);
+
+}
+
+.cancelar-cuenta:hover {
+  border: 1px solid red;
+}
+
+.cancelar-cuenta:active {
+  background-image: linear-gradient(to right, #ff2323 0%, #ff2323 50%, rgb(12, 12, 12) 50%, rgb(12, 12, 12) 100%);
+  background-size: 200% 100%;
+  background-position: 100%;
+  animation: progress 3s ease-out forwards;
+}
+
+@keyframes progress {
+  from {
+    background-position: 100%;
+  }
+  to {
+    background-position: 0%;
+  }
+}
+
+

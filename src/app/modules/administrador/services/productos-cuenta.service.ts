@@ -44,4 +44,15 @@ export class ProductosCuentaService {
           )
         );
     }
+
+    public eliminarProductoCuenta(id:number) : Observable<any>{
+    return this.http.delete(`${this.apiUrl}/${id}`)
+      .pipe(
+        tap(
+          () => {
+            this._refreshNeeded.next();
+          }
+        )
+      )
+    }
 }

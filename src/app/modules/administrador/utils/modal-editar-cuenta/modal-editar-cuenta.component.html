@@ -1,6 +1,7 @@
 <h2 mat-dialog-title>Cuenta de la mesa: {{cuentaData?.mesa?.numeroMesa}}</h2>
 <mat-dialog-content>
-<form [formGroup]="form">
+  <ng-container *ngIf="!isLoading; else cargando">
+  <form [formGroup]="form">
   <mat-form-field>
     <mat-label>Empleado</mat-label>
     <input type="text"  matInput [readonly]="true" value="{{empleadoData?.empleado?.nombre}} {{empleadoData?.empleado?.apellido}}">
@@ -31,20 +32,25 @@
               <td>{{ pc.cantidad }}</td>
               <td>${{ formatearNumeroConPuntos(pc.producto.precio) }}</td>
               <ng-container>
-                <td *ngIf="pc.estado == 'Por despachar'" data-toggle="tooltip" data-placement="left" title="Por despachar">
+                <td *ngIf="pc.estado == 'Por despachar'" matTooltip="En espera">
                   <img src="assets/icons/por-despachar.svg" alt="">
                 </td>
-                <td *ngIf="pc.estado == 'Pagada'" data-toggle="tooltip" data-placement="left" title="Pagada">
+                <td *ngIf="pc.estado == 'Pagada'" matTooltip="Pagada">
                   <img src="assets/icons/pagada.svg" alt="">
                 </td>
-                <td *ngIf="pc.estado == 'Despachado'" data-toggle="tooltip" data-placement="left" title="Despachado">
+                <td *ngIf="pc.estado == 'Despachado'" matTooltip="Despachado">
                   <img src="assets/icons/despachada.svg" alt="">
                 </td>
-                <td *ngIf="pc.estado == 'Pagada'" data-toggle="tooltip" data-placement="left" title="Pagada">
-                  <img src="assets/icons/pagada.svg" alt="">
+                <td *ngIf="pc.estado == 'En preparación'" matTooltip="En preparación">
+                  <img src="assets/icons/en-preparacion.svg" alt="">
                 </td>
               </ng-container>
-
+              <td *ngIf="pc.estado == 'Por despachar'" matTooltip="Quitar producto" (click)="eliminarProductoCuenta(pc.id)">
+                <svg width="2em" height="2em" viewBox="0 0 1024 1024" class="icon"  version="1.1" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M512 897.6c-108 0-209.6-42.4-285.6-118.4-76-76-118.4-177.6-118.4-285.6 0-108 42.4-209.6 118.4-285.6 76-76 177.6-118.4 285.6-118.4 108 0 209.6 42.4 285.6 118.4 157.6 157.6 157.6 413.6 0 571.2-76 76-177.6 118.4-285.6 118.4z m0-760c-95.2 0-184.8 36.8-252 104-67.2 67.2-104 156.8-104 252s36.8 184.8 104 252c67.2 67.2 156.8 104 252 104 95.2 0 184.8-36.8 252-104 139.2-139.2 139.2-364.8 0-504-67.2-67.2-156.8-104-252-104z" fill="" />
+                  <path d="M707.872 329.392L348.096 689.16l-31.68-31.68 359.776-359.768z" fill="" /><path d="M328 340.8l32-31.2 348 348-32 32z" fill="" />
+                </svg>
+              </td>
             </tr>
           </ng-container>
         <ng-container *ngFor="let pc of cuentaProductosAgg; let i = index">
@@ -76,17 +82,36 @@
           en el botón "Agregar producto" en la parte inferior
         </span>
     </div>
-    <mat-form-field >
-      <mat-label>
-        Estado de la cuenta
-      </mat-label>
-      <mat-select [(ngModel)]="estadoSeleccionado"  [ngModelOptions]="{standalone: true}" [disabled] = "isReadOnly">
-        <mat-option *ngFor="let estado of estadosCuenta" [value]="estado.id" >
-          {{estado.nombre}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
+    <div class="estados">
+      <div class="estado-actual">
+        Estado actual de la cuenta: <span>{{cuentaData?.estadoCuenta?.nombre === "Por despachar" ? "En Espera" : cuentaData?.estadoCuenta?.nombre }} </span>
+      </div>
+      <div class="acciones-estados" *ngIf="cuentaData?.estadoCuenta?.nombre != 'Pagada' && cuentaData?.estadoCuenta?.nombre != 'Cancelada'">
+        <div class="cambiar-estado"  (mousedown)="onButtonPress(1000, 'Cambiar estado')" (mouseup)="onButtonRelease()">
+          Cambiar a: <ng-container ngSwitch="{{cuentaData?.estadoCuenta?.nombre}}">
+          <ng-container *ngSwitchCase="'Por despachar'">
+            <span >
+              En preparación
+            </span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'En preparación'">
+            <span>
+              Despachada
+            </span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'Despachada'">
+           <span >
+             Pagada
+           </span>
+          </ng-container>
+        </ng-container> <img src="assets/icons/next.svg" alt="">
+        </div>
+        <button class="cancelar-cuenta" (mousedown)="onButtonPress(3000, 'Cancelar')" (mouseup)="onButtonRelease()"
+        >
+          Cancelar cuenta
+        </button>
+      </div>
+    </div>
     <mat-form-field>
       <mat-label>Abono</mat-label>
       <input type="number"  matInput [(ngModel)]="abonoData" [ngModelOptions]="{standalone: true}" [readonly]="isReadOnly">
@@ -105,6 +130,7 @@
 
   </div>
 </form>
+  </ng-container>
 </mat-dialog-content>
 <ng-container *ngIf="!isReadOnly; else botonCerrar">
   <mat-dialog-actions>
@@ -117,4 +143,8 @@
   <mat-dialog-actions>
     <button mat-button (click)="onNoClick()" class="btn-actualizar-element boton-solito" style="">Cerrar</button>
   </mat-dialog-actions>
+</ng-template>
+
+<ng-template #cargando>
+  <app-skeleton-modal></app-skeleton-modal>
 </ng-template>

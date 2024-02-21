@@ -21,6 +21,7 @@ import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora
 import {EMPTY, forkJoin, Observable, switchMap, tap} from "rxjs";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
+import {ValidarExistenciasService} from "./validar-existencias.service";
 
 
 
@@ -110,7 +111,8 @@ export class CuentasComponent implements OnInit{
               private alertaService : AlertasService,
               public fechaService : FechaHoraService,
               private loginService : LoginService,
-              private router : Router) {
+              private router : Router,
+              private validarExistencias : ValidarExistenciasService) {
   }
 
 
@@ -413,160 +415,126 @@ export class CuentasComponent implements OnInit{
     });
 
     dialogRef.afterClosed().subscribe(
-      result => {
+      async result => {
 
-        if(result){
+        if (result) {
           //crear instancias
-          const cuenta : Cuenta = result.cuenta;
-          const productosCuenta : ProductoCuenta[] = [];
+          const cuenta: Cuenta = result.cuenta;
+          const productosCuenta: ProductoCuenta[] = [];
           //productos cuenta vinculados a la cuenta con anterioridad
-          let productosCuentaExistentes : ProductoCuenta[] = [];
+          let productosCuentaExistentes: ProductoCuenta[] = [];
           //VALIDAR SI LA CUENTA FUE DESPACHADA
           // 3 es el id del estado "despachada"
-          if(cuenta.estadoCuenta.id == 3){
-            //CAMBIAR TODOS LOS PRODUCTOS VINCULADOS A ESTA CUENTA A DESPACHADOS
-            this.productosCuentaService.getProductoCuentaByCuentaId(cuenta.id)
-              .subscribe(
-                async data => {
-                  productosCuentaExistentes = data.object;
+          if (cuenta.estadoCuenta.id == 3) {
+            try {
+            const productosCuenta = await this.productosCuentaService.getProductoCuentaByCuentaId(cuenta.id).toPromise();
+            if (productosCuenta.object.length > 0){
+              // Mostrar alerta de confirmación para editar
+              const result = await this.alertaService.alertaPedirConfirmacionEditar();
 
-                  if (productosCuentaExistentes.length > 0) {
-                    //validar si vienen productos cuyo estado no es despachado
-                    //y guardarlos en otro array
-                    const productosCuentaNoDespachados: ProductoCuenta [] = []
-                    //seleccionar los productosCuenta que no han sido despachados
-                    productosCuentaExistentes.forEach(
-                      (productoCuenta) => {
-                        if (productoCuenta.estado != 'Despachado') {
-                          productosCuentaNoDespachados.push(productoCuenta);
-                        }
-                      }
-                    );
+              if (result.isConfirmed) {
+                // Actualizar el estado de cada producto a "En preparación"
+                await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
+                  producto.estado = "Despachado";
+                  await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
+                }));
 
-                    const insumosProcesados = await this.validarExistenciasDeProductos(productosCuentaNoDespachados);
+                // Actualizar la cuenta
+                await this.cuentaService.actualizarCuenta(cuenta).toPromise();
 
-                    //validar si hay insumos que quedaron en negativo
-                    if (insumosProcesados.insuficientes.length > 0) {
-                      //enviar alerta de que existen insumos cuyos existencias quedan en negativo
-                      this.alertaService.alertaInsumosNegativos(insumosProcesados.insuficientes)
-                        .then(
-                          (result) => {
-                            //en caso de que desee continuar
-                            if (result.isConfirmed) {
-                              //cambiar el estado de cada producto cuenta a despachado
-                              for (let producto of productosCuentaNoDespachados) {
+                // Mostrar alerta de actualización exitosa
+                this.alertaService.alertaConfirmarCreacion();
+              }else if (result.dismiss === Swal.DismissReason.cancel) {
+                this.alertaService.alertaSinModificaciones();
+              }
+            }}
+            catch (error) {
+              console.error("Error al procesar la cuenta:", error);
+            }
+          }
+          //Cuando se va a mandar a preparar la cuenta
+          else if (cuenta.estadoCuenta.id == 5) {
+            try {
 
-                                //CAMBIAR EL ESTADO DE CADA PRODUCTO A DESPACHADO
-                                producto.estado = "Despachado";
-
-                                //Actualizar el productoCuenta en la base de datos
-                                this.productosCuentaService.actualizarProductoCuenta(producto)
-                                  .subscribe(
-                                    result => {
-                                    },
-                                    error => {
-                                      console.log(error)
-                                    }
-                                  );
-                              }
-                              //actualizar todos los insumos guardados en insumosProcesados
-                              for (let insumo of insumosProcesados.aDeducir) {
-                                this.insumoService.actualizarInsumos(insumo.insumo)
-                                  .subscribe(
-                                    result => {
-                                    },
-                                    error => {
-                                      console.log(error);
-                                    });
-                              }
-
-                              this.cuentaService.actualizarCuenta(cuenta)
-                                .subscribe(
-                                  data => {
-
-                                  },
-                                  error => {
-                                    console.log(error)
-                                  }
-                                );
-
-                              //mostrar alerta actualizacion exitosa
-                              this.alertaService.alertaConfirmarCreacion();
-                            }
-                            //en caso de que se cancele la operacion
-                            else if (result.dismiss === Swal.DismissReason.cancel) {
-                              this.alertaService.alertaSinModificaciones();
-                            }
-                          }
-                        )
-                    }//si no hay insumos en negativo
-                    else {
-                      this.alertaService.alertaPedirConfirmacionEditar()
-                        .then(
-                          (result) => {
-                            //en caso de querer continuar
-                            if (result.isConfirmed) {
-                              for (let producto of productosCuentaNoDespachados) {
-
-                                //CAMBIAR EL ESTADO DE CADA PRODUCTO A DESPACHADO
-                                producto.estado = "Despachado";
-
-                                //Actualizar el productoCuenta en la base de datos
-                                this.productosCuentaService.actualizarProductoCuenta(producto)
-                                  .subscribe(
-                                    result => {
-                                    },
-                                    error => {
-                                      console.log(error)
-                                    }
-                                  );
-                              }
-                              //actualizar todos los insumos guardados en insumosProcesados
-                              for (let insumo of insumosProcesados.aDeducir) {
-                                console.log(insumo)
-                                this.insumoService.actualizarInsumos(insumo.insumo)
-                                  .subscribe(
-                                    result => {
-                                    },
-                                    error => {
-                                      console.log(error);
-                                    });
-                              }
-                              //actualizar la cuenta
-                              this.cuentaService.actualizarCuenta(cuenta)
-                                .subscribe(
-                                  data => {
-                                  },
-                                  error => {
-                                    console.log(error)
-                                  }
-                                );
-
-                              //mostrar alerta actualizacion exitosa
-                              this.alertaService.alertaConfirmarCreacion();
-                            }//en caso de que se cancele la operacion
-                            else if (result.dismiss === Swal.DismissReason.cancel) {
-                              this.alertaService.alertaSinModificaciones();
-                            }
-                          }
-                        )
+              const productosCuenta = await this.productosCuentaService.getProductoCuentaByCuentaId(cuenta.id).toPromise();
+              if (productosCuenta.object.length > 0) {
+                //validar si vienen productos cuyo estado no es despachado
+                //y guardarlos en otro array
+                const productosCuentaPendientes: ProductoCuenta [] = []
+                //seleccionar los productosCuenta que no han sido despachados ni estan en preparacion
+                productosCuenta.object.forEach(
+                  (productoCuenta : ProductoCuenta) => {
+                    if (productoCuenta.estado != 'Despachado' && productoCuenta.estado != 'En preparación') {
+                      productosCuentaPendientes.push(productoCuenta);
                     }
-
                   }
+                );
 
-                },error => {
-                  console.log(error)
+                //validar existencias de los insumos
+                const validarInsumos = await this.validarExistencias.validarExistenciasDeProductos(productosCuentaPendientes);
+
+                if (validarInsumos.insuficientes.length > 0) {
+                  //mostrar alerta insumos insuficientes
+                  const result = await this.alertaService.alertaInsumosNegativos(validarInsumos.insuficientes);
+
+                  if (result.isConfirmed) {
+                    //actualizar el estado de cada producto vinculado a la cuenta
+                    await Promise.all(productosCuentaPendientes.map(async (producto: ProductoCuenta) => {
+                      producto.estado = "En preparación";
+                      await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
+                    }));
+
+                    // Actualizar los insumos a deducir
+                    await Promise.all(validarInsumos.aDeducir.map(async (insumo) => {
+                      await this.insumoService.actualizarInsumos(insumo.insumo).toPromise();
+                    }));
+
+                    // Actualizar la cuenta
+                    await this.cuentaService.actualizarCuenta(cuenta).toPromise();
+
+                    //mostrar alerta actualizacion exitosa
+                    this.alertaService.alertaConfirmarCreacion();
+                  } else if (result.isDismissed) {
+                    this.alertaService.alertaSinModificaciones();
+                  }
+                } else {
+                  // Mostrar alerta de confirmación para editar
+                  const result = await this.alertaService.alertaPedirConfirmacionEditar();
+
+                  if (result.isConfirmed) {
+                    // Actualizar el estado de cada producto a "En preparación"
+                    await Promise.all(productosCuentaPendientes.map(async (producto: ProductoCuenta) => {
+                      producto.estado = "En preparación";
+                      await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
+                    }));
+
+                    // Actualizar los insumos procesados
+                    await Promise.all(validarInsumos.aDeducir.map(async (insumo) => {
+                      await this.insumoService.actualizarInsumos(insumo.insumo).toPromise();
+                    }));
+
+                    // Actualizar la cuenta
+                    await this.cuentaService.actualizarCuenta(cuenta).toPromise();
+
+                    // Mostrar alerta de actualización exitosa
+                    this.alertaService.alertaConfirmarCreacion();
+                  } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    this.alertaService.alertaSinModificaciones();
+                  }
                 }
-              );
+              }
+            } catch (error) {
+              console.error("Error al procesar la cuenta:", error);
+            }
           }
           //cuando ya se pagó la cuenta
-          else if(cuenta.estadoCuenta.id == 2){
+          else if (cuenta.estadoCuenta.id == 2) {
 
             //crear instancia de ingreso
-            const ingreso : Ingreso = {
-              id : 0,
-              fecha : null,
-              metodoPago : this.metodoDePagoSeleccionado,
+            const ingreso: Ingreso = {
+              id: 0,
+              fecha: null,
+              metodoPago: this.metodoDePagoSeleccionado,
               total: cuenta.total,
               cuenta: cuenta
             }
@@ -574,7 +542,7 @@ export class CuentasComponent implements OnInit{
             // GUARDAR INGRESO
             this.modalPagar(ingreso).subscribe(
               result => {
-                if(result){
+                if (result) {
                   //ACTUALIZAR CUENTA
                   this.cuentaService.actualizarCuenta(cuenta)
                     .subscribe(
@@ -585,21 +553,21 @@ export class CuentasComponent implements OnInit{
                         console.log(error)
                       }
                     );
-                }else{
+                } else {
                   this.alertaService.alertaSinModificaciones();
                 }
-              },error => {
+              }, error => {
                 console.log(error)
               }
             )
 
           }
           //si no cumple con ninguno de los estados
-          else{
+          else {
             this.alertaService.alertaPedirConfirmacionEditar()
               .then(
                 (result) => {
-                  if(result.isConfirmed){
+                  if (result.isConfirmed) {
                     this.cuentaService.actualizarCuenta(cuenta)
                       .subscribe(
                         data => {
@@ -609,8 +577,7 @@ export class CuentasComponent implements OnInit{
                           console.log(error)
                         }
                       );
-                  }
-                  else if (result.dismiss === Swal.DismissReason.cancel) {
+                  } else if (result.dismiss === Swal.DismissReason.cancel) {
                     this.alertaService.alertaSinModificaciones();
                   }
                 }
@@ -618,13 +585,13 @@ export class CuentasComponent implements OnInit{
 
           }
           //VALIDAR SI SE AÑADIERON MAS PRODUCTOS EN ESTA EDICION
-          if(result.productos.length > 0){
+          if (result.productos.length > 0) {
             //el estado con id 1 es por despachar
             cuenta.estadoCuenta.id = 1
             //recorrer el result y asignarlo al array de productoCuenta
-            for (let producto of result.productos){
+            for (let producto of result.productos) {
               //crear instancia de producto por cuenta
-              const productoXCuenta : ProductoCuenta = {
+              const productoXCuenta: ProductoCuenta = {
                 id: 0,
                 cuenta: cuenta,
                 producto: producto.obj,
@@ -635,15 +602,17 @@ export class CuentasComponent implements OnInit{
               productosCuenta.push(productoXCuenta);
             }
             //guardar todos los neuvos productos
-            for (let pc of productosCuenta){
+            for (let pc of productosCuenta) {
               this.productosCuentaService.crearProductoCuenta(pc)
                 .subscribe(
-                  data=> {},
+                  data => {
+                  },
                   error => {
                     console.log(error)
                   }
                 );
-            };
+            }
+            ;
             this.cuentaService.actualizarCuenta(cuenta)
               .subscribe(
                 data => {

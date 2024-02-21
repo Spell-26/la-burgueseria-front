@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Mesa} from "../../interfaces";
 import {MesasService} from "../../services/mesas.service";
 import {MatDialog} from "@angular/material/dialog";
-import {Validators} from "@angular/forms";
+import {FormControl, Validators} from "@angular/forms";
 import {ModalLateralComponent} from "../../utils/modal-lateral/modal-lateral.component";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 import Swal from "sweetalert2";
@@ -30,9 +30,12 @@ export class MesasComponent implements OnInit{
   mesaEditandoIndex : number | null = null;
   estadosMesa = ['Disponible', 'Deshabilitada'] //'Ocupada' se hace automaticamente cuando se asigna una cuenta
   nuevoEstadoMesa : string = "";
-  nuevoNumeroMesa : number = 0;
+  nuevoNumeroMesa  =  new FormControl(0, [Validators.required,  Validators.pattern(/^(0|[1-9]\d*)$/)]);
   //verificacion de sesion
   userLoginOn : boolean = false;
+  //verificacion de carga de contenido
+  isLoading = true;
+  isLoadingPartial = false;
 
   constructor(private mesaService : MesasService, public dialog : MatDialog,
               private alertaService : AlertasService,
@@ -81,23 +84,28 @@ export class MesasComponent implements OnInit{
     this.modoEdicion = true;
     this.mesaEditandoIndex = index;
     this.nuevoEstadoMesa = this.mesas[index].estado;
-    this.nuevoNumeroMesa = this.mesas[index].numeroMesa;
+    this.nuevoNumeroMesa.setValue(this.mesas[index].numeroMesa) ;
   }
   cancelarEdicion(){
     this.modoEdicion = false;
     this.mesaEditandoIndex = null;
-    this.nuevoNumeroMesa = 0;
+    this.nuevoNumeroMesa.setValue(0);
     this.nuevoEstadoMesa = "";
   }
-  onEstadoSeleccionadoChance(){
-
+  toggleMesaEstado(mesa : Mesa){
+    if(mesa.estado == 'Disponible'){
+      mesa.estado = 'Deshabilitada'
+    }else{
+      mesa.estado = 'Disponible';
+    }
+    this.mesaService.actualizarMesa(mesa).subscribe();
   }
   guardarEdicion(index : number){
 
-    if(this.nuevoEstadoMesa != "" && this.nuevoNumeroMesa != null){
+    if(this.nuevoEstadoMesa != "" && this.nuevoNumeroMesa.value != null){
       const mesa : Mesa = {
         id: index,
-        numeroMesa: this.nuevoNumeroMesa,
+        numeroMesa: this.nuevoNumeroMesa.value,
         estado: this.nuevoEstadoMesa,
         qr: null
       };
@@ -140,6 +148,7 @@ export class MesasComponent implements OnInit{
   //****************************
 
   private getAllMesas(){
+    this.isLoading = true;
     this.mesaService.getMesasPageable(this.pagina, this.tamano, this.order, this.asc)
       .subscribe(
         data =>{
@@ -157,6 +166,9 @@ export class MesasComponent implements OnInit{
           }else{
             console.log(error)
           }
+        },
+        () => {
+          this.isLoading = false;
         }
       )
   }
@@ -187,14 +199,22 @@ export class MesasComponent implements OnInit{
 
   //buscar por numero de mesa
   public buscarMesas(){
+    this.isLoadingPartial = true;
     if(this.nombreBusqueda == null){
       this.setIsNombreBusqueda(false);
       this.getAllMesas();
+      this.isLoadingPartial = false;
     }else{
       this.mesaService.buscarPorNumeroMesa(this.nombreBusqueda)
         .subscribe(
           mesa =>{
             this.mesas = mesa.object
+          },
+          error => {
+            console.log(error)
+          },
+          () => {
+            this.isLoadingPartial = false;
           }
         );
       this.setIsNombreBusqueda(true);
@@ -236,7 +256,11 @@ export class MesasComponent implements OnInit{
                 this.alertaService.alertaConfirmarCreacion()
               },
               error => {
-                console.log(error)
+                if(error.status === 409){
+                  //mostrar alerta con mensaje custom
+                  const mensaje = "Ups! este número de mesa ya esta asignado a otra mesa, intenta con otro."
+                  this.alertaService.alertaErrorMensajeCustom(mensaje);
+                }
               }
             )
         }

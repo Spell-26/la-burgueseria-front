@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
+import {FormControl, Validators} from "@angular/forms";
 
 
 @Component({
@@ -28,11 +29,13 @@ export class InsumosComponent implements OnInit{
   isLast = false;
   //variables para editar un insumo en especifico
   modoEdicion :boolean = false;
-  cantidadEditada : number = 0;
+  cantidadEditada = new FormControl(0, [Validators.required,  Validators.pattern(/^(0|[1-9]\d*)$/)]);
   insumoEditandoIndex : number | null = null;
-  nombreEditado : string = '';
+  nombreEditado = new FormControl('', [Validators.required,  Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚüÜ\s]+$/)] )
   //verificacion de sesion
   userLoginOn : boolean = false;
+  //VARIFICAR SI ESTA CARGANDO
+  isLoading : boolean = true;
 
   constructor(private insumosService : InsumosService,
               public dialog : MatDialog,
@@ -109,21 +112,32 @@ export class InsumosComponent implements OnInit{
   public iniciarEdicion(index :number){
     this.modoEdicion = true;
     this.insumoEditandoIndex = index;
-    this.cantidadEditada = this.insumos[index].cantidad;
-    this.nombreEditado = this.insumos[index].nombre;
+    this.cantidadEditada.setValue(this.insumos[index].cantidad);
+    this.nombreEditado.setValue(this.insumos[index].nombre);
   }
   public guardarEdicion(index : number){
     let dato : insumo = this.insumos[index];
-    dato.cantidad = this.cantidadEditada;
-    dato.nombre = this.nombreEditado;
+
+    if (this.cantidadEditada.value != null) {
+      dato.cantidad = this.cantidadEditada.value;
+    }else{
+      dato.cantidad = this.insumos[index].cantidad;
+    }
+
+    if (this.nombreEditado.value != null) {
+      dato.nombre = this.nombreEditado.value;
+    }else{
+      dato.nombre = this.insumos[index].nombre
+    }
+
     this.insumosService.actualizarInsumos(dato)
       .subscribe();
     this.cancelarEdicion();
   }
   cancelarEdicion(){
     this.modoEdicion = false;
-    this.cantidadEditada = 0;
-    this.nombreEditado = '';
+    this.cantidadEditada.setValue(0);
+    this.nombreEditado.setValue('');
     this.insumoEditandoIndex = null;
   }
 
@@ -149,6 +163,7 @@ export class InsumosComponent implements OnInit{
   }
 
   private getAllInsumos(){
+    this.isLoading = true;
     this.insumosService.getInsumosPageable(this.pagina, this.tamano, this.order, this.asc)
       .subscribe(
         data => {
@@ -167,6 +182,9 @@ export class InsumosComponent implements OnInit{
             console.log(error)
           }
         }
+        , () => {
+          this.isLoading = false;
+        }
       );
 
   }
@@ -176,9 +194,17 @@ export class InsumosComponent implements OnInit{
       this.getAllInsumos();
     }else{
       this.insumosService.buscarPorNombre(this.nombreBusqueda)
-        .subscribe(insumo =>{
+        .subscribe(
+          insumo =>{
           this.insumos = insumo.object;
-        });
+        },
+          error =>{
+            console.log(error)
+          },
+          () => {
+            this.isLoading = false;
+          }
+        );
       this.setIsNombreBusqueda(true);
     }
 
@@ -189,7 +215,7 @@ export class InsumosComponent implements OnInit{
   }
 
 
-  //ALERTAS / TESTING
+  //ALERTAS
 
   //alerta cuando se guarda o se modifica un insumo
   public alertaConfirmacionGuardar() {
@@ -219,81 +245,86 @@ export class InsumosComponent implements OnInit{
   }
 
   //alerta de confirmación para eliminar un insumo
-  public alertaConfirmarEliminar(id : number){
+  public alertaConfirmarEliminar(id : number, cantidad : number){
+    if(cantidad > 0){
+      const mensaje = "Solo se pueden eliminar insumos sin existencias."
+      this.alertaService.alertaErrorMensajeCustom(mensaje);
+    }
+    else{
+      // @ts-ignore
+      Swal.fire({
+        title: "¿Estas seguro de eliminar este insumo?",
+        text: "No podrás revertir esta acción!",
+        icon:"warning",
+        color: "#fff",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, borrar insumo",
+        cancelButtonText:"Cancelar",
+        reverseButtons: true,
+        background: '#1e1e1e', // Fondo oscuro
+      }).then(
+        (result) => {
+          //ACCION A REALIZAR EN CASO DE QUE SE DESEE PROSEGUIR CON
+          // LA ELIMINACION
+          if(result.isConfirmed){
+            //eliminar el insumo con el id asociado
+            this.deleteInsumo(id);
 
-    // @ts-ignore
-    Swal.fire({
-      title: "¿Estas seguro de eliminar este insumo?",
-      text: "No podrás revertir esta acción!",
-      icon:"warning",
-      color: "#fff",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Si, borrar insumo",
-      cancelButtonText:"Cancelar",
-      reverseButtons: true,
-      background: '#1e1e1e', // Fondo oscuro
-    }).then(
-      (result) => {
-        //ACCION A REALIZAR EN CASO DE QUE SE DESEE PROSEGUIR CON
-        // LA ELIMINACION
-        if(result.isConfirmed){
-          //eliminar el insumo con el id asociado
-          this.deleteInsumo(id);
+            let timerInterval: any;
+            // @ts-ignore
+            Swal.fire({
+              title: "Se ha eliminado el insumo correctamente.",
+              icon: 'success',
+              timer: 2000,
+              color: "#fff",
+              timerProgressBar: true,
+              position: 'center', // Esquina inferior derecha
+              showConfirmButton: false, // Ocultar el botón de confirmación
+              background: '#1e1e1e', // Fondo oscuro
+              didOpen: () => {
+                Swal.showLoading();
+                // @ts-ignore
+                const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+                timerInterval = setInterval(() => {
+                }, 100);
+              },
+              willClose: () => {
+                clearInterval(timerInterval);
+              }
+            });
 
-          let timerInterval: any;
-          // @ts-ignore
-          Swal.fire({
-            title: "Se ha eliminado el insumo correctamente.",
-            icon: 'success',
-            timer: 2000,
-            color: "#fff",
-            timerProgressBar: true,
-            position: 'center', // Esquina inferior derecha
-            showConfirmButton: false, // Ocultar el botón de confirmación
-            background: '#1e1e1e', // Fondo oscuro
-            didOpen: () => {
-              Swal.showLoading();
-              // @ts-ignore
-              const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
-              timerInterval = setInterval(() => {
-              }, 100);
-            },
-            willClose: () => {
-              clearInterval(timerInterval);
-            }
-          });
+          }
+          //ACCION A REALIZAR SI SE CANCELA LA ACCION
+          else if(result.dismiss === Swal.DismissReason.cancel ){
+            let timerInterval: any;
+            // @ts-ignore
+            Swal.fire({
+              title: "No se ha realizado ningún cambio en el insumo.",
+              icon: 'error',
+              timer: 2000,
+              color: "#fff",
+              timerProgressBar: true,
+              position: 'center', // Esquina inferior derecha
+              showConfirmButton: false, // Ocultar el botón de confirmación
+              background: '#1e1e1e', // Fondo oscuro
+              didOpen: () => {
+                Swal.showLoading();
+                // @ts-ignore
+                const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+                timerInterval = setInterval(() => {
+                }, 100);
+              },
+              willClose: () => {
+                clearInterval(timerInterval);
+              }
+            });
 
+          }
         }
-        //ACCION A REALIZAR SI SE CANCELA LA ACCION
-        else if(result.dismiss === Swal.DismissReason.cancel ){
-          let timerInterval: any;
-          // @ts-ignore
-          Swal.fire({
-            title: "No se ha realizado ningún cambio en el insumo.",
-            icon: 'error',
-            timer: 2000,
-            color: "#fff",
-            timerProgressBar: true,
-            position: 'center', // Esquina inferior derecha
-            showConfirmButton: false, // Ocultar el botón de confirmación
-            background: '#1e1e1e', // Fondo oscuro
-            didOpen: () => {
-              Swal.showLoading();
-              // @ts-ignore
-              const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
-              timerInterval = setInterval(() => {
-              }, 100);
-            },
-            willClose: () => {
-              clearInterval(timerInterval);
-            }
-          });
-
-        }
-      }
-    )
+      )
+    }
   }
 
 

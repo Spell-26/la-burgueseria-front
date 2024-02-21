@@ -45,6 +45,8 @@ export class IngresosComponent implements OnInit{
   datosRecibidos! : { fromDate: Date | null, toDate : Date | null }
   //verificacion de sesion
   userLoginOn : boolean = false;
+  //verificacion de carga de datos
+  isLoading = false;
 
   ngOnInit(): void {
 
@@ -84,6 +86,7 @@ export class IngresosComponent implements OnInit{
 
   //PETICIONES HTTP
   private getIngresoByFechaPage(fechaInicio : string, fechaFin :string | null){
+    this.isLoading = true;
     this.ingresoService.getIngresoPagableByFecha(fechaInicio, fechaFin, this.pagina, this.tamano, this.order, this.asc)
       .subscribe(
         data => {
@@ -113,6 +116,9 @@ export class IngresosComponent implements OnInit{
           }else{
             console.log(error)
           }
+        },
+        () => {
+          this.isLoading = false;
         }
       )
   }

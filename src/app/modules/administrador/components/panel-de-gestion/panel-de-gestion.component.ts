@@ -39,7 +39,8 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   caja : GestionCaja | null = null;
   //validacion se sesion
   userLoginOn = false;
-
+  //validar carga de datos
+  isLoading = true;
   constructor(
     public dialog : MatDialog,
     public fechaService : FechaHoraService,
@@ -88,7 +89,7 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
           }
         );
 
-      //al iniciar el compoente buscar si hay ahy una caja abierda ese mismo dia
+      //al iniciar el compoente buscar si hay hay una caja abierda ese mismo dia
       this.getGestionCajaByFechas(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
       //obtener resumen
       this.getResumen();
@@ -329,6 +330,7 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
 
 
   private getAllGestionCaja(){
+    this.isLoading = true;
     this.gestionCajaService.listAll()
       .subscribe(
         data => {
@@ -350,6 +352,10 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
               caja.fechaHorainicio = fechaInicio
             }
           }
+        }, error => {
+          console.log(error)
+        }, () => {
+          this.isLoading = false;
         }
       )
   }
@@ -379,50 +385,55 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
 
   //Modal iniciar dia
   public modalIniciarDia(){
-    const dialogRef = this.dialog.open(ModalDashboardComponent, {
-      width: '400px', // Ajusta el ancho según tus necesidades
-      position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '300px',
-    });
+   if(this.cajasPendientes.length > 0){
+     const mensaje = "No es posible iniciar una nueva caja sin cerrar las anteriores."
+     this.alertaService.alertaErrorMensajeCustom(mensaje)
+   }else{
+     const dialogRef = this.dialog.open(ModalDashboardComponent, {
+       width: '400px', // Ajusta el ancho según tus necesidades
+       position: { right: '0' }, // Posiciona el modal a la derecha
+       height: '300px',
+     });
 
-    dialogRef.afterClosed().subscribe(
-      result => {
-        if(result){
-          let fecha: Date = new Date(this.fechaHoraInicioUTC);
+     dialogRef.afterClosed().subscribe(
+       result => {
+         if(result){
+           let fecha: Date = new Date(this.fechaHoraInicioUTC);
 
-          const caja : GestionCaja = {
-            id : 0,
-            totalCalculado: result.totalCalculado,
-            totalReportado : result.totalReportado,
-            saldoInicioCajaMenor : result.saldoInicioCajaMenor,
-            observaciones : result.observaciones,
-            fechaHorainicio : fecha,
-            fechaHoraCierre : null,
-            estadoCaja : true
-          }
+           const caja : GestionCaja = {
+             id : 0,
+             totalCalculado: result.totalCalculado,
+             totalReportado : result.totalReportado,
+             saldoInicioCajaMenor : result.saldoInicioCajaMenor,
+             observaciones : result.observaciones,
+             fechaHorainicio : fecha,
+             fechaHoraCierre : null,
+             estadoCaja : true
+           }
 
-          this.gestionCajaService.crearGestionCaja(caja)
-            .subscribe(
-              result=>{
-                this.alertaService.alertaDiaIniciadoCorrectamente();
-                this.iniciarOTerminarDia(true);
-                //guardar el estado de la caja y la fecha en local storage
-                this.localStore.saveData('fecha', fecha.toISOString());
-                this.localStore.saveData('estadoDia', caja.estadoCaja.toString());
-              }, error => {
-                //en caso de que la base de datos devuelva un status CONFLICT
-                //aparecera una alerta indicando que el dia laboral ya fue finalizado
-                if(error.status === 409){
-                  const mensaje : string = "La caja del día de hoy ya ha sido cerrada, por favor espera al día siguiente para iniciarla nuevamente.";
-                  this.alertaService.alertaErrorMensajeCustom(mensaje);
-                }
-              }
-            )
+           this.gestionCajaService.crearGestionCaja(caja)
+             .subscribe(
+               result=>{
+                 this.alertaService.alertaDiaIniciadoCorrectamente();
+                 this.iniciarOTerminarDia(true);
+                 //guardar el estado de la caja y la fecha en local storage
+                 this.localStore.saveData('fecha', fecha.toISOString());
+                 this.localStore.saveData('estadoDia', caja.estadoCaja.toString());
+               }, error => {
+                 //en caso de que la base de datos devuelva un status CONFLICT
+                 //aparecera una alerta indicando que el dia laboral ya fue finalizado
+                 if(error.status === 409){
+                   const mensaje : string = "La caja del día de hoy ya ha sido cerrada, por favor espera al día siguiente para iniciarla nuevamente.";
+                   this.alertaService.alertaErrorMensajeCustom(mensaje);
+                 }
+               }
+             )
 
 
-        }
-      }
-    )
+         }
+       }
+     )
+   }
   }
 
   //Modal finalizar dia
