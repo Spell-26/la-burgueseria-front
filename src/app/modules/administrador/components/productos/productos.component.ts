@@ -309,14 +309,26 @@ export class ProductosComponent  implements OnInit {
   //GUARDAR PRODUCTO
   private crearProducto(producto : Producto, categoriaid: number){
     const formData : FormData = new FormData();
-
+    formData.append('imagen', producto.imagen);
     formData.append('nombre', producto.nombre);
     formData.append('precio' , producto.precio.toString());
-    formData.append('imagen', producto.imagen);
     formData.append('desc', producto.descripcion);
     formData.append('categoria', categoriaid.toString());
 
-    return this.productosService.crearProducto(formData);
+    const productoDto : Producto = {
+      id : 0,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+      descripcion: producto.descripcion,
+      categoriaProducto : {
+        id: categoriaid,
+        nombre: ""
+      },
+      imagenUrl : ""
+    }
+
+    return this.productosService.crearProducto(productoDto, producto.imagen);
   }
 
   //ELIMINAR PRODUCTO

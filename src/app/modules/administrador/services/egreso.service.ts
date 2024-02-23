@@ -21,23 +21,27 @@ export class EgresoService {
 
   //Crear egreso
   crearEgreso(egreso: Egreso): Observable<any> {
-    const formData = new FormData();
+    const params = new HttpParams()
+      .set('descripcion', egreso.descripcion)
+      .set('fecha', '')
+      .set('total', egreso.total.toString())
+      .set('categoria', egreso.categoria)
+      .set('deduccionDesde', egreso.deduccionDesde);
 
-    formData.append('descripcion', egreso.descripcion);
-    formData.append('fecha', '');
-    formData.append('total', egreso.total.toString());
-    formData.append('categoria', egreso.categoria);
-    formData.append('deduccionDesde', egreso.deduccionDesde);
-    formData.append('soporte', egreso.soporte);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/octet-stream' // Establece el tipo de contenido como binario
+    });
 
-    return this.http.post(this.apiUrl, formData)
-      .pipe(
-        tap(
-          () => {
-            this._refreshNeeded.next();
-          }
-        )
-      );
+    const imagenBlob = this.convertirImagenABlob(egreso.soporte);
+
+    return this.http.post(this.apiUrl, imagenBlob, { params, headers }).pipe(
+      tap(() => {
+        // Realiza alguna acción después de que se haya completado la solicitud, si es necesario
+      })
+    );
+  }
+  convertirImagenABlob(imagen: File): Blob {
+    return new Blob([imagen], { type: imagen.type });
   }
 
 
