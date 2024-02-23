@@ -1,21 +1,138 @@
-<section class="content">
-  <header class="landing-header">
-    <div class="contenido-header">
-      <div class="logo">
-        <img src="assets/logoburgueseria.png" alt="">
+<section class="content" (scroll)="onScroll($event)">
+
+    <header class="landing-header">
+      <div class="contenido-header">
+        <div class="logo">
+          <img src="assets/logoburgueseria.png" alt="">
+        </div>
+        <div class="navbar">
+
+          <a class="link-wrapper" href="#">
+            <span class="fallback">Inicio</span>
+            <div class="img-wrapper">
+              <img class="normal" src="assets/fonts/inicio3.png">
+              <img class="active" src="assets/fonts/inicio-gold.png">
+            </div>
+            <div class="shape-wrapper">
+              <div class="shape red-fill jelly"><svg x="0px" y="0px"
+                                                     viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                <polygon fill="#FF0000" points="29.5,8.5 150.7,0 108.1,32.7 3.1,47 "/>
+              </svg></div>
+              <div class="shape cyan-fill jelly"><svg x="0px" y="0px"
+                                                      viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                <polygon fill="#00FFFF" points="0.3,17 125.1,0 68.8,45.6 24.3,39 "/>
+              </svg></div>
+            </div>
+          </a>
+
+          <a class="link-wrapper" (click)="scrollToMenu()">
+            <span class="fallback">Menu</span>
+            <div class="img-wrapper">
+              <img class="normal" src="assets/fonts/menu.png">
+              <img class="active" src="assets/fonts/menu-gold.png">
+            </div>
+            <div class="shape-wrapper">
+              <div class="shape red-fill jelly">
+                <svg x="0px" y="0px" viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                  <polygon fill="#FF0000" points="0,7.1 127.3,0 32.3,64 4.8,58.2"/>
+                </svg>
+              </div>
+              <div class="shape cyan-fill jelly">
+                <svg x="0px" y="0px" viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                  <polygon fill="#00FFFF" points="14,0.5 127.4,0 77.4,164 2.3,61.1 "/>
+                </svg>
+              </div>
+            </div>
+          </a>
+
+
+          <a class="link-wrapper" href="#">
+            <span class="fallback">Nosotros</span>
+            <div class="img-wrapper">
+              <img class="normal" src="assets/fonts/nosotros.png">
+              <img class="active" src="assets/fonts/nosotros-gold.png">
+            </div>
+            <div class="shape-wrapper">
+              <div class="shape red-fill jelly"><svg x="0px" y="0px"
+                                                     viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                <polygon fill="#FF0000" points="29.5,8.5 150.7,0 108.1,32.7 3.1,47 "/>
+              </svg></div>
+              <div class="shape cyan-fill jelly"><svg x="0px" y="0px"
+                                                      viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                <polygon fill="#00FFFF" points="0.3,17 125.1,0 68.8,45.6 24.3,39 "/>
+              </svg></div>
+            </div>
+          </a>
+
+          <a class="link-wrapper" href="#">
+            <span class="fallback">Contáctanos</span>
+            <div class="img-wrapper">
+              <img class="normal" src="assets/fonts/contactanos.png">
+              <img class="active" src="assets/fonts/contactanos-gold.png">
+            </div>
+            <div class="shape-wrapper">
+              <div class="shape red-fill jelly">
+                <svg x="0px" y="0px" viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                  <polygon fill="#FF0000" points="0,7.1 127.3,0 32.3,64 4.8,58.2"/>
+                </svg>
+              </div>
+              <div class="shape cyan-fill jelly">
+                <svg x="0px" y="0px" viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                  <polygon fill="#00FFFF" points="14,0.5 127.4,0 77.4,164 2.3,61.1 "/>
+                </svg>
+              </div>
+            </div>
+          </a>
+
+
+          <a class="link-wrapper" [routerLink]="'login'">
+            <span class="fallback">Acceder</span>
+            <div class="img-wrapper">
+              <img class="normal" src="assets/fonts/acceder.png">
+              <img class="active" src="assets/fonts/acceder-gold.png">
+            </div>
+            <div class="shape-wrapper">
+              <div class="shape red-fill jelly"><svg x="0px" y="0px"
+                                                     viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                <polygon fill="#FF0000" points="29.5,8.5 150.7,0 108.1,32.7 3.1,47 "/>
+              </svg></div>
+              <div class="shape cyan-fill jelly"><svg x="0px" y="0px"
+                                                      viewBox="0 0 108.1 47" enable-background="new 0 0 108.1 47">
+                <polygon fill="#00FFFF" points="0.3,17 125.1,0 68.8,45.6 24.3,39 "/>
+              </svg></div>
+            </div>
+          </a>
+
+        </div>
       </div>
-      <div class="acciones">
-        <ul>
-          <li>Inicio</li>
-          <li>Menu</li>
-          <li>Nosotros</li>
-          <li>Contactanos</li>
-          <li>Acceder</li>
-        </ul>
-      </div>
+    </header>
+
+
+  <section class="section">
+  <div class="contenedor-angled">
+    <video loop autoplay  width="100%" id="video-background">
+      <source src="assets/videos/landing-video.mp4" type="video/mp4">
+    </video>
+    <div class="texto-overlay">
+      <h1>Te damos la bienvenida a <span>La Burguesería.</span></h1>
+      <h2>Date un gusto con nuestros deliciosos productos!</h2>
     </div>
+  </div>
+  </section>
+  <section class="section" id="menu">
+    <header>
+      <h1 class="titulo-seccion">MENÚ</h1>
+    </header>
+  </section>
 
 
 
-  </header>
+  <div *ngIf="showScrollBox" class="scroll-box">
+    <!-- Aqui -->
+    <header class="custom-header">
+      <h1 class="custom-h1">Burguesería</h1>
+    </header>
+  </div>
+
+
 </section>

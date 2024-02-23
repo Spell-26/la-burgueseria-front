@@ -1,5 +1,13 @@
 .content{
   width: 100%;
+  height: 100vh;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+}
+.section {
+  scroll-snap-align: start;
+  height: 100vh; /* Ajusta la altura de las secciones según sea necesario */
+  position: relative;
 }
 
 .landing-header {
@@ -11,18 +19,23 @@
   justify-content: space-between; /* Ajusta el espacio entre los elementos */
   align-items: center; /* Centra verticalmente los elementos */
   padding-bottom: 1.5em;
+  z-index: 100;
+  background-color: black;
 }
 
 .landing-header::after {
   content: "";
   width: 100%;
-  height: 2px; /* Grosor del borde */
-  background-color: green; /* Color del borde */
+  height: 100%; /* Grosor del borde */
+  background-color: inherit; /* Color del borde */
+  border-bottom: 4px solid red;
   position: absolute;
+  top: 15%;
   bottom: 0;
   left: 0;
   transform: rotate(-2deg); /* Rotación para crear puntas recortadas */
   transform-origin: center bottom; /* Cambia el origen de la rotación al centro inferior */
+  z-index: -1;
 }
 
 .contenido-header {
@@ -30,6 +43,7 @@
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+
 }
 
 
@@ -50,4 +64,294 @@
   color: white;
   font-size: 1.2em;
   margin: 0 1.5em;
+}
+
+
+
+
+.navbar {
+  text-align: center;
+  margin: 0 auto;
+}
+.link-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 0px 16px;
+  cursor: pointer;
+
+  .fallback {
+    font-size: 1em;
+    letter-spacing: 4px;
+    line-height: 0;
+    opacity: 0;
+    position: relative;
+    top: 15px;
+    left: 0;
+  }
+  .shape-wrapper {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+  &:hover {
+    z-index: 9999;
+    .shape-wrapper {
+      transform: rotate(-6deg);
+      display: block;
+      .shape.cyan-fill {
+        transform: scale(3,.1);
+      }
+    }
+    .img-wrapper {
+      img {
+        animation: tiltBounce .15s ease;
+        animation-fill-mode: forwards;
+        display: block;
+        &.normal {
+          mix-blend-mode: darken;
+        }
+      }
+    }
+  }
+  &:nth-child(even) {
+    &:hover {
+      .shape-wrapper { transform: rotate(11deg) }
+      .img-wrapper img {
+        animation: tiltBounceAlt .15s ease;
+        animation-fill-mode: forwards;
+      }
+    }
+  }
+}
+
+.img-wrapper {
+  img {
+    width: auto;
+    height: 40px;
+    display: block;
+    left: 0;
+    right: 0;
+    top: -5px;
+    margin: 0 auto;
+    position: absolute;
+    z-index: 999;
+    &.normal {
+      display: block;
+    }
+    &.active {
+      display: none;
+      z-index: -1;
+    }
+  }
+}
+.shape-wrapper {
+  filter: sepia(50%) saturate(3);
+  .shape {
+    transition: all .1s linear;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 35px;
+    overflow: hidden;
+    svg {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    &.cyan-fill {
+      mix-blend-mode: screen;
+      animation-delay: 0.05s;
+      animation-duration: .4s;
+    }
+    &.red-fill {
+      animation-duration: .45s;
+      animation-delay: 0.08s;
+      opacity: .8;
+    }
+  }
+}
+
+
+.jelly {
+  -webkit-animation-name: jelly;
+  animation-name: jelly;
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+}
+
+@keyframes tiltBounce {
+  0% {
+    transform: scale(1) rotate(-7deg);
+  }
+  50% {
+    transform: scale(1.5) rotate(-7deg);
+  }
+  100% {
+    transform: scale(1.15) rotate(-7deg);
+  }
+}
+@keyframes tiltBounceAlt {
+  0% {
+    transform: scale(1) rotate(7deg);
+  }
+  50% {
+    transform: scale(1.5) rotate(7deg);
+  }
+  100% {
+    transform: scale(1.15) rotate(7deg);
+  }
+}
+@keyframes jelly {
+  0% {
+    width: 100%; transform: scale(1.25,1) skewX(20deg) translateY(3px) rotateX(40deg) rotateY(10deg) rotateZ(-10deg);
+  }
+  50% { width: 100%; transform: scale(1.25,1.1) skewX(-15deg) translateY(-2px) translateZ(-30px); }
+  100% { width: 100%; transform: scale(1.25,1) skewX(20deg) translateY(3px) rotateX(-40deg) rotateY(-10deg) rotateZ(-15deg); }
+}
+
+
+
+.contenedor-angled {
+  position: relative;
+  background: black;
+  display: inline-block;
+  color: black;
+  width: 100%;
+  margin-top: 2em;
+}
+
+.contenedor-angled::after {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  top: -3.5%;
+  left: 0;
+  height: 100%; /* Ajuste para que el angulo sobresalga */
+  width: 100%;
+  background-color: black;
+  transform: skewY(-2deg);
+  border-top: 4px solid red;
+}
+
+#video-background {
+  width: 100%;
+  height: 100%; /* Ajuste para que el video cubra el área del angulo */
+  object-fit: cover;
+  opacity: .5;
+  pointer-events: none; /* Evita que el video interfiera con los eventos del contenido */
+}
+.texto-overlay{
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 20%;
+  color: white;
+  width: 40%;
+}
+.texto-overlay h1{
+  font-size: 2.5em;
+}
+.texto-overlay h1, .texto-overlay h1 span {
+  color: white;
+  font-family: WorkSans-bold, serif;
+
+}
+.texto-overlay h1 span{
+  color: gold;
+}
+
+
+
+.scroll-box {
+  position: fixed;
+  bottom: 30px;
+  right: 50px;
+  width: 20%;
+  height: 20%;
+  background-color: rgba(0, 0, 0, 0);
+  text-align: center;
+  line-height: 50px;
+  font-size: 18px;
+  border-radius: 5px;
+  z-index: 10;
+  transition: opacity 0.3s ease; /* Transición para suavizar la aparición y desaparición */
+}
+
+
+/* Estilos personalizados para el encabezado */
+.custom-header {
+  transform: rotate(-15deg) scaleX(.1);
+  width: 160%;
+  margin-left: -20%;
+  transform-origin: center right;
+  background: #ff0;
+  max-height: 300px;
+  animation: expand .3s 1s forwards, squish .3s 3s forwards;
+}
+
+/* Estilos personalizados para el título */
+.custom-h1 {
+  font-family: Impact, sans-serif;
+  font-size: 10vh;
+  line-height: .78;
+  text-indent: 100%;
+  letter-spacing: -7px;
+  margin-top: 0;
+  margin-right: 4em;
+  color: #000;
+  animation: center 1.6s 1s forwards;
+}
+
+/* Animaciones */
+@keyframes expand {
+  to {
+    transform: rotate(-15deg) scaleX(1);
+  }
+}
+
+@keyframes center {
+  0% {
+    text-indent: inherit;
+  }
+  10% {
+    text-indent: 50%;
+  }
+  90% {
+    text-indent: 50%;
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes squish {
+  to {
+    max-height: 0px;
+  }
+}
+
+
+
+#menu{
+  background: #e8e7e7;
+
+}
+#menu header{
+  position: absolute;
+  top: 25%;
+  right: 0;
+  z-index: 2;
+}
+.titulo-seccion{
+  font-weight: bold;
+  font-size: 2.5em;
+  margin-right: 3em;
 }
