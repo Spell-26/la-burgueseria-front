@@ -8,6 +8,7 @@
           {{ producto.nombre }} ${{producto.precio}}
         </mat-option>
       </mat-select>
+      <mat-error *ngIf="form.get('producto')?.hasError('required')">Debes seleccionar un producto.</mat-error>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Cantidad</mat-label>

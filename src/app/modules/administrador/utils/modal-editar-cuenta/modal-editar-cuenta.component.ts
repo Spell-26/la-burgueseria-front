@@ -8,12 +8,12 @@ import {ProductosCuentaService} from "../../services/productos-cuenta.service";
 import {ModalAddProductoComponent} from "../modal-add-producto/modal-add-producto.component";
 import {AlertasService} from "../sharedMethods/alertas/alertas.service";
 import {CuentasService} from "../../services/cuentas.service";
+import {InsumoReservado, ValidarExistenciasService} from "../../components/cuentas/validar-existencias.service";
+import {InsumosService} from "../../services/insumos.service";
+import {Producto} from "../../interfaces";
 
 
-interface ProductoDeCuenta {
-  cantidad: number;
-  obj:      Obj;
-}
+
 
 interface Obj {
   categoriaProducto: CategoriaProducto;
@@ -40,7 +40,7 @@ export class ModalEditarCuentaComponent implements OnInit{
   empleadoData : EmpleadoCuenta | null = null;
   cuentaData : Cuenta | null = null
   cuentaProductosData : ProductoCuenta[]  = [];
-  cuentaProductosAgg : ProductoDeCuenta[] = [];
+  cuentaProductosAgg : ProductoCuenta[] = [];
   abonoData : number = 0;
   //TOTAL
   totalCuenta : number = 0;
@@ -69,7 +69,9 @@ export class ModalEditarCuentaComponent implements OnInit{
     public dialog : MatDialog,
     private cdr: ChangeDetectorRef,
     private alertaService : AlertasService,
-    private cuentaService : CuentasService
+    private cuentaService : CuentasService,
+    private validarExistencias : ValidarExistenciasService,
+    private insumoService : InsumosService
   ) {
 
     if(data){
@@ -103,8 +105,8 @@ export class ModalEditarCuentaComponent implements OnInit{
     }
   }
 
-  quitarProducto(producto: Obj): void {
-    this.cuentaProductosAgg = this.cuentaProductosAgg.filter(p => p.obj.id !== producto.id);
+  quitarProducto(producto: Producto): void {
+    this.cuentaProductosAgg = this.cuentaProductosAgg.filter(p => p.producto.id !== producto.id);
     this.calcularTotal();
     if(this.cuentaProductosAgg.length == 0){
       this.estadoSeleccionado = this.cuentaData?.estadoCuenta.id;
@@ -115,7 +117,7 @@ export class ModalEditarCuentaComponent implements OnInit{
     let total = 0;
     if(this.cuentaProductosAgg.length > 0){
       this.cuentaProductosAgg.forEach(producto => {
-        total += producto.cantidad * producto.obj.precio
+        total += producto.cantidad * producto.producto.precio
       });
     }
     if(this.cuentaProductosData.length > 0){
@@ -185,8 +187,24 @@ export class ModalEditarCuentaComponent implements OnInit{
 
     this.alertaService.alertaConfirmarEliminar()
       .then(
-        result => {
-          if(result.isConfirmed){
+        async result => {
+          if (result.isConfirmed) {
+            //obtener el producto cuenta
+            const productoCuentaResponse = await this.productoCuentaService.getProductoCuentaByCuentaId(this.data.cuenta.id).toPromise();
+            //filtro para obtener el producto que se desea borrar
+            const productosCuenta : ProductoCuenta[] = productoCuentaResponse.object.filter((productoCuenta : ProductoCuenta) => {
+              const estado = productoCuenta.estado;
+              const pcId = productoCuenta.id;
+              return estado === 'Por despachar' && pcId == id;
+            });
+            //validar existencias a reponer
+            const insumosReponer : InsumoReservado[] = await this.validarExistencias.validarInsumosAReponer(productosCuenta);
+            //asignar la nueva cantidad a cada insumo a reponer
+            for(let insumoR of insumosReponer){
+              insumoR.insumo.cantidad = insumoR.resultadoResta;
+              this.insumoService.actualizarInsumos(insumoR.insumo).subscribe();
+            }
+            //eliminar el producto de la cuenta
             this.productoCuentaService.eliminarProductoCuenta(id).subscribe(
               async () => {
                 this.calcularTotal();
@@ -196,7 +214,6 @@ export class ModalEditarCuentaComponent implements OnInit{
                 console.log(error)
               },
               () => {
-
               }
             );
           }
@@ -238,13 +255,15 @@ export class ModalEditarCuentaComponent implements OnInit{
     });
     dialogRef.afterClosed().subscribe(
       result =>{
-        console.log(result)
-        const object : ProductoDeCuenta = {
-          obj: result.producto,
-          cantidad: result.cantidad
+        const producto : ProductoCuenta = {
+          id : 0,
+          cuenta : this.data.cuenta,
+          producto: result.producto,
+          cantidad: result.cantidad,
+          estado: 'Por confirmar',
         }
 
-        this.cuentaProductosAgg.push(object);
+        this.cuentaProductosAgg.push(producto);
 
         this.calcularTotal();
         //cambia a estado 1 (por despachar)

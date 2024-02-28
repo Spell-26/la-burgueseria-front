@@ -1,12 +1,18 @@
 import { Injectable } from '@angular/core';
 import {ProductoCuenta} from "../../interfaces/productosCuenta";
-import {insumo, InsumoProducto} from "../../interfaces";
+import {insumo, InsumoProducto, InsumoProductoResponse} from "../../interfaces";
 import {InsumosPorProductoService} from "../../services/insumos-por-producto.service";
 
 interface InsumoDeducir {
   insumo: insumo;
   cantidadARestar: number;
   resultadoResta: number;
+}
+export interface InsumoReservado{
+  insumo: insumo;
+  cantidadARestar: number;
+  resultadoResta: number;
+  producto : string;
 }
 
 @Injectable({
@@ -15,6 +21,68 @@ interface InsumoDeducir {
 export class ValidarExistenciasService {
 
   constructor(private insumosPorProductoService : InsumosPorProductoService) { }
+
+  //valida las existencias de los productos y devuelve un objeto con la informacion de los insumos de cada producto
+  public async validarExistencias(productosCuenta : ProductoCuenta[]) {
+    let insumosReservados : InsumoReservado[] = [];
+    //Obtener los insumos de cada producto vinculado a la cuenta
+    for (const productoCuenta of productosCuenta) {
+      const producto = productoCuenta.producto;
+      const cantidadProducto :number = productoCuenta.cantidad; //cantidad de productos soliciado
+
+      try {
+        const ippResponse : InsumoProductoResponse = await this.insumosPorProductoService.getIppByProducto(producto.id).toPromise();
+
+        //recorrer el array de ipp obtenido y almacenar los insumos
+        for (const ipp of ippResponse.object) {
+          //crear una instancia de insumo reservado y añadir al array
+          const insumoReservado : InsumoReservado = {
+            insumo: ipp.insumo,
+            cantidadARestar: cantidadProducto * ipp.cantidad, //cantidad de productos en la carta * cantidad de insumos que necesita cada producto
+            resultadoResta : ipp.insumo.cantidad - (cantidadProducto * ipp.cantidad),
+            producto : ipp.producto.nombre
+          };
+          insumosReservados.push(insumoReservado);
+        }
+      } catch (error) {
+        console.error(error);
+        // Maneja el error según sea necesario
+      }
+    }
+
+    return insumosReservados;
+  }
+
+  //Evaluar cuantos insumos se deben de reponer
+  public async validarInsumosAReponer(productosCuenta : ProductoCuenta[]){
+    let insumosReponer : InsumoReservado[] = [];
+
+    //obtener los insumos de cada producto
+    for (const productoCuenta of productosCuenta) {
+      const producto = productoCuenta.producto;
+      const cantidadProducto = productoCuenta.cantidad;
+      try{
+        const ippResponse : InsumoProductoResponse = await this.insumosPorProductoService.getIppByProducto(producto.id).toPromise();
+        for(let ipp of ippResponse.object){
+          const insumoReservado : InsumoReservado = {
+            insumo: ipp.insumo,
+            cantidadARestar: cantidadProducto * ipp.cantidad, //cantidad de productos en la carta * cantidad de insumos que necesita cada producto
+            resultadoResta : ipp.insumo.cantidad + (cantidadProducto * ipp.cantidad),
+            producto : ipp.producto.nombre
+          };
+
+          //añadir a insumos a reponer
+          insumosReponer.push(insumoReservado);
+        }
+      }catch (error) {
+        console.error(error);
+        // Maneja el error según sea necesario
+      }
+    }
+    return insumosReponer;
+  }
+
+
 
   // Método para validar existencias de productos en base a los insumos disponibles
 // Método para validar existencias de productos en base a los insumos disponibles

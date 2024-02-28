@@ -8,7 +8,7 @@ import {CuentasService} from "../../services/cuentas.service";
 import {ProductosCuentaService} from "../../services/productos-cuenta.service";
 import {EmpleadoCuentaService} from "../../services/empleado-cuenta.service";
 import {ModalEditarCuentaComponent} from "../../utils/modal-editar-cuenta/modal-editar-cuenta.component";
-import {insumo, InsumoProducto, Producto} from "../../interfaces";
+import {InsumoProducto} from "../../interfaces";
 import {InsumosPorProductoService} from "../../services/insumos-por-producto.service";
 import {InsumosService} from "../../services/insumos.service";
 import {ModalIngresosComponent} from "../../utils/modal-ingresos/modal-ingresos.component";
@@ -21,9 +21,8 @@ import {FechaHoraService} from "../../utils/sharedMethods/fechasYHora/fecha-hora
 import {EMPTY, forkJoin, Observable, switchMap, tap} from "rxjs";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
-import {ValidarExistenciasService} from "./validar-existencias.service";
-
-
+import {InsumoReservado, ValidarExistenciasService} from "./validar-existencias.service";
+import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 
 
 @Component({
@@ -112,7 +111,8 @@ export class CuentasComponent implements OnInit{
               public fechaService : FechaHoraService,
               private loginService : LoginService,
               private router : Router,
-              private validarExistencias : ValidarExistenciasService) {
+              private validarExistencias : ValidarExistenciasService,
+              private localStorageService : LocalService) {
   }
 
 
@@ -203,12 +203,10 @@ export class CuentasComponent implements OnInit{
     await Promise.all(promises);
 
     //armar el objeto a devolver
-    const response = {
+    return {
       aDeducir: insumosADeducir,
       insuficientes: insumosInsuficientes
     };
-
-    return response;
   }
 
   public cuentasPorEstado(cuentasFecha : Cuenta[], estado : string): number {
@@ -279,99 +277,116 @@ export class CuentasComponent implements OnInit{
   //****************************
 
   public modalCrearCuenta() : void{
-    const dialogRef = this.dialog.open(ModalCuentasComponent,{
-      width: '450px', // Ajusta el ancho según tus necesidades
-      position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '600px',
-    });
+    //obtener valores del local storage para saber si el dia esta iniciado y esta en la fecha correspondiente
+    const estadoDia = JSON.parse(this.localStorageService.getData('estadoDia'));
+    const fechaCaja = this.localStorageService.getData('fecha');
+    const mensaje = "No se pueden crear cuentas sin haber iniciado el día."
+    if(estadoDia && estadoDia){
+      const fechaComparar = new Date(fechaCaja);
+      const fechaActual = new Date();
+      // Calcular la diferencia en milisegundos entre las fechas
+      const diferenciaMilisegundos = Math.abs(fechaActual.getTime() - fechaComparar.getTime());
+      // Convertir la diferencia de milisegundos a horas
+      const diferenciaHoras = diferenciaMilisegundos / (1000 * 60 * 60);
 
-    dialogRef.afterClosed().subscribe(
-      result =>{
-        if(result){
-          // crear instancias
-          //estado de la cuenta
-          //todas las cuentas se crean con estado ::por despachar::
-          const estadoCuenta : EstadoCuenta = {
-            id: 1,
-            nombre: "Por despachar"
-          }
-          //cuenta
-          const cuenta : Cuenta = {
-            id: 0,
-            mesa: result.mesa,
-            estadoCuenta: estadoCuenta,
-            fecha: null,
-            total: result.total,
-            abono: 0
-          }
-          //Estancia de empleado por cuenta
-          const empleadoCuenta : EmpleadoCuenta = {
-            id : 0,
-            cuenta: cuenta,
-            empleado: result.empleado
-          }
-          //creando las instancias de productos por cuenta
-          //estos se guardan un array para poder ser guardados secuancialmente
-          const productosCuenta : ProductoCuenta [] = [];
-          //recorrer el result y asignarlo al array de productoCuenta
-          for (let producto of result.productos){
-            //crear instancia de producto por cuenta
-            const productoXCuenta : ProductoCuenta = {
-              id: 0,
-              cuenta: cuenta,
-              producto: producto.obj,
-              cantidad: producto.cantidad,
-              estado: "Por despachar"
-            };
-            //una vez creado la instancia se añade al arreglo donde se contendrán
-            productosCuenta.push(productoXCuenta);
-          }
+      // Definir el rango de 16 horas
+      const rangoHoras = 16;
+      if(estadoDia && diferenciaHoras <= rangoHoras){
+        const dialogRef = this.dialog.open(ModalCuentasComponent,{
+          width: '450px', // Ajusta el ancho según tus necesidades
+          position: { right: '0' }, // Posiciona el modal a la derecha
+          height: '600px',
+        });
 
-          //ORDEN PARA LA CREACION DE UNA CUENTA
-          //1 crear cuenta
-          // 2 crear productos por cuenta
-          // 3 crear empleado cuenta
+        dialogRef.afterClosed().subscribe(
+          async result => {
+            if (result) {
+              // crear instancias
+              //estado de la cuenta
+              //todas las cuentas se crean con estado ::por despachar::
+              const estadoCuenta: EstadoCuenta = {
+                id: 1,
+                nombre: "Por despachar"
+              }
+              //cuenta
+              const cuenta: Cuenta = {
+                id: 0,
+                mesa: result.mesa,
+                estadoCuenta: estadoCuenta,
+                fecha: null,
+                total: result.total,
+                abono: 0
+              }
+              //Estancia de empleado por cuenta
+              const empleadoCuenta: EmpleadoCuenta = {
+                id: 0,
+                cuenta: cuenta,
+                empleado: result.empleado
+              }
+              //creando las instancias de productos por cuenta
+              //estos se guardan un array para poder ser guardados secuancialmente
+              const productosCuenta: ProductoCuenta [] = result.productos;
+              //recorrer el result y asignarlo al array de productoCuenta
+              for (let producto of productosCuenta) {
+                producto.cuenta = cuenta;
+              }
+              //se debe validar los insumos
+              const insumosReservados: InsumoReservado[] = await this.validarExistencias.validarExistencias(productosCuenta);
 
-          //CREAR CUENTA
-          this.cuentaService.crearCuenta(cuenta)
-            .subscribe(
-              data=> {
-                //asignarle a la cuenta el id de la cuenta que ha sido recien creada
-                cuenta.id = data.object.id;
-                //CREAR PRODUCTOS POR CUENTA
-                for (let pc of productosCuenta){
-                  this.productosCuentaService.crearProductoCuenta(pc)
-                    .subscribe(
-                      data=> {
-
-                      },
-                      error => {
-                        console.log(error)
-                      }
-                    );
-                };
-                //CREAR EMPLEADO X CUENTA
-                this.empleadoCuentaService.crearEmpleadoCuenta(empleadoCuenta)
+              //verificar si hay insumos insuficientes
+              const insuficientes = insumosReservados.some(insumoR => insumoR.resultadoResta < 0);
+              if(insuficientes){
+                let mensaje = `<h3>Insumos insuficientes</h3>`;
+                insumosReservados.forEach(insumoR => {
+                  if(insumoR.resultadoResta < 0){
+                    mensaje += `<h4>Producto: ${insumoR.producto}, Insumo: ${insumoR.insumo.nombre}, Existencias: ${insumoR.insumo.cantidad}, Cantidad a deducir: ${insumoR.cantidadARestar}</h4>`
+                  }
+                  this.alertaService.alertaErrorMensajeCustom(mensaje)
+                })
+              }else{ //si no hay problema con los insumos, crea la cuenta.
+                this.cuentaService.crearCuenta(cuenta)
                   .subscribe(
                     data=> {
+                      //asignarle a la cuenta el id de la cuenta que ha sido recien creada
+                      cuenta.id = data.object.id;
+                      //CREAR PRODUCTOS POR CUENTA
+                      for (let pc of productosCuenta){
+                        this.productosCuentaService.crearProductoCuenta(pc)
+                          .subscribe();
+                      }
+                      //CREAR EMPLEADO X CUENTA
+                      this.empleadoCuentaService.crearEmpleadoCuenta(empleadoCuenta)
+                        .subscribe();
 
+                      //DEDUCIR LOS INSUMOS
+                      if(insumosReservados){
+                        insumosReservados.forEach(insumoR => {
+                          insumoR.insumo.cantidad = insumoR.resultadoResta;
+                          this.insumoService.actualizarInsumos(insumoR.insumo).subscribe();
+                        })
+                      }
                     },
                     error => {
                       console.log(error)
+                    },
+                    () => {
+                      //una vez la solicitud se completa se muestra mensaje de creación exitosa
+                      this.alertaService.alertaConfirmarCreacion();
                     }
                   );
-              },
-              error => {
-                console.log(error)
               }
-            );
+            }
 
-          //alerta confirmación creación exitosa
-          this.alertaService.alertaConfirmarCreacion();
-        }
-
+          }
+        )
+      }else{
+        this.alertaService.alertaErrorMensajeCustom(mensaje)
       }
-    )
+    }else{
+      this.alertaService.alertaErrorMensajeCustom(mensaje)
+    }
+
+
   }
   //MODAL VER CUENTA Y/O EDITAR
   public verCuenta(cuentaDTO : Cuenta) {
@@ -464,40 +479,12 @@ export class CuentasComponent implements OnInit{
                 //seleccionar los productosCuenta que no han sido despachados ni estan en preparacion
                 productosCuenta.object.forEach(
                   (productoCuenta : ProductoCuenta) => {
-                    if (productoCuenta.estado != 'Despachado' && productoCuenta.estado != 'En preparación') {
+                    if (productoCuenta.estado === 'Por despachar') {
                       productosCuentaPendientes.push(productoCuenta);
                     }
                   }
                 );
 
-                //validar existencias de los insumos
-                const validarInsumos = await this.validarExistencias.validarExistenciasDeProductos(productosCuentaPendientes);
-
-                if (validarInsumos.insuficientes.length > 0) {
-                  //mostrar alerta insumos insuficientes
-                  const result = await this.alertaService.alertaInsumosNegativos(validarInsumos.insuficientes);
-
-                  if (result.isConfirmed) {
-                    //actualizar el estado de cada producto vinculado a la cuenta
-                    await Promise.all(productosCuentaPendientes.map(async (producto: ProductoCuenta) => {
-                      producto.estado = "En preparación";
-                      await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
-                    }));
-
-                    // Actualizar los insumos a deducir
-                    await Promise.all(validarInsumos.aDeducir.map(async (insumo) => {
-                      await this.insumoService.actualizarInsumos(insumo.insumo).toPromise();
-                    }));
-
-                    // Actualizar la cuenta
-                    await this.cuentaService.actualizarCuenta(cuenta).toPromise();
-
-                    //mostrar alerta actualizacion exitosa
-                    this.alertaService.alertaConfirmarCreacion();
-                  } else if (result.isDismissed) {
-                    this.alertaService.alertaSinModificaciones();
-                  }
-                } else {
                   // Mostrar alerta de confirmación para editar
                   const result = await this.alertaService.alertaPedirConfirmacionEditar();
 
@@ -508,11 +495,6 @@ export class CuentasComponent implements OnInit{
                       await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
                     }));
 
-                    // Actualizar los insumos procesados
-                    await Promise.all(validarInsumos.aDeducir.map(async (insumo) => {
-                      await this.insumoService.actualizarInsumos(insumo.insumo).toPromise();
-                    }));
-
                     // Actualizar la cuenta
                     await this.cuentaService.actualizarCuenta(cuenta).toPromise();
 
@@ -521,7 +503,7 @@ export class CuentasComponent implements OnInit{
                   } else if (result.dismiss === Swal.DismissReason.cancel) {
                     this.alertaService.alertaSinModificaciones();
                   }
-                }
+
               }
             } catch (error) {
               console.error("Error al procesar la cuenta:", error);
@@ -562,6 +544,57 @@ export class CuentasComponent implements OnInit{
             )
 
           }
+          //EN CASO DE QUE SE VAYA A CANCELAR LA CUENTA
+          else if(cuenta.estadoCuenta.id == 4){
+            try{
+              const titulo = "¿Deseas cancelar esta cuenta?";
+              const subtitulo ="Esta acción es irreversible."
+              const color = "#FF0000"
+              const alertaConfirmar  = await this.alertaService.alertaPedirConfirmacionMensajeCustom(titulo, subtitulo, color);
+
+              if(alertaConfirmar.isConfirmed){
+                //obtener todos los productos vinculados a la cuenta
+                let productosCuentaResponse  = await this.productosCuentaService.getProductoCuentaByCuentaId(cuenta.id).toPromise();
+                //depurar los que esten en estado cancelado, pagado, despachado, en preparacion
+                const productosCuenta : ProductoCuenta[] = productosCuentaResponse.object.filter((productoCuenta : ProductoCuenta) => {
+                  const estado = productoCuenta.estado
+                  return estado == 'Por despachar';
+                });
+                //calcular la cantidad de insumos que se deben reponer
+                const insumosReponer : InsumoReservado[] = await this.validarExistencias.validarInsumosAReponer(productosCuenta);
+
+                //actualizar cada insumo
+                insumosReponer.forEach(insumoR => {
+                  //asignar el resultado de la operación al total de la cantidad del insumo
+                  insumoR.insumo.cantidad = insumoR.resultadoResta;
+                  //guardar cada insumo
+                   this.insumoService.actualizarInsumos(insumoR.insumo).subscribe();
+                })
+                //actualizar el estado de cada productoCuenta
+                productosCuenta.forEach(pc => {
+                  pc.estado = "Cancelado";
+                  this.productosCuentaService.actualizarProductoCuenta(pc).subscribe();
+                })
+                //actualizar la cuenta
+                this.cuentaService.actualizarCuenta(cuenta).subscribe(
+                  ()=>{
+                  },
+                  error  => {
+                  },
+                  () => {
+                    this.alertaService.alertaEliminadoCorrectamente();
+                  }
+
+                );
+              }
+              else{
+                this.alertaService.alertaSinModificaciones();
+              }
+
+            }catch{
+
+            }
+          }
           //si no cumple con ninguno de los estados
           else {
             this.alertaService.alertaPedirConfirmacionEditar()
@@ -589,42 +622,55 @@ export class CuentasComponent implements OnInit{
             //el estado con id 1 es por despachar
             cuenta.estadoCuenta.id = 1
             //recorrer el result y asignarlo al array de productoCuenta
-            for (let producto of result.productos) {
-              //crear instancia de producto por cuenta
-              const productoXCuenta: ProductoCuenta = {
-                id: 0,
-                cuenta: cuenta,
-                producto: producto.obj,
-                cantidad: producto.cantidad,
-                estado: "Por despachar"
-              };
-              //una vez creado la instancia se añade al arreglo donde se contendrán
-              productosCuenta.push(productoXCuenta);
+            //creando las instancias de productos por cuenta
+            //estos se guardan un array para poder ser guardados secuancialmente
+            const productosCuenta: ProductoCuenta [] = result.productos;
+            //recorrer el result y asignarlo al array de productoCuenta
+
+            for (let producto of productosCuenta) {
+              producto.cuenta = cuenta;
             }
-            //guardar todos los neuvos productos
-            for (let pc of productosCuenta) {
-              this.productosCuentaService.crearProductoCuenta(pc)
+            //se debe validar los insumos
+            const insumosReservados: InsumoReservado[] = await this.validarExistencias.validarExistencias(productosCuenta);
+
+            //verificar si hay insumos insuficientes
+            const insuficientes = insumosReservados.some(insumoR => insumoR.resultadoResta < 0);
+            if(insuficientes){
+              let mensaje = `<h3>Insumos insuficientes</h3>`;
+              insumosReservados.forEach(insumoR => {
+                if(insumoR.resultadoResta < 0){
+                  mensaje += `<h4>Producto: ${insumoR.producto}, Insumo: ${insumoR.insumo.nombre}, Existencias: ${insumoR.insumo.cantidad}, Cantidad a deducir: ${insumoR.cantidadARestar}</h4>`
+                }
+                this.alertaService.alertaErrorMensajeCustom(mensaje)
+              })
+            }else{
+
+              //DEDUCIR LOS INSUMOS
+              if(insumosReservados){
+                insumosReservados.forEach(insumoR => {
+                  insumoR.insumo.cantidad = insumoR.resultadoResta;
+                  this.insumoService.actualizarInsumos(insumoR.insumo).subscribe();
+                })
+              }
+              //Crear los productos Cuenta
+              productosCuenta.forEach(productoCuenta => {
+                this.productosCuentaService.crearProductoCuenta(productoCuenta).subscribe();
+              })
+
+              //actualiza cuenta
+              this.cuentaService.actualizarCuenta(cuenta)
                 .subscribe(
-                  data => {
-                  },
+                  data => {},
                   error => {
                     console.log(error)
+                  },
+                  () => {
+                    this.alertaService.alertaConfirmarCreacion();
                   }
                 );
             }
-            ;
-            this.cuentaService.actualizarCuenta(cuenta)
-              .subscribe(
-                data => {
-
-                },
-                error => {
-                  console.log(error)
-                }
-              );
           }
         }
-
       }
     )
   }

@@ -125,35 +125,8 @@ export class DraggableCuentaComponent implements OnInit {
             const productosCuenta = await this.productosCuentaService.getProductoCuentaByCuentaId(this.cuenta.id).toPromise();
             this.cuenta  = this.fechaService.restar5Horas(this.cuenta);
             if (productosCuenta.object.length > 0) {
-              // Validar existencias de los productos
-              const validarInsumos = await this.validarExistencias.validarExistenciasDeProductos(productosCuenta.object);
 
-              if (validarInsumos.insuficientes.length > 0) {
-                //mostrar alerta insumos insuficientes
-                const result = await this.alertaService.alertaInsumosNegativos(validarInsumos.insuficientes);
 
-                if (result.isConfirmed) {
-                  //actualizar el estado de cada producto vinculado a la cuenta
-                  await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
-                    producto.estado = "En preparación";
-                    await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
-                  }));
-
-                  // Actualizar los insumos a deducir
-                  await Promise.all(validarInsumos.aDeducir.map(async (insumo) => {
-                    await this.insumoService.actualizarInsumos(insumo.insumo).toPromise();
-                  }));
-
-                  // Actualizar la cuenta
-                  await this.cuentaService.actualizarCuenta(this.cuenta).toPromise();
-
-                  //mostrar alerta actualizacion exitosa
-                  this.alertaService.alertaConfirmarCreacion();
-                } else if (result.isDismissed) {
-                  this.alertaService.alertaSinModificaciones();
-                }
-              }
-              else {
                 // Mostrar alerta de confirmación para editar
                 const result = await this.alertaService.alertaPedirConfirmacionEditar();
 
@@ -164,11 +137,6 @@ export class DraggableCuentaComponent implements OnInit {
                     await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
                   }));
 
-                  // Actualizar los insumos procesados
-                  await Promise.all(validarInsumos.aDeducir.map(async (insumo) => {
-                    await this.insumoService.actualizarInsumos(insumo.insumo).toPromise();
-                  }));
-
                   // Actualizar la cuenta
                   await this.cuentaService.actualizarCuenta(this.cuenta).toPromise();
 
@@ -177,8 +145,6 @@ export class DraggableCuentaComponent implements OnInit {
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                   this.alertaService.alertaSinModificaciones();
                 }
-
-              }
             }
           } catch (error) {
             console.error("Error al procesar la cuenta:", error);

@@ -9,7 +9,7 @@ export interface ProductoCuentaResponse {
 
 export interface ProductoCuenta {
   id:       number;
-  cuenta:   Cuenta;
+  cuenta:   Cuenta | null;
   producto: Producto;
   cantidad: number;
   estado:    string;

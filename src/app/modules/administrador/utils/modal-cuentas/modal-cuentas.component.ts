@@ -6,6 +6,7 @@ import {MesasService} from "../../services/mesas.service";
 import {Empleado} from "../../interfaces/empleado";
 import {Mesa, Producto} from "../../interfaces";
 import {ModalAddProductoComponent} from "../modal-add-producto/modal-add-producto.component";
+import {ProductoCuenta} from "../../interfaces/productosCuenta";
 
 
 interface ProductoDeCuenta {
@@ -42,7 +43,7 @@ export class ModalCuentasComponent implements OnInit{
   empleadosActivos : Empleado[] = [];
   mesasDisponibles : Mesa[] = [];
   //productos seleccionados
-  productosCuenta : ProductoDeCuenta[] = [];
+  productosCuenta : ProductoCuenta[] = [];
   //total de la cuenta
   totalCuenta = 0;
   //mesa y empleado seleccionado
@@ -83,8 +84,8 @@ export class ModalCuentasComponent implements OnInit{
     this.mesaSeleccionada = this.mesasDisponibles.find(mesa => mesa.id === mesaSelect.id);
   }
 
-  quitarProducto(producto: Obj): void {
-    this.productosCuenta = this.productosCuenta.filter(p => p.obj.id !== producto.id);
+  quitarProducto(producto: Producto): void {
+    this.productosCuenta = this.productosCuenta.filter(p => p.producto.id !== producto.id);
     this.calcularTotal();
   }
 
@@ -92,7 +93,7 @@ export class ModalCuentasComponent implements OnInit{
   private calcularTotal(){
     let total = 0;
     this.productosCuenta.forEach(producto => {
-      total += producto.cantidad * producto.obj.precio
+      total += producto.cantidad * producto.producto.precio
     });
     this.totalCuenta = total;
   }
@@ -172,12 +173,15 @@ export class ModalCuentasComponent implements OnInit{
     dialogRef.afterClosed().subscribe(
       result =>{
         if(result){
-          const object : ProductoDeCuenta = {
-            obj: result.producto,
-            cantidad: result.cantidad
+          const productoCuenta : ProductoCuenta = {
+            id: 0,
+            producto: result.producto,
+            cantidad: result.cantidad,
+            estado: "Por despachar",
+            cuenta: null
           }
 
-          this.productosCuenta.push(object);
+          this.productosCuenta.push(productoCuenta);
 
           this.calcularTotal();
         }
