@@ -1,0 +1,235 @@
+h2{
+  width: 100%;
+  text-align: center;
+}
+/* nombre-del-componente.component.css */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.48); /* Fondo semi-transparente */
+}
+
+form {
+  width: 100%;
+  max-width: 400px; /* Ajusta según tu preferencia */
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px; /* Ajusta según tu preferencia */
+}
+
+mat-dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px; /* Ajusta según tu preferencia */
+}
+
+
+#productos-list{
+  width: 100%;
+  max-height: 20vh;
+  overflow-y: scroll;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  padding: .2em;
+}
+.fila {
+  border-bottom: 1px solid #fff8f8;
+}
+table, th, td{
+  border: 1px solid #646464;
+  border-collapse: collapse;
+}
+th,td {
+  font-size: .7em;
+  text-align: center;
+  padding: 8px;
+}
+
+#total{
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: .5em;
+}
+
+#btn-black{
+  width: 100%;
+  text-align: center;
+}
+
+#btn-black button{
+  border: 1px solid #3C3B3B;
+  background-color: rgba(40, 40, 40, 0.48);
+  padding: .5em;
+  color: white;
+  font-family: WorkSans-Medium, serif;
+  font-size: 1em;
+  cursor: pointer;
+}
+#btn-black button:hover{
+  border: 1px solid green;
+}
+
+.btn-eliminar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+}
+.btn-eliminar-element:hover{
+  border: 1px solid red;
+  color: red;
+  cursor: pointer;
+}
+.btn-actualizar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+  margin: 0 1em;
+  cursor: pointer;
+}
+.btn-actualizar-element:hover{
+  border: 1px solid #EBB80D;
+}
+
+/* Establece el color blanco por defecto */
+svg {
+  fill: #fff;
+  transition: fill 0.3s ease; /* Agrega una transición suave para el cambio de color */
+  cursor: pointer;
+}
+
+/* Cambia el color a rojo al hacer hover */
+svg:hover {
+  fill: #ff0000; /* Cambia a tu color rojo deseado */
+}
+
+.boton-solito{
+  width: 30%;
+  margin: 0 auto 1.2em auto;
+}
+
+/*Mensaje del fileError*/
+.error-message{
+  color: red;
+  font-family: WorkSans-Light, serif;
+}
+/*Imagen mostrada*/
+.selected-image{
+  width: 100%;
+  text-align: center;
+  margin-bottom: .6em;
+  cursor: pointer;
+}
+.selected-image img {
+  width: 80%;
+  max-height: 15em;
+  object-fit: fill;
+  border-radius: 1em;
+}
+
+.img-selector{
+  text-align: center;
+  margin-top: 2.3em;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: 0 auto;
+}
+.img-selector input{
+  display: none;
+}
+.img-selector label{
+  width: 100%;
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+  cursor: pointer;
+}
+.img-selector label:hover{
+  color: green;
+  cursor: pointer;
+}
+
+.contenedor-insumos-agregar{
+  border: 1px solid #515151;
+  padding: .4em;
+  border-radius: 12px;
+}
+
+.header-insumos-agregar{
+  padding: .5em;
+  position: relative;
+  width: 100%;
+}
+.add-insumo{
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #2bc860;
+  border-radius: 100%;
+  cursor: pointer;
+}
+.add-insumo:hover{
+  background-color: #1e9245;
+}
+.agregar-insumo{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.form-agregar-insumo{
+  width: 85%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-top: 2em;
+  justify-content: space-evenly;
+}
+.form-agregar-insumo mat-form-field{
+  width: 40%;
+}
+.agregar{
+
+  cursor: pointer;
+  width: 10%;
+}
+.agregar img{
+  background-color: #2bc860;
+  border-radius: 100%;
+  padding: .5em;
+}
+.agregar img:hover{
+  background-color: #1e9245;
+}
+
+.staggin-area-insumos{
+  border: 1px solid #515151;
+  padding: .4em;
+  border-radius: 12px;
+  width: 100%;
+  margin-top: 1em;
+}
+.staggin-vacio h2{
+  width: 100%;
+  text-align: center;
+}
+.staggin-vacio p{
+  width: 80%;
+  margin: 0 auto;
+}

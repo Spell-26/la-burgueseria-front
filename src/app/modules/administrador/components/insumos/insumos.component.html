@@ -1,4 +1,10 @@
 <div class="container-section">
+  <div class="btn-black">
+    <button (click)="modalAddInsumo()">
+      <img src="assets/icons/new.svg" alt="">
+      <span>Nuevo test</span>
+    </button>
+  </div>
   <ng-container *ngIf="!isLoading; else cargando">
     <header class ="header-module">
       <h1>
@@ -16,6 +22,7 @@
           <span>Nuevo insumo</span>
         </button>
       </div>
+
     </div>
     <!-- Sección tabla de contenido -->
     <section class="component-main-content">

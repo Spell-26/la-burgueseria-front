@@ -9,6 +9,7 @@ import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 import {FormControl, Validators} from "@angular/forms";
+import {ModalAgregarInsumoComponent} from "../../utils/modal-agregar-insumo/modal-agregar-insumo.component";
 
 
 @Component({
@@ -93,6 +94,15 @@ export class InsumosComponent implements OnInit{
     });
   }
 
+  //añadir insumos
+  modalAddInsumo(){
+    const dialogRef = this.dialog.open(ModalAgregarInsumoComponent,{
+      width: '80vh', // Ajusta el ancho según tus necesidades
+      position: { right: '2%' }, // Posiciona el modal a la derecha
+      height: '95vh',
+
+    })
+  }
   /*
   * fin metodos modal
   * */

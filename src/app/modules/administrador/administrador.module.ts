@@ -48,6 +48,8 @@ import { SkeletonPartialComponent } from './utils/skeleton-loading/skeleton-part
 import { SkeletonModalComponent } from './utils/skeleton-loading/skeleton-modal/skeleton-modal.component';
 import { SkeletonMenuCuentaComponent } from './utils/skeleton-loading/skeleton-menu-cuenta/skeleton-menu-cuenta.component';
 import { SkeletonMenuCuentaResponsiveComponent } from './utils/skeleton-loading/skeleton-menu-cuenta-responsive/skeleton-menu-cuenta-responsive.component';
+import { ModalAgregarInsumoComponent } from './utils/modal-agregar-insumo/modal-agregar-insumo.component';
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 
 @NgModule({
@@ -82,6 +84,7 @@ import { SkeletonMenuCuentaResponsiveComponent } from './utils/skeleton-loading/
     SkeletonModalComponent,
     SkeletonMenuCuentaComponent,
     SkeletonMenuCuentaResponsiveComponent,
+    ModalAgregarInsumoComponent,
 
   ],
     imports: [
@@ -104,7 +107,8 @@ import { SkeletonMenuCuentaResponsiveComponent } from './utils/skeleton-loading/
         MatTabsModule,
         MatButtonModule,
         MatSlideToggleModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatAutocompleteModule
     ]
 })
 export class AdministradorModule { }

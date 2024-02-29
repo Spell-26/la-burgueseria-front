@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>Ingresar insumos</h2>
+<mat-dialog-content>
+  <section class="contenedor-insumos-agregar">
+    <header class="header-insumos-agregar">
+      <div class="add-insumo"
+           matTooltip="Agregar insumo">
+        <img src="assets/icons/plus.svg" alt="">
+      </div>
+      <h2>Añadir existencias de insumos</h2>
+    </header>
+    <ng-container>
+      <div class="agregar-insumo">
+        <form class="form-agregar-insumo">
+          <mat-form-field>
+            <mat-label>Nombre</mat-label>
+            <input matInput placeholder="Insumo" [formControl]="nombreControl" [matAutocomplete]="nombreInsumo">
+            <mat-error *ngIf="form.get('nombre')?.hasError('pattern')" >Nombre del insumo no válido</mat-error>
+            <mat-autocomplete #nombreInsumo="matAutocomplete">
+              <mat-option *ngFor="let insumo of filteredOptions | async" [value]="insumo">
+                {{insumo}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Cantidad</mat-label>
+            <input matInput type="number">
+          </mat-form-field>
+        </form>
+        <div class="agregar"
+             >
+          <img src="assets/icons/check.svg" alt="">
+        </div>
+      </div>
+    </ng-container>
+  </section>
+  <section class="staggin-area-insumos">
+    <ng-container>
+      <div class="staggin-vacio">
+        <h2>Aún no hay insumos pendientes por guardar</h2>
+        <p>Puedes agregar uno más en el botón con el icono "+"</p>
+      </div>
+    </ng-container>
+  </section>
+
+</mat-dialog-content>
