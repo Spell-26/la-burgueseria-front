@@ -39,8 +39,8 @@
   font-size: 0.7em;
 }
 #opciones-menu{
-  margin: 1em;
-  padding: 1em;
+  margin: 1em 0;
+  padding: 1em .2em;
   color: white;
   font-family: WorkSans-Medium, serif;
   overflow-y: scroll;
@@ -49,6 +49,8 @@
 }
 .lista-item{
   margin: 1.5em 0 3em 0;
+  display: flex;
+
 }.accion-lista{
    cursor: pointer;
    padding: 1em 1em 1em 0.5em;

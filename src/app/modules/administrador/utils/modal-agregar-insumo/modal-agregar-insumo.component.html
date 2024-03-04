@@ -1,20 +1,29 @@
-<h2 mat-dialog-title>Ingresar insumos</h2>
+<h2 mat-dialog-title class="titulo-modal">Ingresar insumos</h2>
 <mat-dialog-content>
-  <section class="contenedor-insumos-agregar">
+  <ng-container *ngIf="!isLoading; else cargando">
+
+
+    <section class="contenedor-insumos-agregar" [ngClass]="{'contenedor-insumos-agregar' : isAgregandoInsumo, 'contenedor-insumos-agregar-small' : !isAgregandoInsumo}" >
     <header class="header-insumos-agregar">
-      <div class="add-insumo"
-           matTooltip="Agregar insumo">
-        <img src="assets/icons/plus.svg" alt="">
+      <div
+           matTooltip="Agregar insumo"
+      (click)="changeIsAgregandoInsumo()"
+      [ngClass]="{'add-insumo' : !isAgregandoInsumo, 'quitar-insumo': isAgregandoInsumo}">
+        <img src="assets/icons/plus.svg" alt="" *ngIf="!isAgregandoInsumo">
+        <img src="assets/icons/minus2.svg" alt="" *ngIf="isAgregandoInsumo">
       </div>
-      <h2>Añadir existencias de insumos</h2>
     </header>
-    <ng-container>
+    <ng-container *ngIf="isAgregandoInsumo">
+      <h2>Añadir existencias de insumos</h2>
       <div class="agregar-insumo">
         <form class="form-agregar-insumo">
           <mat-form-field>
             <mat-label>Nombre</mat-label>
             <input matInput placeholder="Insumo" [formControl]="nombreControl" [matAutocomplete]="nombreInsumo">
-            <mat-error *ngIf="form.get('nombre')?.hasError('pattern')" >Nombre del insumo no válido</mat-error>
+            <mat-error *ngIf="nombreControl.errors?.['required']">El nombre es requerido.</mat-error>
+            <mat-error *ngIf="nombreControl.errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</mat-error>
+            <mat-error *ngIf="nombreControl.errors?.['maxlength']">El nombre debe tener máximo 40 caracteres.</mat-error>
+            <mat-error *ngIf="nombreControl.errors?.['pattern']">Nombre inválido.</mat-error>
             <mat-autocomplete #nombreInsumo="matAutocomplete">
               <mat-option *ngFor="let insumo of filteredOptions | async" [value]="insumo">
                 {{insumo}}
@@ -23,23 +32,106 @@
           </mat-form-field>
           <mat-form-field>
             <mat-label>Cantidad</mat-label>
-            <input matInput type="number">
+            <input matInput type="number" [formControl]="cantidadControl">
+            <mat-error *ngIf="cantidadControl.errors?.['required']">La cantidad es requerida</mat-error>
+            <mat-error *ngIf="cantidadControl.errors?.['pattern']">La cantidad debe ser un valor numérico entero</mat-error>
+            <mat-error *ngIf="cantidadControl.errors?.['min']">La cantidad debe ser mayor a 0</mat-error>
+            <mat-error></mat-error>
           </mat-form-field>
         </form>
         <div class="agregar"
+             (click)="agregarAlStagging()"
+             matTooltip="Agregar"
              >
           <img src="assets/icons/check.svg" alt="">
         </div>
       </div>
+      <mat-error *ngIf="errorAgregarInsumo">Por favor completa todos los campos del insumo.</mat-error>
     </ng-container>
   </section>
-  <section class="staggin-area-insumos">
-    <ng-container>
+    <section class="staggin-area-insumos">
+    <ng-container *ngIf="insumosAGuardar.length == 0; else staggin">
       <div class="staggin-vacio">
         <h2>Aún no hay insumos pendientes por guardar</h2>
         <p>Puedes agregar uno más en el botón con el icono "+"</p>
       </div>
     </ng-container>
   </section>
+    <ng-container  *ngIf="insumosAGuardar.length > 0">
+    <section class="detalles-compra-insumos">
+      <h2>Detalles de la compra de insumos</h2>
+      <div  class="datos-egreso">
+        <form autocomplete="off">
+          <mat-form-field>
+            <mat-label>Total compra de insumos</mat-label>
+            <input matInput placeholder="$0" [formControl]="totalCompraControl" autocomplete="off">
+            <mat-error *ngIf="totalCompraControl.errors?.['required']">El total es requerido</mat-error>
+            <mat-error *ngIf="totalCompraControl.errors?.['pattern']">El total debe ser un valor numérico entero</mat-error>
+            <mat-error *ngIf="totalCompraControl.errors?.['min']">El total debe ser mayor a 0</mat-error>
+          </mat-form-field>
 
+          <mat-form-field>
+            <mat-label>
+              Origen de los fondos
+            </mat-label>
+            <mat-select [formControl]="origenControl">
+              <mat-option *ngFor="let origen of origenDeduccion" [value]="origen">
+                {{origen}}
+              </mat-option>
+            </mat-select>
+          <mat-error *ngIf="origenControl.errors?.['required']">Se debe seleccionar el origen de los fondos</mat-error>
+          </mat-form-field>
+
+          <div class="img-selector">
+            <label class="file-upload-button" for="file-upload">Soporte la compra de insumos</label>
+            <input type="file" accept="image/*" (change)="onFileChange($event)" id="file-upload">
+            <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
+            <div class="error-message" *ngIf="fileError">{{ fileError }}</div>
+          </div>
+
+          <div *ngIf="selectedImage" class="selected-image" data-toggle="tooltip" data-placement="top" title="Ver soporte">
+            <img [src]="selectedImage" alt="Imagen seleccionada" (error)="onImageError()">
+          </div>
+        </form>
+
+
+
+      </div>
+
+    </section>
+  </ng-container>
+  </ng-container>
 </mat-dialog-content>
+<mat-dialog-actions >
+  <button mat-button (click)="onSubmit()" class="btn-actualizar-element">Guardar</button>
+  <button mat-button (click)="onNoClick()" class="btn-eliminar-element">Cancelar</button>
+</mat-dialog-actions>
+<ng-template #staggin>
+  <h2>Insumos a guardar</h2>
+  <div class="staggin">
+    <table>
+      <thead>
+        <tr>
+          <th>Insumo</th>
+          <th>Cantidad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let insumo of insumosAGuardar; let i = index">
+        <td>{{insumo.nombre}}</td>
+        <td>{{insumo.cantidad}}</td>
+        <td>
+          <img class="quitarInsumo" src="assets/icons/minus2.svg" alt=""
+          matTooltip="Quitar insumo"
+          (click)="quitarInsumo(i)">
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #cargando>
+  <app-skeleton-modal></app-skeleton-modal>
+</ng-template>

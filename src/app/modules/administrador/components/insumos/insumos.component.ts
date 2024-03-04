@@ -74,32 +74,14 @@ export class InsumosComponent implements OnInit{
   *
   * metodos modal
   * */
-  //abrir modal vinculado a este componente
-  openDialog(): void {
-    const dialogRef = this.dialog.open(ModalInsumosComponent, {
-      width: '400px', // Ajusta el ancho según tus necesidades
-      position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '450px'
-    });
-    //cerrar modal y realizar una acción, en este caso crear un insumo
-    dialogRef.afterClosed().subscribe(result => {
-      if(result){
-        const insumo : insumo = {
-          id: 0,
-          nombre: result.nombre,
-          cantidad: result.cantidad
-        };
-        this.nuevoInsumo(insumo);
-      }
-    });
-  }
+
 
   //añadir insumos
   modalAddInsumo(){
     const dialogRef = this.dialog.open(ModalAgregarInsumoComponent,{
       width: '80vh', // Ajusta el ancho según tus necesidades
-      position: { right: '2%' }, // Posiciona el modal a la derecha
-      height: '95vh',
+      position: { right: '0' }, // Posiciona el modal a la derecha
+      height: '90vh',
 
     })
   }

@@ -2,6 +2,9 @@ h2{
   width: 100%;
   text-align: center;
 }
+.titulo-modal{
+  font-size: 2em
+}
 /* nombre-del-componente.component.css */
 :host {
   display: flex;
@@ -184,6 +187,17 @@ svg:hover {
 .add-insumo:hover{
   background-color: #1e9245;
 }
+.quitar-insumo{
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #686868;
+  border-radius: 100%;
+  cursor: pointer;
+}
+.quitar-insumo:hover{
+  background-color: #565656;
+}
 .agregar-insumo{
   width: 100%;
   display: flex;
@@ -225,11 +239,51 @@ svg:hover {
   width: 100%;
   margin-top: 1em;
 }
+.staggin-vacio{
+  margin: 5em 1em;
+}
 .staggin-vacio h2{
   width: 100%;
   text-align: center;
+
 }
 .staggin-vacio p{
   width: 80%;
   margin: 0 auto;
+}
+.contenedor-insumos-agregar-small{
+  border: none;
+  margin-bottom: 2em;
+}
+.staggin{
+  margin: 1em;
+}
+.staggin table{
+  width: 100%;
+}
+.quitarInsumo{
+  background-color: #616060;
+  border-radius: 100%;
+  padding: .2em;
+  cursor: pointer;
+}
+
+.detalles-compra-insumos{
+  border: 1px solid #515151;
+  padding: .4em;
+  border-radius: 12px;
+  width: 100%;
+  margin-top: 1em;
+}
+.datos-egreso{
+  width: 100%;
+}
+.datos-egreso form {
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+.datos-egreso form mat-form-field{
+
 }

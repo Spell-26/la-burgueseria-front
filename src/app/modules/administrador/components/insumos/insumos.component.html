@@ -1,10 +1,4 @@
 <div class="container-section">
-  <div class="btn-black">
-    <button (click)="modalAddInsumo()">
-      <img src="assets/icons/new.svg" alt="">
-      <span>Nuevo test</span>
-    </button>
-  </div>
   <ng-container *ngIf="!isLoading; else cargando">
     <header class ="header-module">
       <h1>
@@ -17,7 +11,7 @@
         <input type="text" placeholder="Buscar insumo..." [(ngModel)]="nombreBusqueda" (keyup)="buscarInsumos()">
       </div>
       <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nuevo insumo">
-        <button (click)="openDialog()">
+        <button (click)="modalAddInsumo()">
           <img src="assets/icons/new.svg" alt="">
           <span>Nuevo insumo</span>
         </button>
@@ -55,16 +49,8 @@
             </mat-form-field>
 
           </td>
-          <td class="row-contenido-element, editable" *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)" (click)="iniciarEdicion(i)">
+          <td class="row-contenido-element, editable" (click)="iniciarEdicion(i)">
             {{insumo.cantidad}}
-          </td>
-          <td class="row-contenido-element" *ngIf="modoEdicion && i === insumoEditandoIndex">
-            <mat-form-field appearance="outline">
-              <mat-label>Existencias: {{insumo.cantidad}}</mat-label>
-              <input matInput placeholder="Cantidad del insumo" [formControl]="cantidadEditada">
-              <mat-error *ngIf="cantidadEditada.hasError('required')">La cantidad del insumo es obligatoria</mat-error>
-              <mat-error *ngIf="cantidadEditada.hasError('pattern')">Solo se admiten números positivos.</mat-error>
-            </mat-form-field>
           </td>
           <td class="row-contenido-element">
             <button class="btn-actualizar-element"
