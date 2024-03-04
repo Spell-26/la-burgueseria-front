@@ -9,7 +9,9 @@
   height: 100vh; /* Ajusta la altura de las secciones según sea necesario */
   position: relative;
 }
-
+.footer{
+  padding-top: 30vh;
+}
 .landing-header {
   width: 100%;
   position: fixed;

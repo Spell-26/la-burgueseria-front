@@ -8,19 +8,21 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {JwtInterceptorService} from "./modules/home/services/auth/jwt-interceptor.service";
 import {ErrorInterceptorService} from "./modules/home/services/auth/error-interceptor.service";
+import {FooterComponent} from "./modules/administrador/utils/footer/footer.component";
 
 
 @NgModule({
   declarations: [
     AppComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    NgbModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        NgbModule,
+        FooterComponent,
+    ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass : JwtInterceptorService, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptorService, multi: true}

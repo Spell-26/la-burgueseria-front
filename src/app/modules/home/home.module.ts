@@ -7,6 +7,7 @@ import {MatInputModule} from "@angular/material/input";
 import {MatIconModule} from "@angular/material/icon";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
+import {FooterComponent} from "../administrador/utils/footer/footer.component";
 
 
 
@@ -15,13 +16,14 @@ import {MatButtonModule} from "@angular/material/button";
     HomeComponent,
     LoginComponent
   ],
-  imports: [
-    CommonModule,
-    HomeRoutingModule,
-    MatInputModule,
-    MatIconModule,
-    ReactiveFormsModule,
-    MatButtonModule
-  ]
+    imports: [
+        CommonModule,
+        HomeRoutingModule,
+        MatInputModule,
+        MatIconModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        FooterComponent
+    ]
 })
 export class HomeModule { }

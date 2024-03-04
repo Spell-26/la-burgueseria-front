@@ -1,5 +1,64 @@
-#footer{
 
+#footer{
+  margin-top: 2em;
   border-top: 4px solid #EBB80D;
+  border-radius: .5em;
   color: #fff;
+
+}
+.footer{
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 1.5em;
+  justify-content: space-between;
+}
+#logo{
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  padding-left: 1em;
+}
+#logo img{
+  width: 70%;
+  opacity: .7;
+}
+#logo span{
+  font-size: 1.2em;
+  color: #4f4f4f;
+}
+#contacto{
+  font-size: 1.8em;
+  margin-bottom: .5em;
+}
+.hipervinculo{
+  margin: 0 .5em;
+}
+.hipervinculo-group{
+  margin-bottom: 1em;
+}
+.redes, .horarios{
+  width: 30%;
+  margin-top: 3em;
+}
+.redes{
+  margin-left:3em;
+  margin-right: 3em;
+}
+.horarios h3{
+  font-size: 1.8em;
+}
+.horarios ul li{
+  margin-bottom: .5em;
+  font-size: 1.2em;
+}
+#nosotros{
+  margin-top: 2em;
+}
+#nosotros h3{
+  font-size: 1.8em;
+}
+#nosotros p{
+  text-align: left;
 }
