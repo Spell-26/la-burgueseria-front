@@ -185,8 +185,16 @@ export class ProductosComponent  implements OnInit {
 
              result.imagen = file;
            }
-
-           this.productosService.actualizarProducto(result)
+           const producto : Producto = {
+             id : result.id,
+             nombre: result.nombre,
+             precio: result.precio,
+             imagen: result.imagen,
+             descripcion: result.descripcion,
+             categoriaProducto: result.categoriaProducto,
+             imagenUrl: null,
+           }
+           this.productosService.actualizarProducto(producto, producto.imagen)
              .subscribe(
                updatedResult => {
                  // Lógica después de actualizar el producto

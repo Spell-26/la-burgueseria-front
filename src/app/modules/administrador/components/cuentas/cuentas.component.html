@@ -1,6 +1,6 @@
 <div class="container-section">
   <header class="header-module">
-    <h1>Cuentas</h1>
+    <h1>Pedidos</h1>
   </header>
   <div class="actions-container">
 
@@ -13,18 +13,18 @@
       <mat-form-field>
         <mat-label>Filtro</mat-label>
         <mat-select [(value)] = "filtrarEstado">
-          <mat-option value="">Todas las cuentas</mat-option>
-          <mat-option value="Por despachar">Cuentas por despachar</mat-option>
-          <mat-option value="Despachada">Cuentas despachadas</mat-option>
-          <mat-option value="Pagada">Cuentas pagadas</mat-option>
-          <mat-option value="Cancelada">Cuentas canceladas</mat-option>
+          <mat-option value="">Todos los pedidos</mat-option>
+          <mat-option value="Por despachar">Pedidos por despachar</mat-option>
+          <mat-option value="Despachada">Pedidos despachados</mat-option>
+          <mat-option value="Pagada">Pedidos pagados</mat-option>
+          <mat-option value="Cancelada">Pedidos cancelados</mat-option>
         </mat-select>
       </mat-form-field>
 
       <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nueva cuenta">
         <button (click)="modalCrearCuenta()"> <!-- (click) ="crearMesaModal()" -->
           <img src="assets/icons/new.svg" alt="">
-          <span>Nueva cuenta</span>
+          <span>Nuevo pedido</span>
         </button>
       </div>
     </div>

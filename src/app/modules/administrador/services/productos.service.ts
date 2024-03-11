@@ -60,19 +60,22 @@ export class ProductosService {
     return new Blob([imagen], { type: imagen.type });
   }
   //actualizar producto
-  actualizarProducto(producto: Producto): Observable<any>{
+  actualizarProducto(producto: Producto, img : any): Observable<any>{
 
-    const formData : FormData = new FormData();
+    const params = new HttpParams()
+      .set('id', producto.id)
+      .set('nombre', producto.nombre)
+      .set('precio', producto.precio.toString())
+      .set('descripcion', producto.descripcion)
+      .set('categoria', producto.categoriaProducto?.id.toString())
 
-    formData.append('id', producto.id.toString())
-    formData.append('nombre', producto.nombre.toString());
-    formData.append('precio' , producto.precio.toString());
-    formData.append('imagen', producto.imagen);
-    formData.append('desc', producto.descripcion);
-    formData.append('categoria', producto.categoriaProducto?.id.toString());
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/octet-stream' // Establece el tipo de contenido como binario
+    });
 
+    const imagenBlob = this.convertirImagenABlob(img);
 
-    return this.http.put(`${this.apiUrl}/${producto.id}`, formData)
+    return this.http.put(this.apiUrl, imagenBlob, {params, headers})
       .pipe(
         tap(
           () => {

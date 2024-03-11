@@ -12,5 +12,6 @@ export interface ProductoCuenta {
   cuenta:   Cuenta | null;
   producto: Producto;
   cantidad: number;
+  valorProducto : number;
   estado:    string;
 }

@@ -13,12 +13,12 @@
     <!-- Campos para finalizar el dia -->
     <ng-container *ngIf="!isIniciarDia">
       <mat-form-field>
-        <mat-label>Total calculado</mat-label>
+        <mat-label>Total calculado por el sistema</mat-label>
         <input matInput  formControlName="totalCalculado">
       </mat-form-field>
 
       <mat-form-field >
-        <mat-label>Total reportado</mat-label>
+        <mat-label>Total cierre de caja</mat-label>
         <input matInput  formControlName="totalReportado">
         <mat-error *ngIf="form.get('totalReportado')?.hasError('required')">Debes reportar el resultado de cuadre de caja.</mat-error>
         <mat-error *ngIf="form.get('totalReportado')?.hasError('pattern')">Cantidad ingresada no es válida.</mat-error>

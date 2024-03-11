@@ -117,12 +117,12 @@ export class ModalEditarCuentaComponent implements OnInit{
     let total = 0;
     if(this.cuentaProductosAgg.length > 0){
       this.cuentaProductosAgg.forEach(producto => {
-        total += producto.cantidad * producto.producto.precio
+        total += producto.cantidad * producto.valorProducto
       });
     }
     if(this.cuentaProductosData.length > 0){
       this.cuentaProductosData.forEach(producto => {
-        total += producto.cantidad * producto.producto.precio;
+        total += producto.cantidad * producto.valorProducto;
       })
     }
     this.totalCuenta = total;
@@ -260,6 +260,7 @@ export class ModalEditarCuentaComponent implements OnInit{
           cuenta : this.data.cuenta,
           producto: result.producto,
           cantidad: result.cantidad,
+          valorProducto: result.producto.precio,
           estado: 'Por confirmar',
         }
 

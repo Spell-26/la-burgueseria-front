@@ -93,7 +93,7 @@ export class ModalCuentasComponent implements OnInit{
   private calcularTotal(){
     let total = 0;
     this.productosCuenta.forEach(producto => {
-      total += producto.cantidad * producto.producto.precio
+      total += producto.cantidad * producto.valorProducto
     });
     this.totalCuenta = total;
   }
@@ -177,6 +177,7 @@ export class ModalCuentasComponent implements OnInit{
             id: 0,
             producto: result.producto,
             cantidad: result.cantidad,
+            valorProducto: result.producto.precio,
             estado: "Por despachar",
             cuenta: null
           }

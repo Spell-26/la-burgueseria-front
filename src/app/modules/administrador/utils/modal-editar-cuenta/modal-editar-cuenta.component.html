@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Cuenta de la mesa: {{cuentaData?.mesa?.numeroMesa}}</h2>
+<h2 mat-dialog-title>Pedido de la mesa: {{cuentaData?.mesa?.numeroMesa}}</h2>
 <mat-dialog-content>
   <ng-container *ngIf="!isLoading; else cargando">
   <form [formGroup]="form">
@@ -30,7 +30,7 @@
             <tr class="fila">
               <td>{{ pc.producto.nombre }}</td>
               <td>{{ pc.cantidad }}</td>
-              <td>${{ formatearNumeroConPuntos(pc.producto.precio) }}</td>
+              <td>${{ formatearNumeroConPuntos(pc.valorProducto) }}</td>
               <ng-container>
                 <td *ngIf="pc.estado == 'Por despachar'" matTooltip="En espera">
                   <img src="assets/icons/por-despachar.svg" alt="">
@@ -62,7 +62,7 @@
               {{pc.cantidad}}
             </td>
             <td>
-              ${{formatearNumeroConPuntos(pc.producto.precio)}}
+              ${{formatearNumeroConPuntos(pc.valorProducto)}}
             </td>
             <td data-toggle="tooltip" data-placement="left" title="Por confirmar">
               <img src="assets/icons/por-confirmar.svg" alt="">
@@ -78,13 +78,13 @@
 
       </table>
       <span *ngIf="cuentaProductosData.length == 0 && cuentaProductosAgg.length == 0">
-          No hay productos vinculados a esta cuenta, puedes agregar uno
+          No hay productos vinculados a este pedido, puedes agregar uno
           en el botón "Agregar producto" en la parte inferior
         </span>
     </div>
     <div class="estados">
       <div class="estado-actual">
-        Estado actual de la cuenta: <span>{{cuentaData?.estadoCuenta?.nombre === "Por despachar" ? "En Espera" : cuentaData?.estadoCuenta?.nombre }} </span>
+        Estado actual del pedido: <span>{{cuentaData?.estadoCuenta?.nombre === "Por despachar" ? "En Espera" : cuentaData?.estadoCuenta?.nombre }} </span>
       </div>
       <div class="acciones-estados" *ngIf="cuentaData?.estadoCuenta?.nombre != 'Pagada' && cuentaData?.estadoCuenta?.nombre != 'Cancelada'">
         <div class="cambiar-estado"  (mousedown)="onButtonPress(1000, 'Cambiar estado')" (mouseup)="onButtonRelease()">
@@ -108,7 +108,7 @@
         </div>
         <button class="cancelar-cuenta" (mousedown)="onButtonPress(3000, 'Cancelar')" (mouseup)="onButtonRelease()"
         >
-          Cancelar cuenta
+          Cancelar pedido
         </button>
       </div>
     </div>
