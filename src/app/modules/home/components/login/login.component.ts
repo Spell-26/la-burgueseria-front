@@ -17,7 +17,7 @@ export class LoginComponent {
   });
   hide: boolean = true;
   loginError : string = "";
-
+  loadingLogin: boolean = false;
   constructor(
     private fb : FormBuilder,
     private router : Router,
@@ -38,21 +38,31 @@ export class LoginComponent {
   }
 
   login(){
+    this.loadingLogin = true;
     if(this.form.valid){
       this.loginError = "";
-      this.loginService.login(this.form.value as LoginRequest).subscribe({
-        next : (userData) => {
+      this.loginService.login(this.form.value as LoginRequest).subscribe(
+        result => {
+        },
+        error => {
+          this.loadingLogin = false;
+          console.log("Error: ", error)
+          if(error.status === 403){
+            const mensaje = "Los datos de inicio se sesión no han sido correctos."
+            this.alertaService.alertaErrorMensajeCustom(mensaje)
+          }
+         else{
+            const mensaje = "Error interno."
+            this.alertaService.alertaErrorMensajeCustom(mensaje)
+          }
 
         },
-        error: (errorData) => {
-          const mensaje = "Los datos de inicio se sesión no han sido correctos."
-          this.alertaService.alertaErrorMensajeCustom(mensaje)
-        },
-        complete: () => {
+        () => {
+
           this.router.navigateByUrl('/admin');
           this.form.reset();
         }
-      })
+      )
     }
     else{
       this.form.markAsTouched();

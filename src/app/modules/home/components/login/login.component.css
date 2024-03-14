@@ -59,3 +59,34 @@ mat-form-field{
 .btn-login{
   margin-top: 1em;
 }
+
+
+.container-loading{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(23, 23, 23, 0.59);
+  z-index: 50;
+}
+.loading{
+  position: relative;
+  top: 50%;
+  left: 50%;
+  width: 10%;
+  height: 25%;
+  background-color: #414040;
+  border-radius: 1em;
+  padding: 1em;
+  z-index: 60;
+}
+.loading img{
+  width: 50%;
+  margin: 0 auto;
+}
+.loading span{
+  color: white;
+  font-weight: bold;
+  font-size: 1em;
+}

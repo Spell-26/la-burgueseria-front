@@ -237,7 +237,7 @@ export class EmpleadosComponent implements OnInit{
     this.empleadoService.buscarPorNombre(nombre)
       .subscribe(
         empleado =>{
-          console.log(empleado)
+
           this.empleados = empleado.object
         }
       );

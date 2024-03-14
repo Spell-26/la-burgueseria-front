@@ -43,5 +43,15 @@
     </div>
   </div>
 </section>
+
+<ng-container *ngIf="loadingLogin">
+  <div class="container-loading">
+    <div class="loading">
+      <img src="assets/icons/loading.gif" alt="">
+      <span>Iniciando sesión, por favor espere...</span>
+    </div>
+  </div>
+</ng-container>
+
 <app-footer></app-footer>
 
