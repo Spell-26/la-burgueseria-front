@@ -336,21 +336,23 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
         data => {
           if(data){
             this.allGestionCaja = data.object
+            if(this.allGestionCaja.length > 0){
+              for(let caja of this.allGestionCaja){
+                const fechaArray: number[] = caja.fechaHorainicio;
+                const fechaInicio: Date = new Date(
+                  fechaArray[0],
+                  fechaArray[1] - 1, // Restar 1 al mes
+                  fechaArray[2],
+                  fechaArray[3],
+                  fechaArray[4],
+                  fechaArray[5],
+                  fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
+                );
 
-            for(let caja of this.allGestionCaja){
-              const fechaArray: number[] = caja.fechaHorainicio;
-              const fechaInicio: Date = new Date(
-                fechaArray[0],
-                fechaArray[1] - 1, // Restar 1 al mes
-                fechaArray[2],
-                fechaArray[3],
-                fechaArray[4],
-                fechaArray[5],
-                fechaArray[6] / 1000000 // Dividir por 1 millón para obtener los milisegundos
-              );
-
-              caja.fechaHorainicio = fechaInicio
+                caja.fechaHorainicio = fechaInicio
+              }
             }
+
           }
         }, error => {
           console.log(error)
