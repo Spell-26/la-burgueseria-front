@@ -168,7 +168,7 @@ export class EgresosComponent implements OnInit{
     const dialogRef = this.dialog.open(ModalEgresosComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '500px',
+      height: '95vh',
     });
 
     dialogRef.afterClosed().subscribe(
@@ -205,7 +205,7 @@ export class EgresosComponent implements OnInit{
     const dialogRef = this.dialog.open(ModalEgresosComponent, {
       width: '400px', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
-      height: '500px',
+      height: '80vh',
       data : {
         tipoEgreso : egreso.categoria,
         egreso : egreso.total.toLocaleString(),

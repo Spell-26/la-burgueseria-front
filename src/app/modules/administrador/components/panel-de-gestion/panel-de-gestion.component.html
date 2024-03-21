@@ -41,7 +41,7 @@
           </div>
           <ng-container *ngIf="resumenEgreso.length > 0 || resumenCaja.length > 0; else cargando">
             <ng-container *ngIf="resumenEgreso.length > 0">
-              <h3 class="texto">Egresos</h3>
+              <h3 class="texto">Gastos</h3>
               <app-zoomeable-chart [seriesName] = "'Egresos'" [resumenData] = "resumenEgreso"></app-zoomeable-chart>
             </ng-container>
             <ng-container *ngIf="resumenCaja.length > 0">

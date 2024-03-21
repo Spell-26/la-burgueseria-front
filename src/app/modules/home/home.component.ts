@@ -2,6 +2,7 @@ import {Component, ElementRef, HostListener, OnInit} from '@angular/core';
 import {ProductosService} from "../administrador/services/productos.service";
 
 import {Producto} from "../administrador/interfaces";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-home',
@@ -11,9 +12,13 @@ import {Producto} from "../administrador/interfaces";
 export class HomeComponent implements OnInit{
 isLoading = false;
 public productos : Producto[] = [];
+  public productosAgrupados: { [p: string]: Producto[] } = {};
+  currentCategoryIndex: number = 0;
+  categories: string[] = [];
 
 constructor(private elementRef: ElementRef,
-            private productoService : ProductosService) {
+            private productoService : ProductosService,
+            private sanitizer : DomSanitizer,) {
 }
   ngOnInit(): void {
   this.getProductos();
@@ -64,6 +69,30 @@ constructor(private elementRef: ElementRef,
     return Object.keys(obj);
   }
 
+  // metodos para cambiar de pagina den el carusel
+  prevCategory() {
+    this.currentCategoryIndex = (this.currentCategoryIndex - 1 + this.categories.length) % this.categories.length;
+  }
+
+  nextCategory() {
+    this.currentCategoryIndex = (this.currentCategoryIndex + 1) % this.categories.length;
+  }
+
+  onImageError(producto: any) {
+    // Puedes realizar otras acciones aquí, como establecer una imagen de reemplazo.
+    producto.imagenUrl = 'assets/img/placeholder-hamburguesa.png';
+  }
+
+  //FORNMNATEAR BYTES DE LAS IMAGENES
+  private formatearImagen(){
+    this.productos.forEach(
+      (item) =>{
+        if(item.imagen){
+          item.imagenUrl = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + item.imagen);
+        }
+      }
+    );
+  }
 
 
 
@@ -74,7 +103,10 @@ constructor(private elementRef: ElementRef,
     this.productoService.getProductos().subscribe(
       (result) => {
         this.productos = result.object
-        console.log(this.productos)
+        this.formatearImagen();
+        this.productosAgrupados = this.agruparProductosPorCategoria(this.productos);
+        this.categories = Object.keys(this.productosAgrupados);
+
       }, error => {
         console.log(error)
       },() => {

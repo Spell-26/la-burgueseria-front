@@ -1,50 +1,50 @@
-<h2 mat-dialog-title>Egreso</h2>
+<h2 mat-dialog-title>Gastos</h2>
 <mat-dialog-content >
   <form [formGroup] = "form">
 
     <mat-form-field>
-      <mat-label>Total egreso</mat-label>
+      <mat-label>Total del gasto</mat-label>
       <input matInput placeholder="Total" formControlName="egreso">
-      <mat-error *ngIf="form.get('egreso')?.hasError('required')">Egreso es obligatorio</mat-error>
-      <mat-error *ngIf="form.get('egreso')?.hasError('pattern')">Cantidad de egreso no válido</mat-error>
+      <mat-error *ngIf="form.get('egreso')?.hasError('required')">El gasto es obligatorio</mat-error>
+      <mat-error *ngIf="form.get('egreso')?.hasError('pattern')">Cantidad del gasto no válido</mat-error>
     </mat-form-field>
 
     <mat-form-field>
-      <mat-label>Tipo de egreso</mat-label>
+      <mat-label>Tipo de gasto</mat-label>
       <mat-select formControlName="tipoEgreso">
         <mat-option *ngFor="let tipo of tiposEstados" [value]="tipo">
           {{tipo}}
         </mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('egreso')?.hasError('required')">La categoría del egreso es obligatoria</mat-error>
+      <mat-error *ngIf="form.get('egreso')?.hasError('required')">La categoría del gasto es obligatoria</mat-error>
     </mat-form-field>
 
     <mat-form-field>
       <mat-label>
-        Origen del egreso
+        Origen del gasto
       </mat-label>
       <mat-select formControlName="deduccionDesde">
         <mat-option *ngFor="let origen of origenDeduccion" [value]="origen">
           {{origen}}
         </mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('deduccionDesde')?.hasError('required')">Debes seleccionar el origen del egreso</mat-error>
+      <mat-error *ngIf="form.get('deduccionDesde')?.hasError('required')">Debes seleccionar el origen del gasto</mat-error>
     </mat-form-field>
 
     <mat-form-field>
-      <mat-label>Descripción del egreso</mat-label>
+      <mat-label>Descripción del gasto</mat-label>
       <textarea matInput formControlName="descripcion"></textarea>
-      <mat-error *ngIf="form.get('descripcion')?.hasError('required')">Ingresa la descripción del egreso</mat-error>
+      <mat-error *ngIf="form.get('descripcion')?.hasError('required')">Ingresa la descripción del gasto</mat-error>
     </mat-form-field>
 
     <div class="img-selector" *ngIf="!data">
-      <label class="file-upload-button" for="file-upload">Soporte del egreso</label>
+      <label class="file-upload-button" for="file-upload">Soporte del gasto</label>
       <input type="file" accept="image/*" (change)="onFileChange($event)" id="file-upload">
       <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
       <div class="error-message" *ngIf="fileError">{{ fileError }}</div>
     </div>
-    <div style="width: 100%; text-align: center">
-      <h4>Soporte del egreso</h4>
+    <div style="width: 100%; text-align: center" *ngIf="selectedImage">
+      <h4>Soporte del gasto</h4>
     </div>
 
     <div *ngIf="selectedImage" class="selected-image" data-toggle="tooltip" data-placement="top" title="Ver soporte">

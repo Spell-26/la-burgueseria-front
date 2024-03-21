@@ -119,9 +119,49 @@
   </div>
   </section>
   <section class="section" id="menu">
-    <header>
-      <h1 class="titulo-seccion">MENÚ</h1>
-    </header>
+    <div class="menu">
+      <div class="catalogo">
+        <img id="imagen-catalogo" src="assets/img/fondo-catalogo.png" alt="">
+        <div class="contenedor-categorias">
+          <div id="categoria-previa" (click)="prevCategory()">
+            <img src="assets/icons/flecha-izquierda.svg" alt="">
+          </div>
+          <div id="contenido-carusel">
+            <h2 id="titulo-categoria">{{ categories[currentCategoryIndex] }}</h2>
+            <div id="contenedor-productos">
+              <ng-container *ngFor="let product of productosAgrupados[categories[currentCategoryIndex]]">
+                <div class="producto">
+                  <div class="producto-imagen">
+                    <img [src]="product.imagenUrl" (error)="onImageError(product)">
+                  </div>
+                  <div class="contenido-producto">
+                    <h3>{{product.nombre}}</h3>
+                    <h4>${{product.precio.toLocaleString()}}</h4>
+                    <p>{{product.descripcion}}</p>
+                  </div>
+                </div>
+
+              </ng-container>
+            </div>
+          </div>
+          <div id="categoria-siguiente" (click)="nextCategory()">
+            <img src="assets/icons/flecha-derecha.svg" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="texto-menu">
+        <img src="assets/img/fondo-menu.jpg" alt="">
+        <div id="contenedor-titulo-menu">
+          <h2>Conoce nuestro menú.</h2>
+
+          <p>¡Déjate llevar por un viaje culinario en La Burguesería mientras
+            exploras nuestro apetitoso menú! Prepárate para un festín de sabores que
+            te dejará deseando más. Desde clásicos reconfortantes hasta creaciones innovadoras,
+            nuestro menú ofrece una amplia
+            variedad de opciones para satisfacer todos los gustos y antojos.</p>
+        </div>
+      </div>
+    </div>
   </section>
 
 
