@@ -269,6 +269,7 @@ export class EmpleadosComponent implements OnInit{
             username: result.documento,
             password : result.contrasena,
             rol: result.rol,
+            correo : result.correo,
             estado: true
           }
           this.registrarEmpleado(userToRegister)
@@ -280,6 +281,9 @@ export class EmpleadosComponent implements OnInit{
                 if(error.status === 409){
                   //mostrar alerta de error 409 con mensaje custom
                   const mensaje : string = "Ups! ya existe un empleado con este número de documento."
+                  this.alertaService.alertaErrorMensajeCustom(mensaje);
+                }else if(error.status === 406){
+                  const mensaje : string = "Este correo electrónico ya se encuentra en uso.";
                   this.alertaService.alertaErrorMensajeCustom(mensaje);
                 }
                 else{
@@ -308,7 +312,6 @@ export class EmpleadosComponent implements OnInit{
     dialogRef.afterClosed().subscribe(
       result => {
         if(result){
-
           //si se va a cambiar la contraseña
           if(result.contrasena){
             const userToUpdate : UserRegister = {
@@ -317,6 +320,38 @@ export class EmpleadosComponent implements OnInit{
               apellido : result.apellido,
               username: usuarioConEmpleado.empleado.documento,
               password : result.contrasena,
+              rol: result.rol,
+              correo : result.correo,
+              estado: true
+            }
+
+            this.usuarioService.actualizarEmpleado(userToUpdate)
+              .subscribe(
+                result => {
+                  this.alertaService.alertaConfirmarCreacion();
+                }, error => {
+                  if(error.status === 409){
+                    //mostrar alerta de error 409 con mensaje custom
+                    const mensaje : string = "Ups! No se ha encontrado el empleado."
+                    this.alertaService.alertaErrorMensajeCustom(mensaje);
+                  }else if(error.status === 406){
+                    const mensaje : string = "Este correo electrónico ya se encuentra en uso.";
+                    this.alertaService.alertaErrorMensajeCustom(mensaje);
+                  }
+                  else{
+                    console.log(error)
+                  }
+                }
+              );
+
+          }
+          else{
+            const userToUpdate : UserRegister = {
+              id : 0,
+              nombre : result.nombre,
+              apellido : result.apellido,
+              username: usuarioConEmpleado.empleado.documento,
+              correo: result.correo,
               rol: result.rol,
               estado: true
             }
@@ -330,31 +365,8 @@ export class EmpleadosComponent implements OnInit{
                     //mostrar alerta de error 409 con mensaje custom
                     const mensaje : string = "Ups! No se ha encontrado el empleado."
                     this.alertaService.alertaErrorMensajeCustom(mensaje);
-                  }
-                  else{
-                    console.log(error)
-                  }
-                }
-              );
-
-          }else{
-            const userToUpdate : UserRegister = {
-              id : 0,
-              nombre : result.nombre,
-              apellido : result.apellido,
-              username: usuarioConEmpleado.empleado.documento,
-              rol: result.rol,
-              estado: true
-            }
-
-            this.usuarioService.actualizarEmpleado(userToUpdate)
-              .subscribe(
-                result => {
-                  this.alertaService.alertaConfirmarCreacion();
-                }, error => {
-                  if(error.status === 409){
-                    //mostrar alerta de error 409 con mensaje custom
-                    const mensaje : string = "Ups! No se ha encontrado el empleado."
+                  }else if(error.status === 406){
+                    const mensaje : string = "Este correo electrónico ya se encuentra en uso.";
                     this.alertaService.alertaErrorMensajeCustom(mensaje);
                   }
                   else{
