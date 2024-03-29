@@ -127,7 +127,7 @@
             <img src="assets/icons/flecha-izquierda.svg" alt="">
           </div>
           <div id="contenido-carusel">
-            <h2 id="titulo-categoria">{{ categories[currentCategoryIndex] }}</h2>
+            <h2 id="titulo-categoria"><span>{{ categories[currentCategoryIndex] }}</span></h2>
             <div id="contenedor-productos">
               <ng-container *ngFor="let product of productosAgrupados[categories[currentCategoryIndex]]">
                 <div class="producto">

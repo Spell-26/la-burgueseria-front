@@ -70,4 +70,7 @@ export class LoginComponent {
       this.alertaService.alertaErrorMensajeCustom(mensaje)
     }
   }
+  public recuperarPass(){
+    this.router.navigateByUrl('recover');
+  }
 }

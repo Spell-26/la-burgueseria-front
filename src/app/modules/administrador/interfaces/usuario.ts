@@ -13,4 +13,5 @@ export interface UserRegister{
   rol : string;
   estado?: boolean;
   correo : string;
+  token?:    string;
 }

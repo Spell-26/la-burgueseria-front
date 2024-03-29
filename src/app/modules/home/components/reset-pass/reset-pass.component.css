@@ -1,0 +1,71 @@
+.container{
+  width: 100%;
+  margin-bottom: 5em;
+}
+#cabecera-recuperar{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.logo{
+  width: 100%;
+  text-align: center;
+}
+.logo img{
+  width: 20%;
+  object-fit: cover;
+  cursor: pointer;
+}
+#cabecera-recuperar h1{
+  color: white;
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+}
+.info{
+  color: white;
+  text-align: center;
+}
+.formulario-enviar-token{
+  width: 50%;
+  margin: 0 auto auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-email{
+  width: 50%;
+  margin: 2em auto .5em auto;
+  padding: 1.2em;
+  border: 2px solid #c8c800;
+  border-radius: .2em;
+  background-color: #0c0c0c;
+  color: white;
+  font-size: 1.2em;
+}
+.btn-enviar{
+  width: 50%;
+  margin: 0 auto;
+  padding: 1em;
+  background-color: teal;
+  border: none;
+  border-radius: .2em;
+  color: white;
+  font-size: 1.2em;
+}
+.btn-enviar :hover{
+  background-color: #05f4f4;
+  cursor: pointer;
+}
+.errores{
+  text-align: center;
+  margin-bottom: 2em;
+}
+.input-label{
+  text-align: center;
+  color: white;
+  font-size: 1.2em;
+}
+.input-email-variant{
+  margin: .5em auto .5em auto !important;
+}

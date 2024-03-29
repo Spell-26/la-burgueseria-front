@@ -9,12 +9,15 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
 import {FooterComponent} from "../administrador/utils/footer/footer.component";
 
+import { ResetPassComponent } from './components/reset-pass/reset-pass.component';
+
 
 
 @NgModule({
   declarations: [
     HomeComponent,
-    LoginComponent
+    LoginComponent,
+    ResetPassComponent
   ],
     imports: [
         CommonModule,

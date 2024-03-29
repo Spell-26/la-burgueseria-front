@@ -90,3 +90,14 @@ mat-form-field{
   font-weight: bold;
   font-size: 1em;
 }
+.recuperar-pass{
+  margin-top: 1.5em;
+  color: #d3d3d3;
+}
+.recuperar-pass span{
+  color: teal;
+  cursor: pointer;
+}
+.recuperar-pass span:hover{
+  color: #05f4f4;
+}

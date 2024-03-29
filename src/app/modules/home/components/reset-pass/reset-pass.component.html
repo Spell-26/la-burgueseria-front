@@ -1,0 +1,63 @@
+
+    <div class="container">
+      <header id="cabecera-recuperar">
+        <div class="logo">
+          <img src="assets/logoburgueseria.png" alt="logo" (click)="goToHome()">
+        </div>
+        <h1>Recuperar contraseña</h1>
+      </header>
+      <ng-container *ngIf="!correoUsuario">
+        <p class="info">Ingresa el correo electrónico vinculado a
+          tu cuenta y te enviaremos un enlace para recuperar tu contraseña.
+        </p>
+
+        <form class="formulario-enviar-token" [formGroup]="form" autocomplete="off">
+          <input type="email" class="input-email" placeholder="ejemplo@ejemplo.com" autocomplete="off" formControlName="fromEmail" (keyup)="inputStarted()">
+          <ng-container *ngIf="isInputStarted">
+            <div class="errores">
+              <mat-error *ngIf="form.get('fromEmail')?.hasError('required')">Por favor ingresa tu dirección de correo electrónico.</mat-error>
+              <mat-error *ngIf="form.get('fromEmail')?.hasError('email')">Dirección de correo no válida.</mat-error>
+            </div>
+          </ng-container>
+          <button class="btn-enviar" (click)="send()" >Verificar correo</button>
+        </form>
+
+      </ng-container>
+      <ng-container *ngIf="correoUsuario && !startChangingPassword">
+        <p class="info">Por favor ingresa el token que fue enviado a tu correo electrónico.</p>
+
+        <form class="formulario-enviar-token" [formGroup]="formToken" autocomplete="off">
+          <input type="number" class="input-email" placeholder="ejemplo: 0000" autocomplete="off" formControlName="token" (keyup)="inputStarted()">
+          <ng-container *ngIf="isInputStarted">
+            <div class="errores">
+              <mat-error *ngIf="form.get('token')?.hasError('required')">Por favor ingresa el token.</mat-error>
+            </div>
+          </ng-container>
+          <button class="btn-enviar" (click)="validarToken()">Válidar token</button>
+        </form>
+      </ng-container>
+
+      <ng-container *ngIf="correoUsuario && startChangingPassword" [formGroup]="formPassword">
+        <p class="info">Por favor ingresa la nueva contraseña.</p>
+        <form  class="formulario-enviar-token" autocomplete="off">
+          <label class="input-label">Nueva contraseña</label>
+          <input type="password" class="input-email input-email-variant" formControlName="password">
+          <div class="errores" *ngIf="formPassword.get('password')?.invalid && (formPassword.get('password')?.dirty || formPassword.get('password')?.touched)">
+            <mat-error *ngIf="formPassword.get('password')?.hasError('required')">Por favor ingresa la nueva contraseña</mat-error>
+            <mat-error *ngIf="formPassword.get('password')?.hasError('pattern')">La contraseña debe tener como mínimo una mayúscula y un número</mat-error>
+          </div>
+          <label class="input-label">Confirma la contraseña</label>
+          <input type="password" class="input-email input-email-variant" formControlName="confirmPassword">
+          <div class="errores" *ngIf="formPassword.get('confirmPassword')?.dirty || formPassword.get('confirmPassword')?.touched">
+            <mat-error *ngIf="formPassword.get('confirmPassword')?.hasError('required')">Por favor ingresa la nueva contraseña nuevamente.</mat-error>
+            <mat-error *ngIf="formPassword.get('confirmPassword')?.value !== formPassword.get('password')?.value">Las contraseñas no coinciden.</mat-error>
+          </div>
+
+        </form>
+        <div class="formulario-enviar-token">
+          <button class="btn-enviar" (click)="cambiarContrasenna()">Cambiar contraseña</button>
+        </div>
+      </ng-container>
+    </div>
+
+<app-footer></app-footer>

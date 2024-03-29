@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 export class EnvService {
 
   constructor() { }
-
+  fontEndHost = 'http://localhost:4200';
   port : number = 8080;
 
   url : string = `http://localhost:8080/api/v1`;
@@ -22,5 +22,8 @@ export class EnvService {
   }
   getHostUrl() : string {
     return this.urlHost;
+  }
+  getFontUrl() : string{
+    return this.fontEndHost;
   }
 }
