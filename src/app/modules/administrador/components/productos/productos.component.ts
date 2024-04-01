@@ -98,6 +98,19 @@ export class ProductosComponent  implements OnInit {
     return Object.keys(obj);
   }
 
+  //publicar o quitar de publicación el producto
+  public publicarProducto(producto : Producto) : void {
+    this.productosService.publicarProducto(producto)
+      .subscribe(
+        result => {
+          this.alertaService.alertaConfirmarCreacion();
+        },
+        error => {
+          console.log(error)
+        }
+      )
+  }
+
   /*  METODOS MODAL*/
 
    //MODAL NUEVO PRODUCTO V2
@@ -193,6 +206,7 @@ export class ProductosComponent  implements OnInit {
              descripcion: result.descripcion,
              categoriaProducto: result.categoriaProducto,
              imagenUrl: null,
+             isPublicado: result.isPublicado
            }
            this.productosService.actualizarProducto(producto, producto.imagen)
              .subscribe(
@@ -333,7 +347,8 @@ export class ProductosComponent  implements OnInit {
         id: categoriaid,
         nombre: ""
       },
-      imagenUrl : ""
+      imagenUrl : "",
+      isPublicado: producto.isPublicado
     }
 
     return this.productosService.crearProducto(productoDto, producto.imagen);

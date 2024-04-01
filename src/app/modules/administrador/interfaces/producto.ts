@@ -13,4 +13,5 @@ export interface Producto {
   imagen:            any;
   descripcion:       string;
   categoriaProducto: CategoriaProducto | null;
+  isPublicado : boolean;
 }

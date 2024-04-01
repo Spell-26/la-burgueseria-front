@@ -40,13 +40,18 @@ export class ProductosService {
       .set('precio', producto.precio.toString())
       .set('descripcion', producto.descripcion)
       .set('categoria', producto.categoriaProducto?.id.toString())
+      .set('isPublicado', producto.isPublicado.toString())
 
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/octet-stream' // Establece el tipo de contenido como binario
     });
 
-    const imagenBlob = this.convertirImagenABlob(img);
+    let imagenBlob : Blob | null = null;
+
+    if(img != null){
+      imagenBlob = this.convertirImagenABlob(img);
+    }
 
     // Enviar la solicitud POST con el formulario de datos
     return this.http.post(this.apiUrl,imagenBlob, { params, headers })
@@ -56,6 +61,8 @@ export class ProductosService {
         })
       );
   }
+
+
   convertirImagenABlob(imagen: File): Blob {
     return new Blob([imagen], { type: imagen.type });
   }
@@ -68,6 +75,7 @@ export class ProductosService {
       .set('precio', producto.precio.toString())
       .set('descripcion', producto.descripcion)
       .set('categoria', producto.categoriaProducto?.id.toString())
+      .set('isPublicado', producto.isPublicado.toString())
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/octet-stream' // Establece el tipo de contenido como binario
@@ -84,6 +92,19 @@ export class ProductosService {
         )
       );
   }
+  //PUBLICAR O QUITAR DE PUBLICACIÓN UN PRODUCTO
+  publicarProducto(producto : Producto) : Observable<any>{
+    const url = `${this.apiUrl}/${producto.id}`;
+    return this.http.patch(url, producto)
+      .pipe(
+        tap(
+          () => {
+            this._refreshNeeded.next();
+          }
+        )
+      );;
+  }
+
   //BUSCAR PRODCUTO POR NOMBRE
   buscarPorNombre(nombre : string) : Observable<ProductoResponse>{
     const url = `${this.apiUrl}/buscar/${nombre}`;

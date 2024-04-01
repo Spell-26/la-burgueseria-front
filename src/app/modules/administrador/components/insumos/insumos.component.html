@@ -49,8 +49,19 @@
             </mat-form-field>
 
           </td>
-          <td class="row-contenido-element, editable" (click)="iniciarEdicion(i)">
+          <td class="row-contenido-element, editable" (click)="iniciarEdicion(i)"  *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)">
             {{insumo.cantidad}}
+          </td>
+
+          <td class="row-contenido-element" *ngIf="modoEdicion && i === insumoEditandoIndex">
+            <mat-form-field appearance="outline" hintLabel="Stock: {{insumo.cantidad}}">
+              <mat-label>
+               Cantidad
+              </mat-label>
+              <input matInput type="number" [formControl]="cantidadEditada" />
+              <mat-error *ngIf="cantidadEditada.hasError('required')">La cantidad del insumo es obligatoria.</mat-error>
+              <mat-error *ngIf="cantidadEditada.hasError('pattern')">Solo se admiten números.</mat-error>
+            </mat-form-field>
           </td>
           <td class="row-contenido-element">
             <button class="btn-actualizar-element"

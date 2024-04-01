@@ -104,6 +104,8 @@ constructor(private elementRef: ElementRef,
       (result) => {
         this.productos = result.object
         this.formatearImagen();
+        //dejar solo los productos con true en su valor isPublicado
+        this.productos = this.productos.filter(producto => producto.isPublicado)
         this.productosAgrupados = this.agruparProductosPorCategoria(this.productos);
         this.categories = Object.keys(this.productosAgrupados);
 

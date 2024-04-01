@@ -32,7 +32,11 @@ export class EgresoService {
       'Content-Type': 'application/octet-stream' // Establece el tipo de contenido como binario
     });
 
-    const imagenBlob = this.convertirImagenABlob(egreso.soporte);
+    let imagenBlob : Blob | null = null;
+
+    if(egreso.soporte != null){
+      imagenBlob = this.convertirImagenABlob(egreso.soporte);
+    }
 
     return this.http.post(this.apiUrl, imagenBlob, { params, headers }).pipe(
       tap(() => {

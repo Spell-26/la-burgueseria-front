@@ -55,7 +55,8 @@ export class ModalIppComponent implements OnInit{
         imagen: null,
         imagenUrl: null,
         descripcion: "",
-        categoriaProducto: null
+        categoriaProducto: null,
+        isPublicado: false,
       }
       const insumo : insumo = {
         id: insumoSeleccionado.id,

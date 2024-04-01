@@ -69,6 +69,10 @@
           </div>
           <div class="imagen-producto">
             <img [src]="producto.imagenUrl" alt="logo hamburguesa" (error)="onImageError(producto)">
+            <span>Publicado</span>
+            <div class="publicado">
+              <mat-slide-toggle [(ngModel)]="producto.isPublicado" (ngModelChange)="publicarProducto(producto)"></mat-slide-toggle>
+            </div>
           </div>
         </div>
       </div>

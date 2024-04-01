@@ -219,6 +219,10 @@ export class ModalAgregarInsumoComponent implements OnInit {
 
       //agregar el insumo al staggin
       this.insumosAGuardar.push(insumo);
+      //ocultar ventana y resetear formulario
+      this.nombreControl.setValue('');
+      this.cantidadControl.setValue('');
+      this.isAgregandoInsumo = false;
     }else{
       this.errorAgregarInsumo = true;
     }

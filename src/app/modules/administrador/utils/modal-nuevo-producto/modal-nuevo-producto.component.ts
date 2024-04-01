@@ -49,7 +49,7 @@ export class ModalNuevoProductoComponent implements OnInit {
     private alertasService : AlertasService,
   ) {
     this.form = this.fb.group({
-      nombre: [null, [Validators.required, Validators.pattern(/^[a-zA-Z ]+$/)]],
+      nombre: [null, [Validators.required, Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚ0-9 ]+$/)]],
       precio: [null,[Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
       imagen: [null],
       descripcion: ['', [Validators.required, Validators.maxLength(150)]],
@@ -89,6 +89,7 @@ export class ModalNuevoProductoComponent implements OnInit {
       imagenUrl: null,
       descripcion: this.form.value.descripcion,
       categoriaProducto: this.form.value.categoria,
+      isPublicado : false
     }
 
     //guardar el instancia del producto y los ingredientes en un solo objeto

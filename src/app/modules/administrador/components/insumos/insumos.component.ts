@@ -123,7 +123,60 @@ export class InsumosComponent implements OnInit{
     }
 
     this.insumosService.actualizarInsumos(dato)
-      .subscribe();
+      .subscribe(
+        result => {
+          let timerInterval: any;
+          // @ts-ignore
+          Swal.fire({
+            title: "Se ha actualizado el insumo correctamente.",
+            icon: 'success',
+            timer: 2000,
+            color: "#fff",
+            timerProgressBar: true,
+            position: 'center', // Esquina inferior derecha
+            showConfirmButton: false, // Ocultar el botón de confirmación
+            background: '#1e1e1e', // Fondo oscuro
+            didOpen: () => {
+              Swal.showLoading();
+              // @ts-ignore
+              const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+              timerInterval = setInterval(() => {
+              }, 200);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          });
+        },
+        error => {
+          if(error.status === 409){
+            let timerInterval: any;
+            // @ts-ignore
+            Swal.fire({
+              title: "¡Ups! parece que ya existe un insumo con el mismo nombre.",
+              icon: 'error',
+              timer: 2000,
+              color: "#fff",
+              timerProgressBar: true,
+              position: 'center', // Esquina inferior derecha
+              showConfirmButton: false, // Ocultar el botón de confirmación
+              background: '#1e1e1e', // Fondo oscuro
+              didOpen: () => {
+                Swal.showLoading();
+                // @ts-ignore
+                const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
+                timerInterval = setInterval(() => {
+                }, 200);
+              },
+              willClose: () => {
+                clearInterval(timerInterval);
+                location.reload();
+              }
+            });
+          }
+        }
+      );
+
     this.cancelarEdicion();
   }
   cancelarEdicion(){
@@ -340,32 +393,8 @@ export class InsumosComponent implements OnInit{
         //ACCION A REALIZAR EN CASO DE QUE SE DESEE PROSEGUIR CON
         // LA Edicion
         if(result.isConfirmed){
-
           //guardar insumo editado
           this.guardarEdicion(id);
-
-          let timerInterval: any;
-          // @ts-ignore
-          Swal.fire({
-            title: "Se ha actualizado el insumo correctamente.",
-            icon: 'success',
-            timer: 2000,
-            color: "#fff",
-            timerProgressBar: true,
-            position: 'center', // Esquina inferior derecha
-            showConfirmButton: false, // Ocultar el botón de confirmación
-            background: '#1e1e1e', // Fondo oscuro
-            didOpen: () => {
-              Swal.showLoading();
-              // @ts-ignore
-              const timer: any = Swal.getPopup().querySelector(".dark-mode-timer");
-              timerInterval = setInterval(() => {
-              }, 200);
-            },
-            willClose: () => {
-              clearInterval(timerInterval);
-            }
-          });
 
         }
         //ACCION A REALIZAR SI SE CANCELA LA ACCION

@@ -78,7 +78,7 @@ export class ModalEditarProductoComponent implements OnInit{
       this.descripcionValue = this.producto.descripcion;
     }
     this.form = this.fb.group({
-      nombre: [this.producto.nombre, [Validators.required, Validators.pattern(/^[a-zA-Z ]+$/)]],
+      nombre: [this.producto.nombre, [Validators.required, Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚ0-9 ]+$/)]],
       precio: [this.producto.precio, [Validators.required,  Validators.pattern(/^[1-9]\d{0,12}$/)]],
       imagen: [this.producto.imagen],
       descripcion: [this.producto.descripcion, [Validators.required, Validators.maxLength(150)]],
@@ -205,7 +205,8 @@ export class ModalEditarProductoComponent implements OnInit{
       imagen: this.form.value.imagen,
       imagenUrl: null,
       descripcion: this.form.value.descripcion,
-      categoriaProducto: categoriaProducto
+      categoriaProducto: categoriaProducto,
+      isPublicado : this.producto.isPublicado
     }
 
     this.alertaService.alertaPedirConfirmacionEditar()
