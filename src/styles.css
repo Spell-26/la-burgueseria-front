@@ -84,7 +84,7 @@ app-nuevo-insumo, app-insumos, app-categoria-producto, app-productos, app-mesas{
   overflow-y: scroll;
   overflow-x: hidden;
 }
-app-empleados, app-cuentas, app-ingresos, app-egresos{
+app-empleados, app-cuentas, app-ingresos, app-egresos, app-cuentas-empleado{
   width: 60%;
   padding-right: 3em;
   max-height: 90vh;

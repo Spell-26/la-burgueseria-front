@@ -42,6 +42,20 @@ export class CuentasService {
 
     return this.http.get<any>(`${this.apiUrl}/fechas`, { headers });
   }
+
+  cuentasByEmpleado(empleadoId : string | null, fechaInicio : string, fechaFin: string | null) : Observable<any>{
+    let headers: HttpHeaders = new HttpHeaders()
+      .set('fechaInicio', new Date(fechaInicio).toISOString())
+
+    if (fechaFin != null) {
+      headers = headers.set('fechaFin', new Date(fechaFin).toISOString());
+    }
+    if(empleadoId != null){
+      headers = headers.set('empleadoId', empleadoId);
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/empleado/fechas`, { headers });
+  }
   //PAGINACION CUENTAS
   getCuentasPageable(numeroPagina: number, tamanoPagina: number, order : string, asc : boolean) : Observable<any>{
     let params : HttpParams = new HttpParams()

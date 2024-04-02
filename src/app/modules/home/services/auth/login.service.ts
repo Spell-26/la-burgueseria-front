@@ -19,10 +19,12 @@ export class LoginService {
     return this.http.post<any>(this.env.urlHost+"/auth/login", credentials).pipe(
       tap(
         (userData) => {
+          console.log(userData)
           sessionStorage.setItem("token", userData.token);
           sessionStorage.setItem("nombre", userData.nombre);
           sessionStorage.setItem("apellido", userData.apellido);
           sessionStorage.setItem("rol", userData.rol);
+          sessionStorage.setItem("empleadoId", userData.empleadoId);
 
           this.currentUserData.next(userData.token);
           this.currentUserLoginOn.next(true);
@@ -32,7 +34,7 @@ export class LoginService {
         (userData) => {
           userData.token
         }
-      ), catchError(this.handleError)
+      )
     )
   }
 
@@ -41,19 +43,11 @@ export class LoginService {
     sessionStorage.removeItem("nombre");
     sessionStorage.removeItem("apellido");
     sessionStorage.removeItem("rol");
+    sessionStorage.removeItem("empleadoId");
     this.currentUserLoginOn.next(false);
 
   }
 
-  private handleError(error:HttpErrorResponse){
-    if(error.status===0){
-      //console.error('Se ha producio un error ', error.error);
-    }
-    else{
-      //console.error('Backend retornó el código de estado ', error);
-    }
-    return throwError(()=> new Error(''));
-  }
 
   get userData():Observable<String>{
     return this.currentUserData.asObservable();

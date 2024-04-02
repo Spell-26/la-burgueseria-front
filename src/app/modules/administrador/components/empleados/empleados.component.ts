@@ -109,8 +109,11 @@ export class EmpleadosComponent implements OnInit{
     }
   }
   //cambiar estado de empleado con el slide
-  public toggleEmpleadoEstado(empleado : Empleado){
-    empleado.estado = !empleado.estado
+  public toggleEmpleadoEstado(usuarioConEmpleado : any){
+    let empleado : Empleado = usuarioConEmpleado.empleado;
+    let usuario : UserRegister = usuarioConEmpleado.usuario;
+    empleado.estado = !empleado.estado;
+    usuario.estado = !usuario.estado;
 
     const titulo: string = "Deseas cambiar el estado de este empleado?";
 
@@ -120,6 +123,7 @@ export class EmpleadosComponent implements OnInit{
           if(result.isConfirmed){
             //enviar a la base de datos los cambios
             this.actualizarEmpleado(empleado);
+            this.changeUserState(usuario);
             this.alertaService.alertaConfirmarCreacion();
           }else if(result.dismiss === Swal.DismissReason.cancel ){
             this.alertaService.alertaSinModificaciones();
@@ -152,6 +156,11 @@ export class EmpleadosComponent implements OnInit{
           }
         }
       )
+  }
+
+  private changeUserState(usuario : UserRegister){
+    this.usuarioService.actualizarEstadoUsuario(usuario)
+      .subscribe();
   }
 
   public getEmpleadosUsuarios(nombre?: string): void {

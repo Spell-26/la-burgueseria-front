@@ -41,6 +41,8 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   userLoginOn = false;
   //validar carga de datos
   isLoading = true;
+  rolEmpleado = this.localStore.getUserRole();
+  isMesero : boolean = false;
   constructor(
     public dialog : MatDialog,
     public fechaService : FechaHoraService,
@@ -50,7 +52,7 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
     private egresoService : EgresoService,
     private cuentaService : CuentasService,
     protected loginService : LoginService,
-    private router : Router
+    private router : Router,
   ) {
   }
 
@@ -62,6 +64,10 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
+    if(this.rolEmpleado === 'MESERO'){
+      this.isMesero = true;
+    }
+
     this.loginService.userLoginOn.subscribe({
       next: (userLoginOn) => {
         this.userLoginOn = userLoginOn;

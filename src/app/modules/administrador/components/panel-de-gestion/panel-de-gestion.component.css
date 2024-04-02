@@ -122,3 +122,10 @@
   color: white;
   margin-top: 1em;
 }
+.imagen-inicio{
+  width: 100%;
+  text-align: center;
+}
+.imagen-inicio img{
+  width: 50%;
+}

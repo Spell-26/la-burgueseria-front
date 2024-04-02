@@ -30,4 +30,14 @@ export class UsuarioService {
         )
       );
   }
+  actualizarEstadoUsuario(usuario : UserRegister) : Observable<any>{
+    return this.http.patch(`${this.apiUrl}/status`, usuario)
+      .pipe(
+        tap(
+          () => {
+            this._refreshNeeded.next();
+          }
+        )
+      );
+  }
 }

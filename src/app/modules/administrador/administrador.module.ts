@@ -50,6 +50,7 @@ import { SkeletonMenuCuentaComponent } from './utils/skeleton-loading/skeleton-m
 import { SkeletonMenuCuentaResponsiveComponent } from './utils/skeleton-loading/skeleton-menu-cuenta-responsive/skeleton-menu-cuenta-responsive.component';
 import { ModalAgregarInsumoComponent } from './utils/modal-agregar-insumo/modal-agregar-insumo.component';
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import { CuentasEmpleadoComponent } from './components/cuentas-empleado/cuentas-empleado.component';
 
 
 @NgModule({
@@ -85,6 +86,7 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
     SkeletonMenuCuentaComponent,
     SkeletonMenuCuentaResponsiveComponent,
     ModalAgregarInsumoComponent,
+    CuentasEmpleadoComponent,
 
   ],
     imports: [

@@ -11,6 +11,7 @@ import {CuentasService} from "../../services/cuentas.service";
 import {InsumoReservado, ValidarExistenciasService} from "../../components/cuentas/validar-existencias.service";
 import {InsumosService} from "../../services/insumos.service";
 import {Producto} from "../../interfaces";
+import {LocalService} from "../sharedMethods/localStorage/local.service";
 
 
 
@@ -44,7 +45,8 @@ export class ModalEditarCuentaComponent implements OnInit{
   abonoData : number = 0;
   //TOTAL
   totalCuenta : number = 0;
-
+  //obtener rol del empleado
+  rolEmpleado = this.localStorageService.getUserRole();
   //tests
   // Debes inicializarla con el id del estado actual o null
   estadoSeleccionado: number | undefined ;
@@ -71,7 +73,8 @@ export class ModalEditarCuentaComponent implements OnInit{
     private alertaService : AlertasService,
     private cuentaService : CuentasService,
     private validarExistencias : ValidarExistenciasService,
-    private insumoService : InsumosService
+    private insumoService : InsumosService,
+    private localStorageService : LocalService
   ) {
 
     if(data){

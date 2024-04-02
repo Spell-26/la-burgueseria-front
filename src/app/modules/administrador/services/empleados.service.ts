@@ -41,7 +41,10 @@ export class EmpleadosService {
         )
       )
   }
-
+  //filtrar empleado por id
+  getEmpleadoById(id:number):Observable<any>{
+    return this.http.get(`${this.apiUrl}/${id}`)
+  }
   //crear empleado
   crearEmpleado(empleado : Empleado) : Observable<any>{
     return this.http.post(this.apiUrl, empleado)

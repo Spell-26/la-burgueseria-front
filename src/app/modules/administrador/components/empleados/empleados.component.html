@@ -53,7 +53,7 @@
             </td>
             <td class="row-contenido-element">
 
-              <mat-slide-toggle checked="{{usuarioConEmpleado.empleado.estado}}" (change)="toggleEmpleadoEstado(usuarioConEmpleado.empleado)"
+              <mat-slide-toggle checked="{{usuarioConEmpleado.empleado.estado}}" (change)="toggleEmpleadoEstado(usuarioConEmpleado)"
                                 matTooltip="Activar o desactivar empleado.">
                 {{ usuarioConEmpleado.empleado.estado ? 'Activo' : 'Inactivo' }}
               </mat-slide-toggle>

@@ -1,4 +1,5 @@
 <div class="container-section">
+  <ng-container *ngIf="!isMesero;else vistaMesero">
   <ng-container *ngIf="!isLoading; else isCargando">
   <header class="header-module dashboard-header actions-container">
     <div class="header-element">
@@ -93,7 +94,7 @@
     </mat-tab>
   </mat-tab-group>
   </ng-container>
-
+  </ng-container>
 </div>
 
 
@@ -111,5 +112,19 @@
     <h2>No se han encontrado históricos de cajas.</h2>
     <img src="assets/img/running-cat.gif" alt="">
 
+  </div>
+</ng-template>
+<ng-template #vistaMesero>
+  <header class="header-module dashboard-header actions-container">
+    <div class="header-element">
+      <h1>Te damos la bienvenida a la burguesería!</h1>
+    </div>
+    <div class="header-element">
+      <!-- Fecha del dia actual y la hora es dinamica -->
+      <h2><span>{{tiempoActual}}</span></h2>
+    </div>
+  </header>
+  <div class="imagen-inicio">
+    <img src="assets/logoburgueseria.png" alt="">
   </div>
 </ng-template>

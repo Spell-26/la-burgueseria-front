@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import  *  as CryptoJS from  'crypto-js';
+import {Injectable} from '@angular/core';
+import *  as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,12 @@ export class LocalService {
   public saveData(key: string, value: string) {
     localStorage.setItem(key, this.encrypt(value));
   }
-
+  public getUserRole() : string | null{
+    return sessionStorage.getItem("rol");
+  }
+  public getNombreApellidoUsuario() : string | null{
+    return sessionStorage.getItem("nombre") + " " + sessionStorage.getItem("apellido");
+  }
   public getData(key: string) {
     let data = localStorage.getItem(key) || "";
     return this.decrypt(data);

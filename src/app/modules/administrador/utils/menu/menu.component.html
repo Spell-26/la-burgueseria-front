@@ -6,7 +6,8 @@
     <div id="texto-encabezado">
       <div id="container-textos">
         <span id="titulo">La Burguesería</span>
-        <span id="subtitulo">Panel de administración</span>
+        <span class="subtitulo" *ngIf="rolEmpleado !== 'MESERO'">Panel de administración</span>
+        <span class="subtitulo" *ngIf="rolEmpleado === 'MESERO'">Panel de mesero</span>
       </div>
     </div>
   </header>
@@ -18,6 +19,7 @@
           <span class="label-lista">Panel de gestión</span>
         </a>
       </li>
+      <ng-container *ngIf="rolEmpleado !== 'MESERO'">
       <li class="lista-item" >
         <a class="accion-lista" [routerLink]="['insumos']" routerLinkActive="activo">
           <img src="assets/icons/groceries-svgrepo-com.svg" alt="">
@@ -60,6 +62,15 @@
           <span class="label-lista">Gastos</span>
         </a>
       </li>
+      </ng-container>
+      <ng-container *ngIf="rolEmpleado === 'MESERO'">
+        <li class="lista-item">
+          <a href="" class="accion-lista" [routerLink]="['cuentas/empleado']" routerLinkActive="activo">
+            <img src="assets/icons/cuenta.svg" alt="">
+            <span class="label-lista">Pedidos</span>
+          </a>
+        </li>
+      </ng-container>
     </ul>
   </div>
 </aside>

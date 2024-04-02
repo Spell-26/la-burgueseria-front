@@ -46,9 +46,12 @@ export class LoginComponent {
         },
         error => {
           this.loadingLogin = false;
-          console.log("Error: ", error)
           if(error.status === 403){
             const mensaje = "Los datos de inicio se sesión no han sido correctos."
+            this.alertaService.alertaErrorMensajeCustom(mensaje)
+          }
+          else if(error.status == 409){
+            const mensaje = "Ocurrió un error. Por favor, comunícate con un administrador."
             this.alertaService.alertaErrorMensajeCustom(mensaje)
           }
          else{
@@ -58,7 +61,8 @@ export class LoginComponent {
 
         },
         () => {
-
+          //TODO: agregar if para que diferencie cuando es admin y cuando es mesero
+          //TODO: cuando es mesero se va auto al modulo de pedidos
           this.router.navigateByUrl('/admin');
           this.form.reset();
         }

@@ -10,6 +10,7 @@ import {
 } from "./components";
 import {EgresosComponent} from "./components/egresos/egresos.component";
 import {PanelDeGestionComponent} from "./components/panel-de-gestion/panel-de-gestion.component";
+import {CuentasEmpleadoComponent} from "./components/cuentas-empleado/cuentas-empleado.component";
 
 const routes: Routes = [
   {
@@ -29,6 +30,7 @@ const routes: Routes = [
       {path: 'cuentas', component: CuentasComponent},
       {path: 'ingresos', component: IngresosComponent},
       {path: 'egresos', component: EgresosComponent},
+      {path: 'cuentas/empleado', component: CuentasEmpleadoComponent}
     ],
   },
 ];

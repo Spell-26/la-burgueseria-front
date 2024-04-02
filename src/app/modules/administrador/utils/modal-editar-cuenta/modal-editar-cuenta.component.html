@@ -86,6 +86,8 @@
       <div class="estado-actual">
         Estado actual del pedido: <span>{{cuentaData?.estadoCuenta?.nombre === "Por despachar" ? "En Espera" : cuentaData?.estadoCuenta?.nombre }} </span>
       </div>
+
+      <ng-container *ngIf="rolEmpleado !== 'MESERO'">
       <div class="acciones-estados" *ngIf="cuentaData?.estadoCuenta?.nombre != 'Pagada' && cuentaData?.estadoCuenta?.nombre != 'Cancelada'">
         <div class="cambiar-estado"  (mousedown)="onButtonPress(1000, 'Cambiar estado')" (mouseup)="onButtonRelease()">
           Cambiar a: <ng-container ngSwitch="{{cuentaData?.estadoCuenta?.nombre}}">
@@ -111,11 +113,14 @@
           Cancelar pedido
         </button>
       </div>
+      </ng-container>
     </div>
+    <ng-container *ngIf="rolEmpleado !== 'MESERO'">
     <mat-form-field>
       <mat-label>Abono</mat-label>
       <input type="number"  matInput [(ngModel)]="abonoData" [ngModelOptions]="{standalone: true}" [readonly]="isReadOnly">
     </mat-form-field>
+    </ng-container>
 
     <div id="total" *ngIf="cuentaProductosData.length > 0 || cuentaProductosAgg.length > 0">
       Total: ${{formatearNumeroConPuntos(totalCuenta - abonoData)}}

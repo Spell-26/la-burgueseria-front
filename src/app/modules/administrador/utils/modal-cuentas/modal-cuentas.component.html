@@ -1,14 +1,22 @@
 <h2 mat-dialog-title>Nuevo pedido</h2>
 <mat-dialog-content>
   <form [formGroup]="form">
-    <mat-form-field>
-      <mat-label>Empleado</mat-label>
-      <mat-select formControlName="empleado" (selectionChange)="onEmpleadoSeleccionado($event)">
-        <mat-option *ngFor="let empleado of empleadosActivos" [value]="empleado">
+    <ng-container *ngIf="rolEmpleado === 'MESERO'">
+      <mat-form-field>
+        <mat-label>Empleado</mat-label>
+        <input matInput [readonly]="true" value="{{empleadoSeleccionado?.nombre}} {{empleadoSeleccionado?.apellido}}">
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="rolEmpleado !== 'MESERO'">
+      <mat-form-field>
+        <mat-label>Empleado</mat-label>
+        <mat-select formControlName="empleado" (selectionChange)="onEmpleadoSeleccionado($event)">
+          <mat-option *ngFor="let empleado of empleadosActivos" [value]="empleado">
             {{empleado.nombre}} {{empleado.apellido}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
     <mat-form-field>
       <mat-label>Mesa</mat-label>
       <mat-select formControlName="mesa" (selectionChange)="onMesaSeleccionada($event)">

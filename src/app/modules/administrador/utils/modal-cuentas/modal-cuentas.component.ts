@@ -7,6 +7,7 @@ import {Empleado} from "../../interfaces/empleado";
 import {Mesa, Producto} from "../../interfaces";
 import {ModalAddProductoComponent} from "../modal-add-producto/modal-add-producto.component";
 import {ProductoCuenta} from "../../interfaces/productosCuenta";
+import {LocalService} from "../sharedMethods/localStorage/local.service";
 
 
 interface ProductoDeCuenta {
@@ -49,6 +50,8 @@ export class ModalCuentasComponent implements OnInit{
   //mesa y empleado seleccionado
   empleadoSeleccionado : Empleado | undefined;
   mesaSeleccionada : Mesa | undefined;
+  rolEmpleado = this.localStorageService.getUserRole();
+
 
   constructor(
     public dialogRef: MatDialogRef<ModalCuentasComponent>,
@@ -56,7 +59,8 @@ export class ModalCuentasComponent implements OnInit{
     private fb : FormBuilder,
     private empleadoService : EmpleadosService,
     private mesaService : MesasService,
-    public dialog : MatDialog
+    public dialog : MatDialog,
+    private localStorageService : LocalService,
   ) {
     this.form = this.fb.group({
       empleado : [null, Validators.required],
@@ -64,16 +68,26 @@ export class ModalCuentasComponent implements OnInit{
     })
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.getEmpleados();
     this.getMesas();
-
+    if (this.rolEmpleado === 'MESERO') {
+      const id: number = parseInt(sessionStorage.getItem("empleadoId")!);
+      this.empleadoSeleccionado = await this.getEmpleadoByID(id);
+      this.form.get('empleado')?.setValue(this.empleadoSeleccionado);
+    }
   }
 
   /*
   *
   * METODOS
   * */
+  async getEmpleadoByID(id: number): Promise<Empleado> {
+    let request = await this.empleadoService.getEmpleadoById(id).toPromise();
+    const empleado: Empleado = request.object;
+    return empleado;
+  }
+
   onEmpleadoSeleccionado(event: { value: any; }): void {
     const empleadoId = event.value;
     this.empleadoSeleccionado = this.empleados.find(empleado => empleado.id === empleadoId.id);
@@ -157,6 +171,8 @@ export class ModalCuentasComponent implements OnInit{
       }
 
       this.dialogRef.close(datosAEnviar);
+    }else{
+      console.log("formulario invalido")
     }
   }
 
