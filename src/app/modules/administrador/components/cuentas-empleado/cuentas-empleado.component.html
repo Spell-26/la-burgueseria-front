@@ -1,0 +1,87 @@
+<div class="container-section">
+  <header class="header-module">
+    <h1>Pedidos</h1>
+  </header>
+
+  <div class="calendario-container">
+    <bootstrap-range-calendar (fechasEnviadas) = "recibirDatosCalendario($event)" ></bootstrap-range-calendar>
+  </div>
+
+  <div class="filtroYBoton">
+
+    <div class="btn-black" data-toggle="tooltip" data-placement="top" title="Nueva cuenta">
+      <button (click)="modalCrearCuenta()"> <!-- (click) ="crearMesaModal()" -->
+        <img src="assets/icons/new.svg" alt="">
+        <span>Nuevo pedido</span>
+      </button>
+    </div>
+  </div>
+
+  <section class="component-main-component">
+    <ng-container *ngIf="!isLoading ; else skeletonLoadingPartial">
+      <ng-container *ngIf="cuentasEmpleado.length > 0; else buscando">
+        <table class="tabla-listado" >
+          <thead class="cabecera-tabla">
+          <tr class="row-header">
+            <th class="row-header-element">
+              MESA
+            </th>
+            <th class="row-header-element">
+              EMPLEADO
+            </th>
+            <th class="row-header-element">
+              SUBTOTAL
+            </th>
+            <th class="row-header-element">
+              ABONO
+            </th>
+            <th class="row-header-element">
+              TOTAL
+            </th>
+            <th class="row-header-element">
+              ESTADO
+            </th>
+            <th class="row-header-element">
+              FECHA
+            </th>
+            <th class="row-header-element">
+              ACCIONES
+            </th>
+          </tr>
+          </thead>
+          <tbody class="contenido-tabla">
+            <tr class="row-contenido-tabla" *ngFor="let cuenta of cuentasEmpleado">
+              <td class="row-contenido-element">{{cuenta.mesa.numeroMesa}}</td>
+              <td class="row-contenido-element">{{nombreEmpleado}}</td>
+              <td class="row-contenido-element">{{cuenta.total.toLocaleString()}}</td>
+              <td class="row-contenido-element">{{cuenta.abono.toLocaleString()}}</td>
+              <td class="row-contenido-element">{{(cuenta.total - cuenta.abono).toLocaleString()}}</td>
+              <td class="row-contenido-element" ngClass="estado{{cuenta.estadoCuenta.id}}">{{cuenta.estadoCuenta.nombre === "Por despachar" ? "En espera" : cuenta.estadoCuenta.nombre}}</td>
+              <td class="row-contenido-element">{{ cuenta.fecha.toLocaleString()}}</td>
+              <td class="row-contenido-element"><button class="ver-cuenta" (click)="verCuenta(cuenta)">
+                Gestionar
+              </button></td>
+            </tr>
+          </tbody>
+
+        </table>
+      </ng-container>
+    </ng-container>
+  </section>
+
+</div>
+
+
+
+
+<ng-template #skeletonLoadingPartial>
+  <app-skeleton-partial></app-skeleton-partial>
+</ng-template>
+
+<ng-template #buscando >
+  <div class="cargando">
+    <h2>No se han encontrado ninguna cuenta en las fechas dadas.</h2>
+    <img src="assets/img/running-cat.gif" alt="">
+
+  </div>
+</ng-template>

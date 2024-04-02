@@ -1,0 +1,118 @@
+
+
+
+
+/* Contenido principal del componente (tablas, cards, etc)*/
+
+.tabla-listado{
+  width: 100%;
+  color: #fff;
+  margin: 0 .5em;
+  border-collapse: separate;
+  border-spacing: 0 10px
+}
+.row-header-element{
+  font-size: 1.1em;
+  font-family: WorkSans-bold, serif;
+  text-align: center;
+  color: #EBB80D;
+}
+.row-header-element {
+  width: calc(100% / 7); /* Ajusta el ancho según el número de columnas */
+  text-align: center; /* Alinea el texto en el centro */
+}
+.row-contenido-tabla{
+  text-align: center;
+}
+.row-contenido-tabla:hover{
+  background-color: rgba(79, 74, 74, 0.42);
+  cursor: pointer;
+}
+.row-contenido-element{
+  padding: .8em .5em;
+}
+.btn-eliminar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+}
+.btn-eliminar-element:hover{
+  border: 1px solid red;
+  color: red;
+  cursor: pointer;
+}
+
+.btn-black button {
+  padding: .5em 1em !important;
+}
+
+.row-contenido-element span{
+  font-family: WorkSans-Light, serif;
+  font-size: 1em;
+  margin: 0 .5em;
+}
+.row-contenido-element input{
+  width: 5em;
+  padding: .8em;
+  border: 0;
+}
+.btn-actualizar-element{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  font-size: 1em;
+  margin: 0 1em;
+  cursor: pointer;
+}
+.btn-actualizar-element:hover{
+  border: 1px solid #EBB80D;
+}
+.editable:hover{
+  background-color: rgba(85, 135, 73, 0.42);
+}
+
+.ver-cuenta{
+  padding: .8em;
+  background-color: rgba(255, 255, 255, 0);
+  color: #fff;
+  font-family: WorkSans, serif;
+  border: 1px solid #3C3B3B;
+  cursor: pointer;
+}
+
+.ver-cuenta:hover{
+  border: 1px solid green;
+}
+
+/* Colores para cada estado cuenta*/
+
+/* 1 : Por despachar*/
+.estado1{
+  color:  #FF9900
+;
+}
+/* 2: Pagada*/
+.estado2{
+  color: #4CAF50 ;
+}
+/* 3: despachada*/
+.estado3{
+  color:  #3366CC ;
+}
+/* 4: cancelada*/
+.estado4{
+  color:  #FF3333;
+}
+.calendario-container{
+  width: 100% !important;
+}
+.filtroYBoton{
+  width: 100% !important;
+  margin-top: 1em;
+}
+
