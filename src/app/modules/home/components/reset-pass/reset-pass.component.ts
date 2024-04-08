@@ -65,12 +65,9 @@ export class ResetPassComponent implements OnInit{
             });
             this.form.reset()
           }
-          this.alertaEnviarMail();
         }
-      )
-
-
-
+      );
+    this.alertaEnviarMail();
   }
 
   public validarToken(){
