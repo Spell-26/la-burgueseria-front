@@ -42,6 +42,14 @@
               <a class="nav-link" [routerLink]="['dashboard']" style="color: white;">Dashboard</a>
             </li>
           </div>
+          <ng-container *ngIf="rolEmpleado === 'MESERO'">
+            <div class="col-4">
+              <li class="nav-item">
+                <a class="nav-link" [routerLink]="['cuentas/empleado']" style="color: white;">Pedidos</a>
+              </li>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="rolEmpleado !== 'MESERO'">
           <div class="col-4">
             <li class="nav-item">
               <a class="nav-link" [routerLink]="['cuentas']" style="color: white;">Pedidos</a>
@@ -52,7 +60,9 @@
               <a class="nav-link" style="color: white;" [routerLink]="['productos']">Productos</a>
             </li>
           </div>
+          </ng-container>
         </div>
+        <ng-container *ngIf="rolEmpleado !== 'MESERO'">
         <div class="row">
           <div class="col-4">
             <li class="nav-item">
@@ -84,6 +94,7 @@
             </li>
           </div>
         </div>
+        </ng-container>
       </ul>
     </div>
 

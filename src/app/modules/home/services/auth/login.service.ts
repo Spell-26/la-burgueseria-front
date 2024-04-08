@@ -19,7 +19,6 @@ export class LoginService {
     return this.http.post<any>(this.env.urlHost+"/auth/login", credentials).pipe(
       tap(
         (userData) => {
-          console.log(userData)
           sessionStorage.setItem("token", userData.token);
           sessionStorage.setItem("nombre", userData.nombre);
           sessionStorage.setItem("apellido", userData.apellido);

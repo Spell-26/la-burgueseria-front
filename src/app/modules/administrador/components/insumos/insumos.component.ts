@@ -10,6 +10,7 @@ import {Router} from "@angular/router";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 import {FormControl, Validators} from "@angular/forms";
 import {ModalAgregarInsumoComponent} from "../../utils/modal-agregar-insumo/modal-agregar-insumo.component";
+import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 
 
 @Component({
@@ -37,12 +38,13 @@ export class InsumosComponent implements OnInit{
   userLoginOn : boolean = false;
   //VARIFICAR SI ESTA CARGANDO
   isLoading : boolean = true;
-
+  rolEmpleado = this.localStore.getUserRole();
   constructor(private insumosService : InsumosService,
               public dialog : MatDialog,
               private loginService : LoginService,
               private router : Router,
-              private alertaService : AlertasService
+              private alertaService : AlertasService,
+              private localStore : LocalService
   ) {
 
   }
@@ -54,7 +56,10 @@ export class InsumosComponent implements OnInit{
     });
     if(!this.userLoginOn){
       this.router.navigateByUrl('home/login')
-    }else{
+    }else if(this.rolEmpleado === 'MESERO'){
+      this.router.navigateByUrl('admin')
+    }
+    else{
       this.insumosService.refreshNeeded
         .subscribe(
           () =>{

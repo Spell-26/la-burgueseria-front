@@ -8,6 +8,7 @@ import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service"
 import Swal from "sweetalert2";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
+import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 
 @Component({
   selector: 'app-mesas',
@@ -36,11 +37,12 @@ export class MesasComponent implements OnInit{
   //verificacion de carga de contenido
   isLoading = true;
   isLoadingPartial = false;
-
+  rolEmpleado = this.localStore.getUserRole();
   constructor(private mesaService : MesasService, public dialog : MatDialog,
               private alertaService : AlertasService,
               private loginService : LoginService,
-              private router : Router
+              private router : Router,
+              private localStore : LocalService
   ) {
   }
   ngOnInit(): void {
@@ -51,7 +53,10 @@ export class MesasComponent implements OnInit{
     });
     if(!this.userLoginOn){
       this.router.navigateByUrl('home/login')
-    }else{
+    }else if(this.rolEmpleado === 'MESERO'){
+      this.router.navigateByUrl('admin')
+    }
+    else{
       this.mesaService.refreshNeeded
         .subscribe(
           () =>{

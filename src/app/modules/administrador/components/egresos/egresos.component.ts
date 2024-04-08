@@ -9,6 +9,7 @@ import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service"
 import Swal from "sweetalert2";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
+import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 
 @Component({
   selector: 'app-egresos',
@@ -22,7 +23,8 @@ export class EgresosComponent implements OnInit{
     private egresoService : EgresoService,
     private alertaService : AlertasService,
     private loginService : LoginService,
-    private router : Router
+    private router : Router,
+    private localStore : LocalService
   ) {
   }
 
@@ -46,6 +48,7 @@ export class EgresosComponent implements OnInit{
   userLoginOn : boolean = false;
   //verificacion de carga de datos
   isLoading = false;
+  rolEmpleado = this.localStore.getUserRole();
   ngOnInit(): void {
 
     this.loginService.userLoginOn.subscribe({
@@ -55,7 +58,10 @@ export class EgresosComponent implements OnInit{
     });
     if(!this.userLoginOn){
       this.router.navigateByUrl('home/login')
-    }else{
+    }else if(this.rolEmpleado === 'MESERO'){
+      this.router.navigateByUrl('admin')
+    }
+    else{
       this.egresoService.refreshNeeded
         .subscribe(
           () => {

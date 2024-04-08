@@ -18,6 +18,7 @@ import {format} from "date-fns";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
+import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 
 @Component({
   selector: 'app-ingresos',
@@ -47,7 +48,7 @@ export class IngresosComponent implements OnInit{
   userLoginOn : boolean = false;
   //verificacion de carga de datos
   isLoading = false;
-
+  rolEmpleado = this.localStore.getUserRole();
   ngOnInit(): void {
 
     this.loginService.userLoginOn.subscribe({
@@ -57,7 +58,10 @@ export class IngresosComponent implements OnInit{
     });
     if(!this.userLoginOn){
       this.router.navigateByUrl('home/login')
-    }else{
+    }else if(this.rolEmpleado === 'MESERO'){
+      this.router.navigateByUrl('admin')
+    }
+    else{
       this.ingresoService.refreshNeeded
         .subscribe(
           () => {
@@ -80,7 +84,8 @@ export class IngresosComponent implements OnInit{
               public fechaService : FechaHoraService,
               private loginService : LoginService,
               private router : Router,
-              private alertaService : AlertasService) {
+              private alertaService : AlertasService,
+              private localStore : LocalService) {
   }
 
 

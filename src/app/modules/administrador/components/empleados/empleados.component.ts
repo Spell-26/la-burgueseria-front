@@ -11,6 +11,7 @@ import {UserRegister} from "../../interfaces/usuario";
 import {RegisterService} from "../../../home/services/auth/register.service";
 import {forkJoin} from "rxjs";
 import {UsuarioService} from "../../../home/services/usuario/usuario.service";
+import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 
 
 @Component({
@@ -42,7 +43,7 @@ export class EmpleadosComponent implements OnInit{
   isPartialLoading : boolean = false;
   //usuario y empleado
   usuariosConEmpleados : any[] = [];
-
+  rolEmpleado = this.localStore.getUserRole();
   //CONSTRUCTOR
   constructor(private empleadoService : EmpleadosService, public dialog : MatDialog,
               private alertaService : AlertasService,
@@ -50,6 +51,7 @@ export class EmpleadosComponent implements OnInit{
               private router : Router,
               private registerService : RegisterService,
               private usuarioService : UsuarioService,
+              private localStore : LocalService
               ) {
   }
 
@@ -63,7 +65,10 @@ export class EmpleadosComponent implements OnInit{
 
     if(!this.userLoginOn){
       this.router.navigateByUrl('home/login')
-    }else{
+    }else if(this.rolEmpleado === 'MESERO'){
+      this.router.navigateByUrl('admin')
+    }
+    else{
       this.empleadoService.refreshNeeded
         .subscribe(
           () => {

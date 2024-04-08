@@ -20,7 +20,7 @@ import {AlertasService} from "../sharedMethods/alertas/alertas.service";
 import {ModalEditarCuentaComponent} from "../modal-editar-cuenta/modal-editar-cuenta.component";
 import Swal from "sweetalert2";
 import {Ingreso} from "../../interfaces/ingreso";
-import {EMPTY, forkJoin, interval, Observable, Subject, switchMap, takeUntil} from "rxjs";
+import {EMPTY, forkJoin, interval, Observable, Subject, switchMap, takeUntil, tap} from "rxjs";
 import {ModalIngresosComponent} from "../modal-ingresos/modal-ingresos.component";
 import {MatDialog} from "@angular/material/dialog";
 import {LoginService} from "../../../home/services/auth/login.service";
@@ -60,7 +60,8 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
   nombreUsuario = '';
   apellidoUsuario = '';
   rolUsuario = '';
-
+  idEmpleado : string | null = sessionStorage.getItem("empleadoId");
+  rolEmpleado : string | null = sessionStorage.getItem("rol");
   constructor(
     private iconRegistry : MatIconRegistry,
     private sanitizer : DomSanitizer,
@@ -111,10 +112,14 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
           )
         }
       );
-
-    // Obtener las cuentas y empleados al inicio
-    this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
     this.getEmpleadoCuentas();
+    // Obtener las cuentas y empleados al inicio
+    if(this.rolEmpleado === 'MESERO'){
+      this.getCuentasMeseroByFechas();
+    }else{
+      this.getCuentasByFecha(this.fechaHoraInicioUTC, this.fechaHoraFinUTC);
+    }
+
 
   }
   ngOnDestroy(): void {
@@ -194,6 +199,43 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
           console.log(error)
         }
       )
+  }
+
+  private getCuentasMeseroByFechas() {
+    // Llamada a la API para obtener las cuentas por fecha
+    const cuentasPorFecha$ = this.cuentaService.cuentasByEmpleado(this.idEmpleado,this.fechaHoraInicioUTC, this.fechaHoraFinUTC)
+      .pipe(
+        tap(data => {
+          // Formatear la fecha y hora de cada cuenta
+          data.object.forEach((cuenta: Cuenta)  => {
+            const fechaArray: number[] = cuenta.fecha;
+            const fecha: Date = new Date(
+              fechaArray[0],
+              fechaArray[1] - 1,
+              fechaArray[2],
+              fechaArray[3],
+              fechaArray[4],
+              fechaArray[5],
+              fechaArray[6] / 1000000
+            );
+            cuenta.fecha = fecha;
+          });
+        })
+      );
+
+    // Combinar ambas llamadas usando forkJoin
+    forkJoin({
+      cuentasPorFecha: cuentasPorFecha$
+    }).subscribe(
+      ({ cuentasPorFecha}) => {
+        this.cuentasFecha = cuentasPorFecha.object;
+        this.separateCuentasByEstado(this.cuentasFecha);
+      },
+      error => {
+      },
+      () => {
+      }
+    );
   }
 
   private getEmpleadoCuentas(){

@@ -53,7 +53,7 @@ export class CuentasComponent implements OnInit{
 
   //skeletonLoadingPartial
   isLoading = true;
-
+  rolEmpleado = this.localStorageService.getUserRole();
 
   ngOnInit(): void {
     this.loginService.userLoginOn.subscribe({
@@ -63,7 +63,10 @@ export class CuentasComponent implements OnInit{
     });
     if(!this.userLoginOn){
       this.router.navigateByUrl('home/login')
-    }else{
+    }else if(this.rolEmpleado === 'MESERO'){
+      this.router.navigateByUrl('admin')
+    }
+    else{
       this.cuentaService.refreshNeeded
         .subscribe(
           () =>{

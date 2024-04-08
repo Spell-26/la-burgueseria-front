@@ -15,6 +15,7 @@ import {InsumosPorProductoService} from "../../services/insumos-por-producto.ser
 import {AlertasService} from "../../utils/sharedMethods/alertas/alertas.service";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
+import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
 
 @Component({
   selector: 'app-productos',
@@ -37,7 +38,7 @@ export class ProductosComponent  implements OnInit {
   //verificar carga de datos
   isLoading = true;
   isLoadingPartial = false;
-
+  rolEmpleado = this.localStore.getUserRole();
 
   // CONSTRUCTOR E INICIALIZADORES
   constructor(private productosService : ProductosService,
@@ -48,7 +49,8 @@ export class ProductosComponent  implements OnInit {
               public dialog : MatDialog,
               private alertaService : AlertasService,
               private loginService : LoginService,
-              private router : Router) {
+              private router : Router,
+              private localStore : LocalService) {
   }
   ngOnInit(): void {
 
@@ -59,7 +61,10 @@ export class ProductosComponent  implements OnInit {
     });
     if(!this.userLoginOn){
       this.router.navigateByUrl('home/login')
-    }else{
+    }else if(this.rolEmpleado === 'MESERO'){
+      this.router.navigateByUrl('admin')
+    }
+    else{
       this.productosService.refreshNeeded
         .subscribe(
           () =>{
