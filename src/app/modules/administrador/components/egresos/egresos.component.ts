@@ -216,7 +216,7 @@ export class EgresosComponent implements OnInit{
         tipoEgreso : egreso.categoria,
         egreso : egreso.total.toLocaleString(),
         descripcion : egreso.descripcion,
-        fecha : this.fechaService.convertirUTCAFechaHoraLocal(egreso.fecha?.toLocaleString()),
+        fecha : this.fechaService.convertirUTCAFechaHoraLocal(egreso.fecha),
         deduccionDesde : egreso.deduccionDesde,
         soporte : egreso.soporte
       }
