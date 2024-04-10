@@ -61,7 +61,8 @@ export class ModalIppComponent implements OnInit{
       const insumo : insumo = {
         id: insumoSeleccionado.id,
         nombre: insumoSeleccionado.nombre,
-        cantidad : 0
+        cantidad : 0,
+        precioCompraUnidad : insumoSeleccionado.precioCompraUnidad
       }
 
       const insumosProducto : InsumoProducto = {

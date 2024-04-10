@@ -169,6 +169,7 @@ svg:hover {
   border: 1px solid #515151;
   padding: .4em;
   border-radius: 12px;
+  width: 100%;
 }
 
 .header-insumos-agregar{
@@ -207,7 +208,8 @@ svg:hover {
   align-items: center;
 }
 .form-agregar-insumo{
-  width: 85%;
+  width: 90%;
+  max-width: 90% !important;
   height: 100%;
   display: flex;
   flex-direction: row;
@@ -216,7 +218,7 @@ svg:hover {
   justify-content: space-evenly;
 }
 .form-agregar-insumo mat-form-field{
-  width: 40%;
+  width: 31%;
 }
 .agregar{
 
@@ -260,6 +262,7 @@ svg:hover {
 }
 .staggin table{
   width: 100%;
+  font-size: 1.6em;
 }
 .quitarInsumo{
   background-color: #616060;
@@ -286,4 +289,20 @@ svg:hover {
 }
 .datos-egreso form mat-form-field{
 
+}
+.precio-unitario{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  border: none;
+}
+.precio-unitario span{
+  width: 100%;
+}
+.aumento{
+  color: red;
+}
+
+.descuento{
+  color: green;
 }

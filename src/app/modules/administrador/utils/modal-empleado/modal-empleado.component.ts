@@ -47,7 +47,11 @@ export class ModalEmpleadoComponent {
           rol : [null, Validators.required]
 
         }
-      )
+      );
+      // Suscribirse a los cambios en contrasenaVerify para verificar la coincidencia de contraseñas
+      this.form.get('contrasenaVerify')?.valueChanges.subscribe(() => {
+        this.verifyPasswordMatch();
+      });
     }
 
   }
@@ -85,7 +89,22 @@ export class ModalEmpleadoComponent {
 
     }
   }
+
+  // Función para verificar la coincidencia de contraseñas
+  verifyPasswordMatch(): void {
+    const contrasena = this.form.get('contrasena')?.value;
+    const contrasenaVerify = this.form.get('contrasenaVerify')?.value;
+
+    if (contrasena !== contrasenaVerify) {
+      this.form.get('contrasenaVerify')?.setErrors({ mismatch: true });
+    } else {
+      this.form.get('contrasenaVerify')?.setErrors(null);
+    }
+  }
+
 }
+
+
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {

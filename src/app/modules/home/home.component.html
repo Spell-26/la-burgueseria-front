@@ -135,8 +135,8 @@
                     <img [src]="product.imagenUrl" (error)="onImageError(product)">
                   </div>
                   <div class="contenido-producto">
-                    <h3>{{product.nombre}}</h3>
-                    <h4>${{product.precio.toLocaleString()}}</h4>
+                    <h3 class="nombre-producto">{{product.nombre}}</h3>
+                    <h4>Precio: ${{product.precio.toLocaleString()}}</h4>
                     <p>{{product.descripcion}}</p>
                   </div>
                 </div>

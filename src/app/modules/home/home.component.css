@@ -4,6 +4,10 @@
   scroll-snap-type: y mandatory;
   overflow-y: scroll;
 }
+.nombre-producto{
+  font-weight: 500;
+  font-size: 1.8em;
+}
 .section {
   scroll-snap-align: start;
   height: 100vh; /* Ajusta la altura de las secciones según sea necesario */

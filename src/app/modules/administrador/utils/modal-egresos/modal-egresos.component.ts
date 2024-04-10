@@ -117,39 +117,49 @@ export class ModalEgresosComponent {
 
   // Función para manejar el cambio de archivo
   onFileChange(event: any) {
-    //selecciona el elemento fuente del objeto
     const fileInput = event.target;
 
-    //asegurando que el evento si contenga una imagen
-    if(fileInput.files && fileInput.files.length > 0){
-      const file = event.target.files[0];
+    // Verificar si se seleccionó un archivo y es una imagen
+    if (fileInput.files && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
 
-      //verificar que el tamaño de la imagen sea menor a 2mb
-      if(file.size <= 5 * 1024 * 1024){ // 2 MB en bytes
-        this.form.get('soporte')?.setValue(file);
-        this.fileName = fileInput.files[0].name;
-        this.fileError = ''; //Limpiar el mensaje de error si estaba presente
-
-        //mostrar la imagen seleccionada
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.selectedImage = e.target?.result as string;
-        };
-
-        reader.readAsDataURL(file);
+      // Validar el tipo de archivo
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        this.fileError = 'Error: El archivo seleccionado no es una imagen válida.';
+        this.resetFileInput(fileInput); // Restablecer el input de archivo
+        return;
       }
-      else{
-        this.fileError = '¡Error!, la imagen del egreso no puede superar los 5mb.'
-        // Restablecer el valor del input de archivo para permitir una nueva selección
-        fileInput.value = '';
-        //limpiar nombre del filename
-        this.fileName = '';
-        // Limpiar la imagen seleccionada si hay error
-        this.selectedImage = '';
+
+      // Verificar el tamaño del archivo (no debe superar los 5 MB)
+      if (file.size > 5 * 1024 * 1024) { // 5 MB en bytes
+        this.fileError = '¡Error!, la imagen seleccionada no puede superar los 5MB.';
+        this.resetFileInput(fileInput); // Restablecer el input de archivo
+        return;
       }
+
+      // Si el archivo es válido (tipo y tamaño), actualizar el formulario y la vista previa de la imagen
+      this.form.get('soporte')?.setValue(file);
+      this.fileName = file.name;
+      this.fileError = ''; // Limpiar el mensaje de error si estaba presente
+
+      // Mostrar la imagen seleccionada en un elemento <img>
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.selectedImage = e.target?.result as string;
+      };
+
+      reader.readAsDataURL(file);
     }
-
   }
+
+// Función para restablecer el input de archivo y limpiar los datos relacionados
+  resetFileInput(fileInput: any): void {
+    fileInput.value = ''; // Limpiar el valor del input de archivo
+    this.fileName = ''; // Limpiar el nombre del archivo
+    this.selectedImage = ''; // Limpiar la imagen seleccionada
+  }
+
 
 
 }

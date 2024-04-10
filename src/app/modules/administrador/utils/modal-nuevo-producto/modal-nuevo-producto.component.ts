@@ -39,6 +39,8 @@ export class ModalNuevoProductoComponent implements OnInit {
   menuDesplegado = false;
   // Variable para almacenar la descripción
   descripcionValue: string = '';
+
+  valorInsumos : number = 0;
   constructor(
     public dialogRef: MatDialogRef<ModalNuevoProductoComponent>,
     @Inject(MAT_DIALOG_DATA) public data : any,
@@ -140,13 +142,26 @@ export class ModalNuevoProductoComponent implements OnInit {
     if (fileInput.files && fileInput.files.length > 0) {
       const file = fileInput.files[0];
 
-      // Verificar si el tamaño del archivo es menor o igual a 2 MB
-      if (file.size <= 5 * 1024 * 1024) { // 2 MB en bytes
+      // Validar el tipo de archivo
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        this.fileError = 'Error: El archivo seleccionado no es una imagen válida.';
+        // Restablecer el valor del input de archivo para permitir una nueva selección
+        fileInput.value = '';
+        // Limpiar el nombre del filename
+        this.fileName = '';
+        // Limpiar la imagen seleccionada si hay error
+        this.selectedImage = '';
+        return; // Salir de la función si el tipo de archivo no es válido
+      }
+
+      // Verificar si el tamaño del archivo es menor o igual a 5 MB
+      if (file.size <= 5 * 1024 * 1024) { // 5 MB en bytes
         this.form.get('imagen')?.setValue(file);
         this.fileName = fileInput.files[0].name;
         this.fileError = ''; // Limpiar el mensaje de error si estaba presente
 
-        //mostrar la imagen seleccionada
+        // Mostrar la imagen seleccionada
         const reader = new FileReader();
         reader.onload = (e) => {
           this.selectedImage = e.target?.result as string;
@@ -154,16 +169,17 @@ export class ModalNuevoProductoComponent implements OnInit {
 
         reader.readAsDataURL(file);
       } else {
-        this.fileError = '¡Error!, la imagen del producto no puede superar los 5mb.'
+        this.fileError = '¡Error!, la imagen del producto no puede superar los 5MB.'
         // Restablecer el valor del input de archivo para permitir una nueva selección
         fileInput.value = '';
-        //limpiar nombre del filename
+        // Limpiar nombre del filename
         this.fileName = '';
         // Limpiar la imagen seleccionada si hay error
         this.selectedImage = '';
       }
     }
   }
+
 
 
   //metodos de los insumos del producto
@@ -183,13 +199,14 @@ export class ModalNuevoProductoComponent implements OnInit {
   guardarIpp(index: number){
 
     this.insumos[index].cantidad = this.cantidadEditada;
-
+    this.calcularValorInsumos(this.insumos);
     this.terminarEdicion(index);
   }
 
   //eliminar ipp
   eliminarIpp(index : number){
     this.insumos.splice(index, 1);
+    this.calcularValorInsumos(this.insumos);
   }
 
   //boton para eliminar una categoria
@@ -280,10 +297,22 @@ export class ModalNuevoProductoComponent implements OnInit {
           //validar que no esté ya un objeto con el mismo ID agregado al array
           if(!this.insumos.some(insumo => insumo.insumo.id === result.insumo.id)){
             this.insumos.push(result);
-            this.mostrarIconoScroll()
+            this.mostrarIconoScroll();
+            this.calcularValorInsumos(this.insumos);
           }
         }
       }
     )
   }
+  private calcularValorInsumos(insumosPorPorducto : InsumoProducto[]){
+    this.valorInsumos = 0; //limpiar el valor actual
+    insumosPorPorducto.forEach(ipp => {
+        const valor = ipp.insumo.precioCompraUnidad
+        // @ts-ignore
+        const valorNeto = valor * ipp.cantidad;
+        this.valorInsumos += valorNeto;
+      }
+    )
+  }
+
 }

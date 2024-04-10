@@ -38,7 +38,7 @@ export class ModalEditarProductoComponent implements OnInit{
   menuDesplegado = false;
   // Variable para almacenar la descripción
   descripcionValue: string = '';
-
+  valorInsumos : number = 0;
   ngOnInit(): void {
 
     this.categoriaService.refreshNeeded
@@ -130,12 +130,24 @@ export class ModalEditarProductoComponent implements OnInit{
       .subscribe(
         data => {
           this.insumosPorProducto = data.object
+          this.calcularValorInsumos(this.insumosPorProducto);
         },
         error => {
           console.log(error)
         }
       )
   }
+  //calcular la sumatoria del valor insumos por producto
+  private calcularValorInsumos(insumosPorPorducto : InsumoProducto[]){
+    this.valorInsumos = 0; //limpiar el valor actual
+    insumosPorPorducto.forEach(ipp => {
+      const valor = ipp.insumo.precioCompraUnidad
+      // @ts-ignore
+      const valorNeto = valor * ipp.cantidad;
+      this.valorInsumos += valorNeto;
+      }
+    )
+}
   // cargar todas las categorias producto
   private getCategoriasProducto(){
     this.categoriaService.getCategoriasProductos()
@@ -155,40 +167,50 @@ export class ModalEditarProductoComponent implements OnInit{
 
 
   // Función para manejar el cambio de archivo
-  onFileChange(event: any) {
-    //selecciona el elemento fuente del objeto
+  onFileChange(event: any): void {
     const fileInput = event.target;
 
-    //asegurando que el evento si contenga una imagen
-    if(fileInput.files && fileInput.files.length > 0){
-      const file = event.target.files[0];
+    if (fileInput.files && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
 
-      //verificar que el tamaño de la imagen sea menor a 2mb
-      if(file.size <= 5 * 1024 * 1024){ // 2 MB en bytes
+      // Validar el tipo de archivo
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        this.fileError = 'Error: El archivo seleccionado no es una imagen válida.';
+        // Restablecer el valor del input de archivo para permitir una nueva selección
+        fileInput.value = '';
+        // Limpiar el nombre del filename
+        this.fileName = '';
+        // Limpiar la imagen seleccionada si hay error
+        this.selectedImage = '';
+        return; // Salir de la función si el tipo de archivo no es válido
+      }
+
+      // Verificar si el tamaño del archivo es menor o igual a 5 MB
+      if (file.size <= 5 * 1024 * 1024) { // 5 MB en bytes
         this.form.get('imagen')?.setValue(file);
         this.fileName = fileInput.files[0].name;
-        this.fileError = ''; //Limpiar el mensaje de error si estaba presente
+        this.fileError = ''; // Limpiar el mensaje de error si estaba presente
 
-        //mostrar la imagen seleccionada
+        // Mostrar la imagen seleccionada
         const reader = new FileReader();
         reader.onload = (e) => {
           this.selectedImage = e.target?.result as string;
         };
 
         reader.readAsDataURL(file);
-      }
-      else{
-        this.fileError = '¡Error!, la imagen del producto no puede superar los 5mb.'
+      } else {
+        this.fileError = '¡Error!, la imagen del producto no puede superar los 5MB.'
         // Restablecer el valor del input de archivo para permitir una nueva selección
         fileInput.value = '';
-        //limpiar nombre del filename
+        // Limpiar nombre del filename
         this.fileName = '';
         // Limpiar la imagen seleccionada si hay error
         this.selectedImage = '';
       }
     }
-
   }
+
 
   onGuardarClick(): void {
     //construir objeto para devolver
@@ -274,7 +296,7 @@ export class ModalEditarProductoComponent implements OnInit{
     this.ippService.updateIpp(ipp)
       .subscribe(
         res =>{
-
+          this.calcularValorInsumos(this.insumosPorProducto);
         },
         error => {
           console.log(error)
@@ -286,7 +308,11 @@ export class ModalEditarProductoComponent implements OnInit{
   //eliminar ipp
   eliminarIpp(ippId : number, index : number){
     this.ippService.deleteIpp(ippId)
-      .subscribe();
+      .subscribe(
+        result => {
+          this.calcularValorInsumos(this.insumosPorProducto)
+        }
+      );
   }
 
   private getCategorias() {
@@ -325,7 +351,9 @@ export class ModalEditarProductoComponent implements OnInit{
         if(result){
           const ipp : InsumoProducto = result;
           this.ippService.createIpp(ipp)
-            .subscribe();
+            .subscribe(
+              result => {}
+            );
         }
         this.getInsumosPorProducto(this.producto.id)
         this.mostrarIconoScroll();

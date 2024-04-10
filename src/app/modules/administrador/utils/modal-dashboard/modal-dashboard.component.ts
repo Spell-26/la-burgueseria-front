@@ -32,7 +32,12 @@ export class ModalDashboardComponent implements OnInit {
     this.form = this.fb.group({
       totalCalculado: [null],
       totalReportado: [null],
-      saldoInicioCajaMenor: [null, [Validators.required, Validators.pattern(/^[1-9]\d{0,12}$/)]],
+      saldoInicioCajaMenor: [null, [
+        Validators.required,
+        Validators.min(5000),
+        Validators.max(3000000), // Máximo 3 millones
+        Validators.pattern(/^[1-9]\d{0,6}$/) // Patrón para aceptar números enteros positivos hasta 7 dígitos
+      ]],
       observaciones: [null],
       fechaHoraInicio: [null],
       fechaHoraCierre: [null],

@@ -8,7 +8,8 @@
         <input matInput  formControlName="saldoInicioCajaMenor">
         <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('required')">La base del día es obligatoria.</mat-error>
         <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('pattern')">Cantidad ingresada no es válida.</mat-error>
-      </mat-form-field>
+        <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('min')">El valor mínimo permitido es 5000.</mat-error>
+        <mat-error *ngIf="form.get('saldoInicioCajaMenor')?.hasError('max')">El valor máximo permitido es 3,000,000.</mat-error></mat-form-field>
     </ng-container>
     <!-- Campos para finalizar el dia -->
     <ng-container *ngIf="!isIniciarDia">

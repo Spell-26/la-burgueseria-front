@@ -85,7 +85,7 @@ export class ResetPassComponent implements OnInit{
   }
 
   public cambiarContrasenna(){
-    if(this.formPassword.value.password === this.formPassword.value.confirmPassword){
+    if((this.formPassword.value.password === this.formPassword.value.confirmPassword) && (this.formPassword.value.password != null && this.formPassword.value.confirmPassword != null)){
       let usuario : UserRegister;
       this.passwordRecoveryService.generateToken(this.correoUsuario!)
         .subscribe(

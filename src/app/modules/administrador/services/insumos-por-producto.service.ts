@@ -28,7 +28,6 @@ export class InsumosPorProductoService {
     const id = ipp.id;
     const insumoId = ipp.insumo.id;
     const productoId = ipp.producto.id
-    console.log("desde el service: ", ipp)
     // Configura un encabezado personalizado con el ID
     const headers = new HttpHeaders().set('Id', id.toString()).set('insumoId', ipp.insumo.id.toString())
       .set('productoId', ipp.producto.id.toString());

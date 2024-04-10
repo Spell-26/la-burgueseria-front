@@ -28,10 +28,16 @@ export class ModalAgregarInsumoComponent implements OnInit {
     Validators.pattern(/^\d+$/), // solo valores numéricos enteros
     Validators.min(1) // la cantidad debe ser mayor a 0
   ]);
+  precioUnitarioControl = new FormControl('', [
+    Validators.required,
+    Validators.pattern(/^\d+$/), // solo valores numéricos enteros
+    Validators.min(50), // la cantidad debe ser mayor a 0
+    Validators.max(3000000)
+  ]);
   totalCompraControl = new FormControl('',[
     Validators.required,
     Validators.pattern(/^\d+$/), // solo valores numéricos enteros
-    Validators.min(1) // la cantidad debe ser mayor a 0
+    Validators.min(50) // la cantidad debe ser mayor a 0
     ]);
   origenControl = new FormControl(null, [
     Validators.required
@@ -158,39 +164,52 @@ export class ModalAgregarInsumoComponent implements OnInit {
   }
   // Función para manejar el cambio de archivo
   onFileChange(event: any) {
-    //selecciona el elemento fuente del objeto
+    // Seleccionar el elemento fuente del objeto
     const fileInput = event.target;
 
-    //asegurando que el evento si contenga una imagen
-    if(fileInput.files && fileInput.files.length > 0){
+    // Asegurar que el evento contenga un archivo
+    if (fileInput.files && fileInput.files.length > 0) {
       const file = event.target.files[0];
 
-      //verificar que el tamaño de la imagen sea menor a 2mb
-      if(file.size <= 5 * 1024 * 1024){ // 2 MB en bytes
+      // Verificar que el tamaño de la imagen sea menor o igual a 5 MB
+      if (file.size <= 5 * 1024 * 1024) { // 5 MB en bytes
+        // Validar el tipo de archivo
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+          this.fileError = 'Error: El archivo seleccionado no es una imagen válida.';
+          // Restablecer el valor del input de archivo para permitir una nueva selección
+          fileInput.value = '';
+          // Limpiar el nombre del filename
+          this.fileName = '';
+          // Limpiar la imagen seleccionada si hay error
+          this.selectedImage = '';
+          return; // Salir de la función si el tipo de archivo no es válido
+        }
+
+        // Establecer el archivo seleccionado en el control de imagen
         this.imagenControl.setValue(file);
         this.fileName = fileInput.files[0].name;
-        this.fileError = ''; //Limpiar el mensaje de error si estaba presente
+        this.fileError = ''; // Limpiar el mensaje de error si estaba presente
 
-        //mostrar la imagen seleccionada
+        // Mostrar la imagen seleccionada en un elemento <img>
         const reader = new FileReader();
         reader.onload = (e) => {
           this.selectedImage = e.target?.result as string;
         };
 
         reader.readAsDataURL(file);
-      }
-      else{
-        this.fileError = '¡Error!, la imagen del egreso no puede superar los 5mb.'
+      } else {
+        this.fileError = '¡Error!, la imagen del egreso no puede superar los 5MB.'
         // Restablecer el valor del input de archivo para permitir una nueva selección
         fileInput.value = '';
-        //limpiar nombre del filename
+        // Limpiar el nombre del filename
         this.fileName = '';
         // Limpiar la imagen seleccionada si hay error
         this.selectedImage = '';
       }
     }
-
   }
+
 
   //fin del manejo de la imagen del egreso
 
@@ -203,17 +222,30 @@ export class ModalAgregarInsumoComponent implements OnInit {
     this.isAgregandoInsumo = !this.isAgregandoInsumo;
   }
   //agregar insumo al stagging
-  public agregarAlStagging(){
+  public async agregarAlStagging() {
     //crear instancia del insumo
-    if(this.nombreControl.value != '' && this.cantidadControl.value != ''){
+    if (this.nombreControl.value != '' && this.cantidadControl.value != '' && this.precioUnitarioControl.value != '') {
 
-      const insumo : insumo = {
+      const insumo: insumo = {
         id: 0,
         // @ts-ignore
         nombre: this.nombreControl.value,
         // @ts-ignore
-        cantidad: this.cantidadControl.value
+        cantidad: this.cantidadControl.value,
+        // @ts-ignore
+        precioCompraUnidad: this.precioUnitarioControl.value
       }
+      //consultar a la api si existe un insumo con el mismo nombre
+      //si existe añadir al objeto insumo el valor de su precio compra unitario
+      const data = await this.insumoService.buscarPorNombre(insumo.nombre).toPromise();
+
+      if(data?.object[0]){
+        insumo.precioCompraUnidadAntiguo = data?.object[0].precioCompraUnidad
+      }else{
+        insumo.precioCompraUnidadAntiguo = undefined;
+      }
+      insumo.porcentaje = this.calcularCambioPrecio(insumo);
+
 
       this.errorAgregarInsumo = false;
 
@@ -222,8 +254,9 @@ export class ModalAgregarInsumoComponent implements OnInit {
       //ocultar ventana y resetear formulario
       this.nombreControl.setValue('');
       this.cantidadControl.setValue('');
+      this.precioUnitarioControl.setValue('');
       this.isAgregandoInsumo = false;
-    }else{
+    } else {
       this.errorAgregarInsumo = true;
     }
 
@@ -253,4 +286,29 @@ export class ModalAgregarInsumoComponent implements OnInit {
         }
       );
   }
+
+
+  public calcularCambioPrecio(insumoDto: insumo): string {
+    if (insumoDto.precioCompraUnidad === undefined || (insumoDto.precioCompraUnidadAntiguo === undefined || insumoDto.precioCompraUnidadAntiguo == 0)) {
+      return ''; // Manejar el caso donde faltan datos
+    }
+
+    const precioNuevo = insumoDto.precioCompraUnidad;
+    const precioAntiguo = insumoDto.precioCompraUnidadAntiguo;
+
+    if (precioNuevo === precioAntiguo) {
+      return '0%';
+    }
+
+    const cambioPorcentaje = ((precioNuevo - precioAntiguo) / precioAntiguo) * 100;
+    const cambioRedondeado = Math.round(cambioPorcentaje); // Redondear el porcentaje
+
+    if (cambioRedondeado > 0) {
+      return `+${cambioRedondeado}%`;
+    } else {
+      return `${cambioRedondeado}%`;
+    }
+  }
+
 }
+

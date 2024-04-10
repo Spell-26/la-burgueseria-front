@@ -53,7 +53,7 @@
         </button>
         <mat-error *ngIf="form.get('contrasenaVerify')?.hasError('required')">Debes ingresar una contraseña válida.</mat-error>
         <mat-error *ngIf="form.get('contrasenaVerify')?.hasError('pattern')">La contraseña debe contener como mínimo: una mayúscula, un número, un carácter especial y una longitud mínima de 8 carácteres.</mat-error>
-        <mat-error *ngIf="form.get('contrasenaVerify')?.value != form.get('contrasena')?.value">Las contraseñas ingresadas no coinciden.</mat-error>
+        <mat-error *ngIf="form.get('contrasenaVerify')?.hasError('mismatch')">Las contraseñas no coinciden.</mat-error>
       </mat-form-field>
     </ng-container>
 

@@ -84,7 +84,7 @@ export class InsumosComponent implements OnInit{
   //añadir insumos
   modalAddInsumo(){
     const dialogRef = this.dialog.open(ModalAgregarInsumoComponent,{
-      width: '80vh', // Ajusta el ancho según tus necesidades
+      width: '90vh', // Ajusta el ancho según tus necesidades
       position: { right: '0' }, // Posiciona el modal a la derecha
       height: '90vh',
 

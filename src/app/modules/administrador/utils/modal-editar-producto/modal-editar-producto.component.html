@@ -9,6 +9,53 @@
       <mat-error *ngIf="form.get('nombre')?.hasError('required')">El nombre es obligatorio</mat-error>
       <mat-error *ngIf="form.get('nombre')?.hasError('pattern')">Nombre no válido</mat-error>
     </mat-form-field>
+
+    <div class="nuevoIpp">
+      <button (click)="modalAgregarInsumo()">Vincular un nuevo ingrediente</button>
+    </div>
+
+    <ng-container *ngIf="insumosPorProducto" >
+      <div class="contenedor-ingredientes">
+        <h2>Ingredientes</h2>
+        <div *ngFor="let ipp of insumosPorProducto; let i = index" class="ingrediente">
+          <div class="icono-ipp">
+            <img src="assets/icons/components.svg" alt="Insumos por producto">
+          </div>
+          <div class="inputs-ipp">
+            <span class="ingrediente-nombre">{{ipp.insumo.nombre}}</span>
+            <div class="input-ingrediente">
+              <input type="number" placeholder="cantidad" [value]="ipp.cantidad" (click)="iniciarEdicion(i)" *ngIf="!isEditable">
+              <input type="number" placeholder="cantidad" [value]="cantidadEditada"  (input)="onCantidadChange($event)"  autofocus *ngIf="isEditable && i === insumoPorProductoEditandoIndex">
+            </div>
+          </div>
+          <div class="acciones-ipp">
+            <div class="actualizar-ingrediente" *ngIf="isEditable && i === insumoPorProductoEditandoIndex">
+              <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="guardarIpp(ipp, i)"
+              matTooltip="Guardar">
+                <img src="assets/icons/check.svg" alt="">
+              </button>
+              <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="terminarEdicion(i)"
+              matTooltip="Cancelar">
+                <img src="assets/icons/cancel.svg" alt="">
+              </button>
+            </div>
+            <div class="actualizar-ingrediente"  *ngIf="!isEditable">
+              <button *ngIf="!isEditable" (click)="eliminarIpp(ipp.id, i)"
+              matTooltip="Quitar">
+                <img src="assets/icons/cancel.svg" alt="">
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="valorInsumos > 0">
+      <div class="precio-insumos">
+        <span>Valor en insumos: ${{valorInsumos.toLocaleString()}}</span>
+      </div>
+    </ng-container>
     <mat-form-field>
       <mat-label>Precio del producto</mat-label>
       <input matInput placeholder="Precio" formControlName="precio">
@@ -48,28 +95,7 @@
       <img [src]="selectedImage" alt="Imagen seleccionada" (error)="onImageError()">
     </div>
 
-    <ng-container *ngIf="insumosPorProducto" >
-      <div class="contenedor-ingredientes">
-      <h2>Ingredientes</h2>
-      <div *ngFor="let ipp of insumosPorProducto; let i = index" class="ingrediente">
-        <span class="ingrediente-nombre">{{ipp.insumo.nombre}}</span>
-        <div class="input-ingrediente">
-          <input type="number" placeholder="cantidad" [value]="ipp.cantidad" (click)="iniciarEdicion(i)" *ngIf="!isEditable">
-          <input type="number" placeholder="cantidad" [value]="cantidadEditada"  (input)="onCantidadChange($event)"  autofocus *ngIf="isEditable && i === insumoPorProductoEditandoIndex">
-        </div>
-        <div class="actualizar-ingrediente" *ngIf="isEditable && i === insumoPorProductoEditandoIndex">
-          <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="guardarIpp(ipp, i)">Guardar</button>
-          <button *ngIf="isEditable && i === insumoPorProductoEditandoIndex" (click)="terminarEdicion(i)">Cancelar</button>
-        </div>
-        <div class="borrar-ingrediente" *ngIf="!isEditable">
-          <button *ngIf="!isEditable" (click)="eliminarIpp(ipp.id, i)">Borrar</button>
-        </div>
-      </div>
-      </div>
-    </ng-container>
-    <div class="nuevoIpp">
-      <button (click)="modalAgregarInsumo()">Vincular un nuevo ingrediente</button>
-    </div>
+
   </form>
   <div id="fixed-scroll-icon" *ngIf="showScrollIcon">
     <img src="assets/icons/scroll-down.gif" alt="">

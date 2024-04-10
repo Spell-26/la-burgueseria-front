@@ -174,42 +174,75 @@ svg:hover {
   width: 100%;
   display: flex;
   flex-direction: column;
-  max-height: 60vh;
+  max-height: 40vh;
   overflow-y: scroll;
-  margin-top: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 1.5em;
 }
 .ingrediente{
-  width: 100%;
+  width: 90%;
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  border: 1px solid #3C3B3B;
+  margin: .5em auto;
+}
+.icono-ipp{
+  width: 20%;
+  display: flex;
+  align-items: center;
+}
+.icono-ipp img{
+  width: 100%;
+  text-align: center;
+}
+.inputs-ipp{
+  display: flex;
+  width: 55%;
   flex-direction: column;
+}
+.acciones-ipp{
+  width: 20%;
+  position: relative;
 }
 .ingrediente-nombre{
   width: 100%;
-  text-align: center;
-  margin-top: .8em;
+  text-align: left;
+  margin-left: .4em;
+  margin-top: .4em;
 }
 .input-ingrediente{
-  text-align: center;
+  text-align: left;
 }
 .input-ingrediente input{
-  padding: .8em;
+  padding: .4em;
   background-color: rgba(255, 255, 255, 0);
   color: #fff;
   font-family: WorkSans, serif;
   border: 1px solid #3C3B3B;
   font-size: 1em;
+  width: 40%;
+  margin: 0 0 .4em .4em;
 }
-.actualizar-ingrediente{
+.actualizar-ingrediente {
   text-align: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
 }
 .actualizar-ingrediente button{
-  padding: .6em;
   background-color: rgba(255, 255, 255, 0);
   color: #fff;
   font-family: WorkSans, serif;
   border: 1px solid #3C3B3B;
-  font-size: .7em;
-  margin: .5em .4em;
+  border-radius: 2em;
+  margin: .4em .1em;
+  width: 40%;
+  height: 30%;
+}
+.actualizar-ingrediente button img {
+  text-align: center;
+  object-fit: cover;
 }
 .actualizar-ingrediente button:hover{
   border: 1px solid rgb(244, 98, 19);
@@ -235,7 +268,7 @@ svg:hover {
 }
 .nuevoIpp{
   text-align: center;
-  margin-top: 2.3em;
+  margin-bottom: 1em;
 }
 .nuevoIpp button{
   padding: .8em;

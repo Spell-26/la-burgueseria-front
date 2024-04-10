@@ -47,14 +47,14 @@
   width: 50%;
   margin: 0 auto;
   padding: 1em;
-  background-color: teal;
+  background-color: #c51d1d;
   border: none;
   border-radius: .2em;
   color: white;
   font-size: 1.2em;
 }
-.btn-enviar :hover{
-  background-color: #05f4f4;
+.btn-enviar:hover{
+  background-color: #de2020;
   cursor: pointer;
 }
 .errores{

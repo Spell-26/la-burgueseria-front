@@ -7,6 +7,9 @@ export interface insumo {
   id:       number;
   nombre:   string;
   cantidad: number;
+  precioCompraUnidad? : number;
+  precioCompraUnidadAntiguo? : number;
+  porcentaje? : string;
 }
 
 // interfaces paginacion insumos

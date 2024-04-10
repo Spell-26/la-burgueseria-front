@@ -38,6 +38,15 @@
             <mat-error *ngIf="cantidadControl.errors?.['min']">La cantidad debe ser mayor a 0</mat-error>
             <mat-error></mat-error>
           </mat-form-field>
+          <mat-form-field>
+            <mat-label>Precio unitario</mat-label>
+            <input matInput type="number" [formControl]="precioUnitarioControl">
+            <mat-error *ngIf="precioUnitarioControl.errors?.['required']">La cantidad es requerida</mat-error>
+            <mat-error *ngIf="precioUnitarioControl.errors?.['pattern']">La cantidad debe ser un valor numérico entero</mat-error>
+            <mat-error *ngIf="precioUnitarioControl.errors?.['min']">La valor debe ser mayor a 50</mat-error>
+            <mat-error *ngIf="precioUnitarioControl.errors?.['max']">La valor debe ser inferior a 3.000.000</mat-error>
+            <mat-error></mat-error>
+          </mat-form-field>
         </form>
         <div class="agregar"
              (click)="agregarAlStagging()"
@@ -114,6 +123,7 @@
         <tr>
           <th>Insumo</th>
           <th>Cantidad</th>
+          <th>Precio unitario</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -121,6 +131,17 @@
       <tr *ngFor="let insumo of insumosAGuardar; let i = index">
         <td>{{insumo.nombre}}</td>
         <td>{{insumo.cantidad}}</td>
+        <td class="precio-unitario">
+          <span>{{insumo.precioCompraUnidad}}</span>
+          <span *ngIf="insumo.porcentaje?.includes('-')" class="descuento">
+            <img src="assets/icons/decrease.svg" alt="decrecimiento porcentual">
+            {{insumo.porcentaje}}
+          </span>
+          <span *ngIf="insumo.porcentaje?.includes('+')" class="aumento">
+            <img src="assets/icons/increase.svg" alt="incremento porcentual">
+            {{insumo.porcentaje}}
+          </span>
+        </td>
         <td>
           <img class="quitarInsumo" src="assets/icons/minus2.svg" alt=""
           matTooltip="Quitar insumo"
