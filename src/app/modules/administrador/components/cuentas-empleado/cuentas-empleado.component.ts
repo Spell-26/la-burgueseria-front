@@ -305,7 +305,7 @@ export class CuentasEmpleadoComponent  implements OnInit{
       cuenta: cuentaDTO,
       empleado : e.object
     }
-    console.log(empleado)
+
     let productosCuenta: ProductoCuenta [] = [];
 
     this.productosCuentaService.getProductoCuentaByCuentaId(cuenta.id)

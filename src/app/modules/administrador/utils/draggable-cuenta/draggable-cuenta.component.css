@@ -38,6 +38,7 @@
   border: 1px solid #3C3B3B;
   border-collapse: collapse;
   text-align: center;
+  max-width: 14.28%;
 }
 .texto-background{
   margin-left: .5em;

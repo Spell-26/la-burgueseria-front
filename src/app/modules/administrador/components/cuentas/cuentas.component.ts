@@ -455,10 +455,13 @@ export class CuentasComponent implements OnInit{
 
               if (result.isConfirmed) {
                 // Actualizar el estado de cada producto a "En preparación"
-                await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
-                  producto.estado = "Despachado";
-                  await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
-                }));
+                // Actualizar el estado de cada producto a "Despachado" solo si el estado actual es "Por despachar"
+                let prodCuenta : ProductoCuenta[] = productosCuenta.object;
+                prodCuenta.forEach(pc => {
+                  if(pc.estado === "En preparación"){
+                    this.productosCuentaService.actualizarProductoCuenta(pc).subscribe();
+                  }
+                })
 
                 // Actualizar la cuenta
                 await this.cuentaService.actualizarCuenta(cuenta).toPromise();
@@ -517,7 +520,7 @@ export class CuentasComponent implements OnInit{
           }
           //cuando ya se pagó la cuenta
           else if (cuenta.estadoCuenta.id == 2) {
-
+            const productosCuenta = await this.productosCuentaService.getProductoCuentaByCuentaId(cuenta.id).toPromise();
             //crear instancia de ingreso
             const ingreso: Ingreso = {
               id: 0,
@@ -534,10 +537,14 @@ export class CuentasComponent implements OnInit{
                   //ACTUALIZAR CUENTA
                   this.cuentaService.actualizarCuenta(cuenta)
                     .subscribe(
-                      data => {
+                      async data => {
                         const mesa = cuenta.mesa;
                         mesa.isOcupada = false; //liberar cuenta
                         this.mesaService.actualizarMesa(mesa).subscribe();
+                        await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
+                          producto.estado = "Pagado";
+                          await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
+                        }));
                         this.alertaService.alertaConfirmarCreacion();
                       },
                       error => {

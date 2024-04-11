@@ -133,8 +133,16 @@ export class DraggableCuentaComponent implements OnInit {
                 const result = await this.alertaService.alertaPedirConfirmacionEditar();
 
                 if (result.isConfirmed) {
+                  const productosCuentaPendientes: ProductoCuenta [] = []
+                  productosCuenta.object.forEach(
+                    (productoCuenta : ProductoCuenta) => {
+                      if (productoCuenta.estado === 'Por despachar') {
+                        productosCuentaPendientes.push(productoCuenta);
+                      }
+                    }
+                  );
                   // Actualizar el estado de cada producto a "En preparación"
-                  await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
+                  await Promise.all(productosCuentaPendientes.map(async (producto: ProductoCuenta) => {
                     producto.estado = "En preparación";
                     await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
                   }));
@@ -165,10 +173,12 @@ export class DraggableCuentaComponent implements OnInit {
 
               if (result.isConfirmed) {
                 // Actualizar el estado de cada producto a "En preparación"
-                await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
-                  producto.estado = "Despachado";
-                  await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
-                }));
+                let prodCuenta : ProductoCuenta[] = productosCuenta.object;
+                prodCuenta.forEach(pc => {
+                  if(pc.estado === "En preparación"){
+                    this.productosCuentaService.actualizarProductoCuenta(pc).subscribe();
+                  }
+                })
 
                 // Actualizar la cuenta
                 await this.cuentaService.actualizarCuenta(this.cuenta).toPromise();
@@ -196,6 +206,7 @@ export class DraggableCuentaComponent implements OnInit {
               total: this.cuenta.total,
               cuenta: this.cuenta
             }
+            const productosCuenta = await this.productosCuentaService.getProductoCuentaByCuentaId(this.cuenta.id).toPromise();
             //ABRIR MODAL PARA SABER EL TIPO DE MÉTODO DE PAGO
             // GUARDAR INGRESO
             this.modalPagar(ingreso).subscribe(
@@ -204,10 +215,14 @@ export class DraggableCuentaComponent implements OnInit {
                   //ACTUALIZAR CUENTA
                   this.cuentaService.actualizarCuenta(this.cuenta)
                     .subscribe(
-                      data => {
+                      async data => {
                         const mesa = this.cuenta.mesa;
                         mesa.isOcupada = false;
                         this.mesaService.actualizarMesa(mesa).subscribe();
+                        await Promise.all(productosCuenta.object.map(async (producto: ProductoCuenta) => {
+                          producto.estado = "Pagado";
+                          await this.productosCuentaService.actualizarProductoCuenta(producto).toPromise();
+                        }));
                         this.alertaService.alertaConfirmarCreacion();
                       },
                       error => {

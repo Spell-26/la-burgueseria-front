@@ -190,6 +190,7 @@ export class ModalEditarCuentaComponent implements OnInit{
           this.cuentaProductosData = result.object;
           this.cdr.detectChanges(); // Forzar la detección de cambios
           this.calcularTotal();
+          console.log(this.cuentaProductosData)
         },
         error => {
           console.log(error);
@@ -279,7 +280,7 @@ export class ModalEditarCuentaComponent implements OnInit{
           producto: result.producto,
           cantidad: result.cantidad,
           valorProducto: result.producto.precio,
-          estado: 'Por confirmar',
+          estado: 'Por despachar',
         }
 
         this.cuentaProductosAgg.push(producto);
