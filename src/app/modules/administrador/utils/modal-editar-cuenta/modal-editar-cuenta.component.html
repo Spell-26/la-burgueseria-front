@@ -125,6 +125,11 @@
     <div id="total" *ngIf="cuentaProductosData.length > 0 || cuentaProductosAgg.length > 0">
       Total: ${{formatearNumeroConPuntos(totalCuenta - abonoData)}}
     </div>
+    <div class="meseros">
+      <p>
+        Meseros responsables: {{empleadosResponsables}}
+      </p>
+    </div>
     <ng-container *ngIf="!isReadOnly">
       <div id="btn-black">
         <button (click)="modalAgregarProducto()" >

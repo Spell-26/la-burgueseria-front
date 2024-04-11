@@ -12,6 +12,7 @@ import {InsumoReservado, ValidarExistenciasService} from "../../components/cuent
 import {InsumosService} from "../../services/insumos.service";
 import {Producto} from "../../interfaces";
 import {LocalService} from "../sharedMethods/localStorage/local.service";
+import {EmpleadoCuentaService} from "../../services/empleado-cuenta.service";
 
 
 
@@ -57,6 +58,7 @@ export class ModalEditarCuentaComponent implements OnInit{
   public isPressed: boolean = false;
   //variable para verificar carga de datos
   isLoading : boolean = true;
+  empleadosResponsables : string = '';
   ngOnInit(): void {
     this.obtenerProductos();
     //asignar el valor del id del estado
@@ -74,7 +76,8 @@ export class ModalEditarCuentaComponent implements OnInit{
     private cuentaService : CuentasService,
     private validarExistencias : ValidarExistenciasService,
     private insumoService : InsumosService,
-    private localStorageService : LocalService
+    private localStorageService : LocalService,
+    private empleadoCuentaService : EmpleadoCuentaService
   ) {
 
     if(data){
@@ -86,6 +89,17 @@ export class ModalEditarCuentaComponent implements OnInit{
       if(data.readOnly){
         this.isReadOnly = data.readOnly
       }
+
+      this.empleadoCuentaService.empleadoCuentaByCuentaId(this.cuentaData!.id)
+        .subscribe(
+          result => {
+            let empleadosCuenta : EmpleadoCuenta[]
+            empleadosCuenta= result.object;
+            empleadosCuenta.forEach(ec => {
+              this.empleadosResponsables += ec.empleado.nombre + ' ' + ec.empleado.apellido + '. ';
+            })
+          }
+        )
     }
 
     this.form = this.fb.group({
@@ -241,7 +255,8 @@ export class ModalEditarCuentaComponent implements OnInit{
 
     const datosAEnviar = {
       productos : this.cuentaProductosAgg,
-      cuenta : cuenta
+      cuenta : cuenta,
+      mesa : cuenta?.mesa
     }
 
     this.dialogRef.close(datosAEnviar);

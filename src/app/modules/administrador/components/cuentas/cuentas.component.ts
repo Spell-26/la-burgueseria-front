@@ -8,7 +8,7 @@ import {CuentasService} from "../../services/cuentas.service";
 import {ProductosCuentaService} from "../../services/productos-cuenta.service";
 import {EmpleadoCuentaService} from "../../services/empleado-cuenta.service";
 import {ModalEditarCuentaComponent} from "../../utils/modal-editar-cuenta/modal-editar-cuenta.component";
-import {InsumoProducto} from "../../interfaces";
+import {InsumoProducto, Mesa} from "../../interfaces";
 import {InsumosPorProductoService} from "../../services/insumos-por-producto.service";
 import {InsumosService} from "../../services/insumos.service";
 import {ModalIngresosComponent} from "../../utils/modal-ingresos/modal-ingresos.component";
@@ -23,6 +23,7 @@ import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
 import {InsumoReservado, ValidarExistenciasService} from "./validar-existencias.service";
 import {LocalService} from "../../utils/sharedMethods/localStorage/local.service";
+import {MesasService} from "../../services/mesas.service";
 
 
 @Component({
@@ -115,7 +116,8 @@ export class CuentasComponent implements OnInit{
               private loginService : LoginService,
               private router : Router,
               private validarExistencias : ValidarExistenciasService,
-              private localStorageService : LocalService) {
+              private localStorageService : LocalService,
+              private mesaService : MesasService) {
   }
 
 
@@ -439,6 +441,7 @@ export class CuentasComponent implements OnInit{
           //crear instancias
           const cuenta: Cuenta = result.cuenta;
           const productosCuenta: ProductoCuenta[] = [];
+          const mesa : Mesa = result.mesa;
           //productos cuenta vinculados a la cuenta con anterioridad
           let productosCuentaExistentes: ProductoCuenta[] = [];
           //VALIDAR SI LA CUENTA FUE DESPACHADA
@@ -532,6 +535,9 @@ export class CuentasComponent implements OnInit{
                   this.cuentaService.actualizarCuenta(cuenta)
                     .subscribe(
                       data => {
+                        const mesa = cuenta.mesa;
+                        mesa.isOcupada = false; //liberar cuenta
+                        this.mesaService.actualizarMesa(mesa).subscribe();
                         this.alertaService.alertaConfirmarCreacion();
                       },
                       error => {
@@ -581,6 +587,9 @@ export class CuentasComponent implements OnInit{
                 //actualizar la cuenta
                 this.cuentaService.actualizarCuenta(cuenta).subscribe(
                   ()=>{
+                    const mesa = cuenta.mesa;
+                    mesa.isOcupada = false; //liberar mesa
+                    this.mesaService.actualizarMesa(mesa).subscribe();
                   },
                   error  => {
                   },

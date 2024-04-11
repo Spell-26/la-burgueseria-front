@@ -13,6 +13,7 @@ import {Ingreso} from "../../interfaces/ingreso";
 import {ModalIngresosComponent} from "../modal-ingresos/modal-ingresos.component";
 import {MatDialog} from "@angular/material/dialog";
 import {IngresoService} from "../../services/ingreso.service";
+import {MesasService} from "../../services/mesas.service";
 
 @Component({
   selector: 'app-draggable-cuenta',
@@ -40,7 +41,8 @@ export class DraggableCuentaComponent implements OnInit {
               private cuentaService : CuentasService,
               private fechaService : FechaHoraService,
               public dialog : MatDialog,
-              private ingresoService: IngresoService) { }
+              private ingresoService: IngresoService,
+              private mesaService : MesasService) { }
 
   ngOnInit() {
     this.containerWidth = this.innerContainerRef.nativeElement.getBoundingClientRect().width;
@@ -203,6 +205,9 @@ export class DraggableCuentaComponent implements OnInit {
                   this.cuentaService.actualizarCuenta(this.cuenta)
                     .subscribe(
                       data => {
+                        const mesa = this.cuenta.mesa;
+                        mesa.isOcupada = false;
+                        this.mesaService.actualizarMesa(mesa).subscribe();
                         this.alertaService.alertaConfirmarCreacion();
                       },
                       error => {

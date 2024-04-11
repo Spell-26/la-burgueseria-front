@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Mesa} from "../../interfaces";
+import {Mesa, MesaResponse} from "../../interfaces";
 import {MesasService} from "../../services/mesas.service";
 import {MatDialog} from "@angular/material/dialog";
 import {FormControl, Validators} from "@angular/forms";
@@ -105,27 +105,30 @@ export class MesasComponent implements OnInit{
     }
     this.mesaService.actualizarMesa(mesa).subscribe();
   }
-  guardarEdicion(index : number){
+  async guardarEdicion(index: number) {
 
-    if(this.nuevoEstadoMesa != "" && this.nuevoNumeroMesa.value != null){
-      const mesa : Mesa = {
+    if (this.nuevoEstadoMesa != "" && this.nuevoNumeroMesa.value != null) {
+      const mesaObj = await this.mesaService.getMesaById(index).toPromise();
+
+      const mesa: Mesa = {
         id: index,
         numeroMesa: this.nuevoNumeroMesa.value,
         estado: this.nuevoEstadoMesa,
-        qr: null
+        qr: null,
+        isOcupada : mesaObj.object.isOcupada,
       };
 
       this.alertaService.alertaPedirConfirmacionEditar()
         .then(
           (result) => {
-            if(result.isConfirmed){
+            if (result.isConfirmed) {
               this.alertaService.alertaConfirmarCreacion();
               this.mesaService.actualizarMesa(mesa)
                 .subscribe(
                   result => {
 
                   }, error => {
-                    if(error.status === 409){
+                    if (error.status === 409) {
                       //mostrar alerta con mensaje custom
                       const mensaje = "Ups! este número de mesa ya esta asignado a otra mesa, intenta con otro."
                       this.alertaService.alertaErrorMensajeCustom(mensaje);
@@ -133,7 +136,7 @@ export class MesasComponent implements OnInit{
                   }
                 );
 
-            }else if(result.dismiss === Swal.DismissReason.cancel ){
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
               this.alertaService.alertaSinModificaciones();
             }
           }
@@ -252,6 +255,7 @@ export class MesasComponent implements OnInit{
             id: 0,
             numeroMesa: result.numero,
             estado : "Disponible",
+            isOcupada : false,
             qr : null
           };
 

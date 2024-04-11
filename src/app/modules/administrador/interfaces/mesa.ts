@@ -11,6 +11,7 @@ export interface Mesa {
   numeroMesa: number;
   qr:         Qr | null;
   estado: string;
+  isOcupada : boolean;
 }
 
 

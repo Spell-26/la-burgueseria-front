@@ -34,6 +34,11 @@ export class MesasService {
     return this.http.get<any>(`${this.apiUrl}s-page`, {params})
   }
 
+  //OBTENER MESA POR ID
+  getMesaById(id : number): Observable<any>{
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
   //ELIMINAR MESA
   deleteMesa(id : number):Observable<any>{
     return this.http.delete(`${this.apiUrl}/${id}`)
