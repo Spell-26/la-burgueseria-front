@@ -47,8 +47,7 @@ export class ModalDashboardComponent implements OnInit {
     });
 
     if (data) {
-      let horaLocal = this.fechaHoraService.convertirUTCAFechaHoraLocal(data.fechaHoraInicio);
-      let horaLocalFormateada = this.fechaHoraService.convertirLocalFormatAFormatoEstandar(horaLocal);
+      let horaLocal:string  = this.fechaHoraService.convertirUTCAFechaHoraLocal(data.fechaHoraInicio);
       this.totalCalculado = data.saldoInicioCajaMenor;
       let horaCierre : any = this.fechaHoraService.obtenerFechaHoraLocalActual();
       let horaCierreUTC = this.fechaHoraService.convertirFechaHoraLocalAUTC(horaCierre);
@@ -69,8 +68,8 @@ export class ModalDashboardComponent implements OnInit {
 
       // Utilizar forkJoin para esperar a que ambas peticiones se completen
       forkJoin([
-        this.cuentaService.cuentasByFecha(horaLocalFormateada, null),
-        this.egresoService.getListEgresoByFecha(horaLocalFormateada, null)
+        this.cuentaService.cuentasByFecha(data.fechaHoraInicio, null),
+        this.egresoService.getListEgresoByFecha(data.fechaHoraInicio, null)
       ]).subscribe(
         ([cuentasResult, egresosResult]) => {
           if (cuentasResult.object.length > 0) {

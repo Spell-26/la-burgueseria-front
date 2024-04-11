@@ -73,7 +73,7 @@
         <form autocomplete="off">
           <mat-form-field>
             <mat-label>Total compra de insumos</mat-label>
-            <input matInput placeholder="$0" [formControl]="totalCompraControl" autocomplete="off">
+            <input matInput [formControl]="totalCompraControl" readonly>
             <mat-error *ngIf="totalCompraControl.errors?.['required']">El total es requerido</mat-error>
             <mat-error *ngIf="totalCompraControl.errors?.['pattern']">El total debe ser un valor numérico entero</mat-error>
             <mat-error *ngIf="totalCompraControl.errors?.['min']">El total debe ser mayor a 0</mat-error>

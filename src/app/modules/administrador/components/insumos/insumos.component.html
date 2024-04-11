@@ -30,6 +30,9 @@
             EN STOCK
           </th>
           <th class="row-header-element">
+            PRECIO C/U
+          </th>
+          <th class="row-header-element">
             ACCIONES
           </th>
         </tr>
@@ -51,6 +54,9 @@
           </td>
           <td class="row-contenido-element, editable" (click)="iniciarEdicion(i)"  *ngIf="!modoEdicion || (modoEdicion && i !== insumoEditandoIndex)">
             {{insumo.cantidad}}
+          </td>
+          <td class="row-contenido-element">
+            {{insumo.precioCompraUnidad}}
           </td>
 
           <td class="row-contenido-element" *ngIf="modoEdicion && i === insumoEditandoIndex">
