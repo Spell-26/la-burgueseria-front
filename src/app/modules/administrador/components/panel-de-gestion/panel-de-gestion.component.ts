@@ -227,7 +227,7 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
                   //convertir this.gestionCaja[0].fechaHorainicio a string y almacenarlo
                   let fechaInicioString = this.gestionCaja[0].fechaHorainicio.toString()
                   const fechaInicio = format(fechaInicioString, "dd/MM/yyyy")
-                  const fechaFin = addDays(fechaInicio, 1).toString();
+                  const fechaFin = addDays(fechaInicio, 0).toString();
 
                   //ahora convertir la fechaHoraInicio de cada caja al formato y comparar para ver
                   //si es elegible para añadir al array
@@ -313,7 +313,8 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
                 );
                 this.gestionCaja[0].fechaHorainicio = fechaInicio.toISOString();
                 this.iniciarOTerminarDia(true);
-                this.localStore.saveData('estadoDia', true.toString());
+                this.localStore.saveData('fecha', fechaInicio.toISOString());
+                this.localStore.saveData('estadoDia', this.gestionCaja[0].estadoCaja.toString());
               }
             }else{
               this.iniciarOTerminarDia(false);
@@ -342,6 +343,7 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
         data => {
           if(data){
             this.allGestionCaja = data.object
+            this.allGestionCaja.reverse();
             if(this.allGestionCaja.length > 0){
               for(let caja of this.allGestionCaja){
                 const fechaArray: number[] = caja.fechaHorainicio;

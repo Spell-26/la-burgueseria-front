@@ -94,8 +94,10 @@
   margin-top: 1em !important;
 }
 .historicos{
-  margin-top: 5em !important;
-  max-height: 55vh;
+  margin: 0 !important;
+  display: block !important;
+  max-height: 60vh !important;
+  padding: 2.5em !important;
 }
 .estado-abierta {
   color: orangered;
@@ -129,3 +131,4 @@
 .imagen-inicio img{
   width: 50%;
 }
+

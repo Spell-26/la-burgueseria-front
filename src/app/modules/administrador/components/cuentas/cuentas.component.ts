@@ -294,7 +294,7 @@ export class CuentasComponent implements OnInit{
       // Convertir la diferencia de milisegundos a horas
       const diferenciaHoras = diferenciaMilisegundos / (1000 * 60 * 60);
 
-      // Definir el rango de 16 horas
+      // COmprueba si no han pasado mas de 16 horas entre la fecha actual y la fecha caja
       const rangoHoras = 16;
       if(estadoDia && diferenciaHoras <= rangoHoras){
         const dialogRef = this.dialog.open(ModalCuentasComponent,{
