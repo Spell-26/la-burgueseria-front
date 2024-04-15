@@ -34,11 +34,8 @@ export class ModalAgregarInsumoComponent implements OnInit {
     Validators.min(50), // la cantidad debe ser mayor a 0
     Validators.max(3000000)
   ]);
-  totalCompraControl = new FormControl('',[
-    Validators.required,
-    Validators.pattern(/^\d+$/), // solo valores numéricos enteros
-    Validators.min(50) // la cantidad debe ser mayor a 0
-    ]);
+  totalCompraControl: FormControl = new FormControl();
+  valorTotalInsumos: number = 0;
   origenControl = new FormControl(null, [
     Validators.required
   ]);
@@ -80,7 +77,13 @@ export class ModalAgregarInsumoComponent implements OnInit {
 
   ngOnInit(): void {
     this.getInsumos();
+    // Inicializar el FormControl con el valor inicial de valorTotalInsumos
+    this.totalCompraControl.setValue(this.valorTotalInsumos);
 
+    // Suscribirse a los cambios en valorTotalInsumos y actualizar el FormControl
+    this.totalCompraControl.valueChanges.subscribe(() => {
+      this.totalCompraControl.setValue(this.valorTotalInsumos);
+    });
     this.insumoService.refreshNeeded.subscribe(
       () => {
         this.getInsumos();
@@ -110,7 +113,7 @@ export class ModalAgregarInsumoComponent implements OnInit {
       const egreso : Egreso = {
         id : 0,
         // @ts-ignore
-        total : this.totalCompraControl.value?.toString(),
+        total : this.valorTotalInsumos.toString(),
         categoria: 'Compra de insumos',
         // @ts-ignore
         deduccionDesde: this.origenControl.value,
@@ -118,7 +121,7 @@ export class ModalAgregarInsumoComponent implements OnInit {
         fecha : null,
         descripcion : descripcion
       }
-
+      console.log("Egreso a crear: ", egreso)
       this.alertaService.alertaPedirConfirmacionCrear().then(
         (result) => {
           if(result.isConfirmed)
@@ -235,6 +238,12 @@ export class ModalAgregarInsumoComponent implements OnInit {
         // @ts-ignore
         precioCompraUnidad: this.precioUnitarioControl.value
       }
+
+      //aumentar el valor compra unitario
+      // @ts-ignore
+      this.valorTotalInsumos += insumo.precioCompraUnidad * insumo.cantidad;
+
+      this.totalCompraControl.setValue(this.valorTotalInsumos);
       //consultar a la api si existe un insumo con el mismo nombre
       //si existe añadir al objeto insumo el valor de su precio compra unitario
       const data = await this.insumoService.buscarPorNombre(insumo.nombre).toPromise();
@@ -264,6 +273,11 @@ export class ModalAgregarInsumoComponent implements OnInit {
 
   //Quitar un insumo del array
   public quitarInsumo(i : number) {
+    const insumo :insumo = this.insumosAGuardar[i];
+    // @ts-ignore
+    this.valorTotalInsumos -= insumo.precioCompraUnidad * insumo.cantidad;
+
+    this.totalCompraControl.setValue(this.valorTotalInsumos);
     this.insumosAGuardar.splice(i, 1);
   }
 
