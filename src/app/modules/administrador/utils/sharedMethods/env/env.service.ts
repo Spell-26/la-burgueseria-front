@@ -6,15 +6,15 @@ import { Injectable } from '@angular/core';
 export class EnvService {
 
   constructor() { }
-  fontEndHost = 'http://localhost:4200';
-  //fontEndHost = 'https://laburgueseria-ed758.web.app';
+  //fontEndHost = 'http://localhost:4200';
+  fontEndHost = 'https://laburgueseria-ed758.web.app';
   port : number = 8080;
 
-  url : string = `http://localhost:8080/api/v1`;
-  urlHost : string = `http://localhost:8080`;
+  //url : string = `http://localhost:8080/api/v1`;
+  //urlHost : string = `http://localhost:8080`;
 
-  //url : string = `https://la-burgueseria.onrender.com/api/v1`
-  //urlHost : string = `https://la-burgueseria.onrender.com`
+  url : string = `https://la-burgueseria.onrender.com/api/v1`
+  urlHost : string = `https://la-burgueseria.onrender.com`
   getPort() : number {
     return this.port;
   }
