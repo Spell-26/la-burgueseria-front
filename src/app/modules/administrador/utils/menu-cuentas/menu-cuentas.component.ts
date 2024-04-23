@@ -26,6 +26,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {LoginService} from "../../../home/services/auth/login.service";
 import {Router} from "@angular/router";
 import {InsumoReservado, ValidarExistenciasService} from "../../components/cuentas/validar-existencias.service";
+import {LocalService} from "../sharedMethods/localStorage/local.service";
 
 @Component({
   selector: 'app-menu-cuentas',
@@ -77,7 +78,8 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
     public dialog : MatDialog,
     private loginService : LoginService,
     private router : Router,
-    private validarExistencias : ValidarExistenciasService
+    private validarExistencias : ValidarExistenciasService,
+    private localStoreService : LocalService
   ) {
 
 
@@ -142,6 +144,8 @@ export class MenuCuentasComponent implements OnInit, OnDestroy{
         result => {
           if(result.isConfirmed){
             this.loginService.logout()
+            this.localStoreService.removeData('fecha');
+            this.localStoreService.removeData('estadoDia')
             this.router.navigateByUrl('home')
           }
         }

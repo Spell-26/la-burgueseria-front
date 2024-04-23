@@ -284,19 +284,8 @@ export class CuentasComponent implements OnInit{
   public modalCrearCuenta() : void{
     //obtener valores del local storage para saber si el dia esta iniciado y esta en la fecha correspondiente
     const estadoDia = JSON.parse(this.localStorageService.getData('estadoDia'));
-    const fechaCaja = this.localStorageService.getData('fecha');
     const mensaje = "No se pueden crear cuentas sin haber iniciado el día."
-    if(estadoDia && estadoDia){
-      const fechaComparar = new Date(fechaCaja);
-      const fechaActual = new Date();
-      // Calcular la diferencia en milisegundos entre las fechas
-      const diferenciaMilisegundos = Math.abs(fechaActual.getTime() - fechaComparar.getTime());
-      // Convertir la diferencia de milisegundos a horas
-      const diferenciaHoras = diferenciaMilisegundos / (1000 * 60 * 60);
-
-      // COmprueba si no han pasado mas de 16 horas entre la fecha actual y la fecha caja
-      const rangoHoras = 16;
-      if(estadoDia && diferenciaHoras <= rangoHoras){
+    if(estadoDia){
         const dialogRef = this.dialog.open(ModalCuentasComponent,{
           width: '450px', // Ajusta el ancho según tus necesidades
           position: { right: '0' }, // Posiciona el modal a la derecha
@@ -384,9 +373,6 @@ export class CuentasComponent implements OnInit{
 
           }
         )
-      }else{
-        this.alertaService.alertaErrorMensajeCustom(mensaje)
-      }
     }else{
       this.alertaService.alertaErrorMensajeCustom(mensaje)
     }

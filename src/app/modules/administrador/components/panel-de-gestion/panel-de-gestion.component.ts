@@ -226,14 +226,18 @@ export class PanelDeGestionComponent implements OnInit, OnDestroy{
 
                   //convertir this.gestionCaja[0].fechaHorainicio a string y almacenarlo
                   let fechaInicioString = this.gestionCaja[0].fechaHorainicio.toString()
-                  const fechaInicio = format(fechaInicioString, "dd/MM/yyyy")
-                  const fechaFin = addDays(fechaInicio, 0).toString();
-
+                  const fechaInicio = new Date(fechaInicioString);
+                  let fechaFin : Date | null = null;
+                  fechaFin = addDays(fechaInicio, 1);
                   //ahora convertir la fechaHoraInicio de cada caja al formato y comparar para ver
                   //si es elegible para añadir al array
-                  const fechaCajaFormat = format(fechaString, "dd/MM/yyyy")
+                  const fechaCajaFormat = format(fechaString, "dd/MM/yyyy");
+                  const fechaFinFormat = format(fechaFin, "dd/MM/yyyy");
+                  const fechaInicioFormat = format(fechaInicio, "dd/MM/yyyy");
 
-                  if(fechaCajaFormat != fechaInicio && fechaCajaFormat != fechaFin){
+                  //compara la fecha de la caja de la iteración actual con la información de fecha en la
+                  //caja activa del dia actual
+                  if(fechaCajaFormat != fechaInicioFormat && fechaCajaFormat != fechaFinFormat){
                     this.cajasPendientes.push(caja);
                   }
                 }else{

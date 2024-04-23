@@ -190,7 +190,6 @@ export class ModalEditarCuentaComponent implements OnInit{
           this.cuentaProductosData = result.object;
           this.cdr.detectChanges(); // Forzar la detección de cambios
           this.calcularTotal();
-          console.log(this.cuentaProductosData)
         },
         error => {
           console.log(error);

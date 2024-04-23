@@ -121,7 +121,6 @@ export class ModalAgregarInsumoComponent implements OnInit {
         fecha : null,
         descripcion : descripcion
       }
-      console.log("Egreso a crear: ", egreso)
       this.alertaService.alertaPedirConfirmacionCrear().then(
         (result) => {
           if(result.isConfirmed)
